@@ -31,7 +31,7 @@ export default function Navigation() {
     <header className="nav" role="banner">
       <div className="nav-inner">
         <div className="container-card nav-bar">
-          {/* Brand / Logo badge */}
+          {/* Brand / Logo */}
           <Link href="/" className="brand" aria-label="Barracks Media Home">
             <span className="logoImageWrap" aria-hidden="true">
               <Image
@@ -50,14 +50,14 @@ export default function Navigation() {
             </span>
           </Link>
 
-          {/* Primary links */}
+          {/* Links */}
           <nav className="navLinks" aria-label="Primary navigation">
-            <Link className="tab" href="/services">
-              Services
-            </Link>
-
             <Link className="tab" href="/network">
               Network
+            </Link>
+
+            <Link className="tab" href="/services">
+              Services
             </Link>
 
             {/* Command dropdown */}
@@ -76,12 +76,6 @@ export default function Navigation() {
                 <div className="dropdown" role="menu">
                   <Link className="dropItem" href="/services" onClick={() => setOpen(false)}>
                     Start a Project
-                  </Link>
-                  <Link className="dropItem" href="/services" onClick={() => setOpen(false)}>
-                    Web Design
-                  </Link>
-                  <Link className="dropItem" href="/services" onClick={() => setOpen(false)}>
-                    Podcast Production
                   </Link>
 
                   <div className="divider" />
