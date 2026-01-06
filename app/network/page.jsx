@@ -106,13 +106,7 @@ export default function NetworkPage() {
               style={{ width: "100%" }}
             >
               <div className="podCoverWrap" style={{ aspectRatio: "16 / 10" }}>
-                {/* plain img keeps it simple with your existing CSS */}
-                <img
-                  src={s.image}
-                  alt={s.title}
-                  className="podCover"
-                  loading="lazy"
-                />
+                <img src={s.image} alt={s.title} className="podCover" loading="lazy" />
               </div>
 
               <div className="podMeta">
