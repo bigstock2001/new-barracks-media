@@ -120,20 +120,20 @@ export default function ShowPage({ params }) {
           ← Back to Network
         </Link>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "320px 1fr",
-            gap: 18,
-            marginTop: 14,
-            alignItems: "start",
-          }}
-        >
-          <div style={{ borderRadius: 18, overflow: "hidden", border: "1px solid rgba(255,255,255,0.12)" }}>
+        <div className="showLayout" style={{ marginTop: 14 }}>
+          <div
+            style={{
+              borderRadius: 18,
+              overflow: "hidden",
+              border: "1px solid rgba(255,255,255,0.12)",
+              background: "rgba(255,255,255,0.04)",
+            }}
+          >
             <img
               src={show.image}
               alt={show.title}
               style={{ width: "100%", height: "auto", display: "block" }}
+              loading="lazy"
             />
           </div>
 
@@ -172,14 +172,6 @@ export default function ShowPage({ params }) {
           plus a clean episode list.
         </p>
       </section>
-
-      <style jsx>{`
-        @media (max-width: 840px) {
-          section :global(div[style*="grid-template-columns"]) {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </>
   );
 }
