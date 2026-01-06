@@ -115,6 +115,72 @@ body {
   padding-top: 14px;
 }
 
+/* Sound-wave light sweep behind nav */
+.nav::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  transform: translateX(-50%);
+  width: min(1100px, calc(100% - 36px));
+  height: 64px;
+  border-radius: 22px;
+  pointer-events: none;
+  z-index: -1;
+
+  /* Wave bars + soft pulse glow */
+  background:
+    radial-gradient(800px 60px at 50% 50%, rgba(255, 255, 255, 0.18), transparent 65%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.12) 0px,
+      rgba(255, 255, 255, 0.12) 2px,
+      transparent 2px,
+      transparent 9px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.06) 0px,
+      rgba(255, 255, 255, 0.06) 1px,
+      transparent 1px,
+      transparent 14px
+    );
+
+  opacity: 0.65;
+  mix-blend-mode: screen;
+  filter: blur(0.2px);
+
+  animation: navWaveSweep 6.5s linear infinite;
+}
+
+/* Ensure nav bar sits above wave */
+.nav-inner,
+.nav-bar {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes navWaveSweep {
+  0% {
+    background-position: 0% 50%, 0px 0, 0px 0;
+    opacity: 0.35;
+  }
+  40% {
+    opacity: 0.7;
+  }
+  100% {
+    background-position: 220% 50%, 420px 0, 260px 0;
+    opacity: 0.35;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .nav::before {
+    animation: none;
+  }
+}
+
 .nav-inner {
   width: 100%;
   max-width: 1100px;
@@ -145,6 +211,7 @@ body {
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
 }
 
 .brandText {
