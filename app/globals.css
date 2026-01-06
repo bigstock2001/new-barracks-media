@@ -1,0 +1,415 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --card-bg: rgba(12, 12, 12, 0.72);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.72);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background: #000;
+  overflow-x: hidden;
+}
+
+/* =============================
+   Sticky Background
+============================= */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url("/background.jpg") center / cover no-repeat fixed;
+}
+
+.bg-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* =============================
+   Layout
+============================= */
+.site {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 18px 50px;
+}
+
+.container-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+/* =============================
+   Hero
+============================= */
+.hero-strip {
+  width: 100%;
+  max-width: 1100px;
+  margin: 20px auto 0;
+  padding: 42px 26px;
+  min-height: 160px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.h1 {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  margin: 0;
+}
+
+.p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* =============================
+   Sections
+============================= */
+.section {
+  margin-top: 22px;
+  padding: 22px;
+}
+
+/* =============================
+   Navigation
+============================= */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding-top: 14px;
+}
+
+.nav-inner {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 18px;
+}
+
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: white;
+}
+
+.logoImageWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brandTitle {
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: 0.6px;
+}
+
+.brandSub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tab {
+  padding: 10px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid transparent;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.dropWrap {
+  position: relative;
+}
+
+.dropBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.dropBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  min-width: 260px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.dropItem {
+  display: block;
+  padding: 12px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.dropItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 10px 0;
+}
+
+/* =============================
+   Footer
+============================= */
+.footerWrap {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 22px;
+  padding: 0 18px;
+}
+
+.footer {
+  padding: 18px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.link {
+  color: white;
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.social {
+  display: flex;
+  gap: 12px;
+}
+
+/* =============================
+   Podcast Carousel
+============================= */
+.carouselHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.carouselActions {
+  display: flex;
+  gap: 10px;
+}
+
+.carouselBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.carouselBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.carouselTrack {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 10px 2px 4px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.carouselTrack::-webkit-scrollbar {
+  height: 10px;
+}
+.carouselTrack::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+.carouselTrack::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+}
+
+.podCard {
+  scroll-snap-align: start;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.92);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  width: 220px;
+  flex: 0 0 220px;
+}
+
+.podCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.podCoverWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.podCoverWrap[data-missing="true"] .podCoverFallback {
+  display: flex;
+}
+
+.podCover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.podCoverFallback {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.podFallbackTitle {
+  font-weight: 900;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.podFallbackSmall {
+  margin-top: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.podMeta {
+  padding: 12px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.podTitle {
+  font-weight: 850;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.podCta {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+}
