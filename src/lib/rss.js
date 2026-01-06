@@ -39,13 +39,14 @@ function parsePubDate(dateStr) {
 export function parseRss(xml, limit = 20) {
   const items = [];
 
-  const itemBlocks = xml.match(/<item[\s\S]*?<\/item>/gi) || [];
+  // Captivate/Podcast RSS should have <item> blocks, but this makes it tolerant.
+  const itemBlocks = xml.match(/<item\b[\s\S]*?<\/item>/gi) || [];
+
   for (const block of itemBlocks.slice(0, limit)) {
     const title = pickTag(block, "title");
     const link = pickTag(block, "link") || pickTag(block, "guid");
     const pubDate = parsePubDate(pickTag(block, "pubDate"));
-    const duration =
-      pickTag(block, "itunes:duration") || pickTag(block, "duration");
+    const duration = pickTag(block, "itunes:duration") || pickTag(block, "duration");
 
     const enclosureUrl = pickAttr(block, "enclosure", "url");
     const image =
@@ -54,13 +55,10 @@ export function parseRss(xml, limit = 20) {
       pickAttr(block, "media:content", "url");
 
     const rawDesc =
-      pickTag(block, "content:encoded") ||
-      pickTag(block, "description") ||
-      "";
+      pickTag(block, "content:encoded") || pickTag(block, "description") || "";
 
     const description = stripHtml(decodeCdata(rawDesc));
 
-    // Skip junk rows
     if (!title) continue;
 
     items.push({
@@ -78,8 +76,10 @@ export function parseRss(xml, limit = 20) {
 }
 
 export async function fetchEpisodesFromRss(rssUrl, limit = 20) {
-  const res = await fetch(rssUrl, {
-    // Cache on Vercel a bit to reduce load; tweak later
+  const url = String(rssUrl || "").trim();
+  if (!url) throw new Error("Missing RSS URL.");
+
+  const res = await fetch(url, {
     next: { revalidate: 900 },
     headers: {
       "User-Agent": "BarracksMediaRSS/1.0 (+https://barracksmedia.com)",
@@ -88,9 +88,17 @@ export async function fetchEpisodesFromRss(rssUrl, limit = 20) {
   });
 
   if (!res.ok) {
-    throw new Error(`RSS fetch failed: ${res.status} ${res.statusText}`);
+    const body = await res.text().catch(() => "");
+    throw new Error(`RSS fetch failed: ${res.status} ${res.statusText}${body ? ` — ${body.slice(0, 120)}` : ""}`);
   }
 
   const xml = await res.text();
-  return parseRss(xml, limit);
+  const episodes = parseRss(xml, limit);
+
+  if (!episodes.length) {
+    // Help diagnose quickly if Captivate responds but structure differs
+    throw new Error("RSS parsed but returned zero episodes (no <item> blocks found or unexpected format).");
+  }
+
+  return episodes;
 }

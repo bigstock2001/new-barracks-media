@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getShowBySlug } from "@/lib/shows";
 import ShowEpisodes from "@/components/ShowEpisodes";
+import { fetchEpisodesFromRss } from "@/lib/rss";
 
 export async function generateMetadata({ params }) {
   const p = await params;
@@ -23,27 +24,13 @@ export default async function ShowPage({ params }) {
   if (!show) return notFound();
 
   let episodes = [];
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_URL || ""}/api/episodes/${show.slug}`,
-      { cache: "no-store" }
-    );
+  let rssError = "";
 
-    // If NEXT_PUBLIC_SITE_URL isn't set locally, fallback to relative fetch:
-    if (!res.ok) {
-      const localRes = await fetch(`http://localhost:3000/api/episodes/${show.slug}`, {
-        cache: "no-store",
-      });
-      if (localRes.ok) {
-        const data = await localRes.json();
-        episodes = data.episodes || [];
-      }
-    } else {
-      const data = await res.json();
-      episodes = data.episodes || [];
-    }
-  } catch {
+  try {
+    episodes = await fetchEpisodesFromRss(String(show.rss || "").trim(), 25);
+  } catch (err) {
     episodes = [];
+    rssError = String(err?.message || err);
   }
 
   return (
@@ -92,6 +79,14 @@ export default async function ShowPage({ params }) {
                 Work with Barracks Media
               </Link>
             </div>
+
+            {rssError ? (
+              <div style={{ marginTop: 14 }}>
+                <p className="p">
+                  RSS fetch error: <span style={{ opacity: 0.9 }}>{rssError}</span>
+                </p>
+              </div>
+            ) : null}
           </div>
         </div>
       </section>
