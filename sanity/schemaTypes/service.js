@@ -1,0 +1,85 @@
+export default {
+  name: "service",
+  title: "Service",
+  type: "document",
+  fields: [
+    {
+      name: "title",
+      title: "Title",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: { source: "title", maxLength: 96 },
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "shortDescription",
+      title: "Short Description (Card)",
+      type: "text",
+      rows: 3,
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "longDescription",
+      title: "Long Description (Page)",
+      type: "array",
+      of: [{ type: "block" }],
+    },
+    {
+      name: "features",
+      title: "Features (Bullets)",
+      type: "array",
+      of: [{ type: "string" }],
+    },
+    {
+      name: "ctaLabel",
+      title: "CTA Label",
+      type: "string",
+      initialValue: "Get Started",
+    },
+    {
+      name: "stripeMode",
+      title: "Stripe Mode",
+      type: "string",
+      options: {
+        list: [
+          { title: "One-time payment", value: "payment" },
+          { title: "Subscription", value: "subscription" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "payment",
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "stripePriceId",
+      title: "Stripe Price ID",
+      type: "string",
+      description: "Example: price_123...",
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "successPath",
+      title: "Success Path (Onboarding Page)",
+      type: "string",
+      description: "Example: /onboarding/web-design",
+    },
+    {
+      name: "active",
+      title: "Active",
+      type: "boolean",
+      initialValue: true,
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: "sortOrder",
+      title: "Sort Order",
+      type: "number",
+      initialValue: 10,
+    },
+  ],
+};
