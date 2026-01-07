@@ -16,13 +16,10 @@ export default defineConfig({
   basePath: "/studio",
 
   plugins: [
-    deskTool({
-      structure: deskStructure,
-    }),
+    deskTool({ structure: deskStructure }),
     visionTool({ defaultApiVersion: apiVersion }),
   ],
 
-  schema: {
-    types: schema,
-  },
+  // ✅ Your schemaTypes file already exports { types: [] }
+  schema,
 });
