@@ -1,3 +1,28 @@
-import type { StructureResolver } from "sanity/structure";
+// sanity.config.ts
+import { defineConfig } from "sanity";
+import { deskTool } from "sanity/desk";
+import { visionTool } from "@sanity/vision";
 
-export const deskStructure: StructureResolver = (S) => S.list().title("Content").items(S.documentTypeListItems());
+import { apiVersion, dataset, projectId } from "./sanity/env";
+import { schema } from "./sanity/schemaTypes";
+import { deskStructure } from "./sanity/deskStructure";
+
+export default defineConfig({
+  name: "default",
+  title: "Barracks Media",
+  projectId,
+  dataset,
+  apiVersion,
+  basePath: "/studio",
+
+  plugins: [
+    deskTool({
+      structure: deskStructure,
+    }),
+    visionTool({ defaultApiVersion: apiVersion }),
+  ],
+
+  schema: {
+    types: schema,
+  },
+});

@@ -1,27 +1,28 @@
-import { visionTool } from "@sanity/vision";
+// sanity.config.ts
 import { defineConfig } from "sanity";
-import { structureTool } from "sanity/structure";
+import { deskTool } from "sanity/desk";
+import { visionTool } from "@sanity/vision";
 
 import { apiVersion, dataset, projectId } from "./sanity/env";
-import { schemaTypes } from "./sanity/schemaTypes";
+import { schema } from "./sanity/schemaTypes";
 import { deskStructure } from "./sanity/deskStructure";
 
 export default defineConfig({
   name: "default",
-  title: "Barracks Media Studio",
-
+  title: "Barracks Media",
   projectId,
   dataset,
   apiVersion,
-
   basePath: "/studio",
 
-  schema: {
-    types: schemaTypes,
-  },
-
   plugins: [
-    structureTool({ structure: deskStructure }),
-    visionTool(),
+    deskTool({
+      structure: deskStructure,
+    }),
+    visionTool({ defaultApiVersion: apiVersion }),
   ],
+
+  schema: {
+    types: schema,
+  },
 });
