@@ -64,12 +64,24 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    // ✅ NEW: lookup key replaces price ID
     defineField({
-      name: "stripePriceId",
-      title: "Stripe Price ID",
+      name: "stripeLookupKey",
+      title: "Stripe Lookup Key",
       type: "string",
-      description: "Example: price_123...",
-      validation: (Rule) => Rule.required(),
+      description:
+        "Matches the Stripe PRICE lookup key (not the Product). Example: starter_website",
+      validation: (Rule) =>
+        Rule.required()
+          .min(3)
+          .max(128)
+          .regex(/^[a-z0-9_-]+$/, {
+            name: "lookupKeyFormat",
+            invert: false,
+          })
+          .error(
+            "Use lowercase letters/numbers with underscores or hyphens only (example: starter_website)."
+          ),
     }),
 
     defineField({
