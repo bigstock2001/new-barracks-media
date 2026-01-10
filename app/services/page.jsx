@@ -1,3 +1,4 @@
+// app/services/page.jsx
 import Link from "next/link";
 import { getServices } from "@/lib/sanity";
 
@@ -20,7 +21,16 @@ function FeatureList({ features }) {
 }
 
 export default async function ServicesPage() {
-  const services = await getServices();
+  let services = [];
+  let sanityError = "";
+
+  try {
+    services = await getServices();
+    if (!Array.isArray(services)) services = [];
+  } catch (e) {
+    sanityError = e?.message || "Failed to load services.";
+    services = [];
+  }
 
   return (
     <>
@@ -33,49 +43,110 @@ export default async function ServicesPage() {
       </section>
 
       <section className="section">
-        <div
-          style={{
-            display: "grid",
-            gap: 16,
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          }}
-        >
-          {(services || []).map((s) => (
-            <div key={s._id} className="container-card" style={{ padding: 18 }}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <h2 className="h1" style={{ fontSize: 18 }}>
-                  {s.title}
-                </h2>
-                <span className="small" style={{ opacity: 0.85 }}>
-                  {s.stripeMode === "subscription" ? "Monthly" : "One-time"}
-                </span>
-              </div>
+        {/* Empty state + debug (won’t break production UI, but gives you a real clue) */}
+        {sanityError ? (
+          <div className="container-card" style={{ padding: 18, marginBottom: 16 }}>
+            <h2 className="h1" style={{ fontSize: 18 }}>
+              Services failed to load
+            </h2>
+            <p className="p" style={{ marginTop: 10, opacity: 0.9 }}>
+              {sanityError}
+            </p>
+            <p className="small" style={{ marginTop: 10, opacity: 0.8 }}>
+              Check that NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET
+              are set in both .env.local and Vercel (Production).
+            </p>
+          </div>
+        ) : null}
 
-              <p className="p" style={{ marginTop: 10 }}>
-                {s.shortDescription}
-              </p>
+        {services.length === 0 ? (
+          <div className="container-card" style={{ padding: 18 }}>
+            <h2 className="h1" style={{ fontSize: 18 }}>
+              No services found
+            </h2>
+            <p className="p" style={{ marginTop: 10, opacity: 0.9 }}>
+              If you just created services in Sanity, make sure they are{" "}
+              <strong>Published</strong> (not Draft), and that your site is pointing to
+              the same dataset as your Studio.
+            </p>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gap: 16,
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            }}
+          >
+            {services.map((raw) => {
+              // Normalize in case Sanity returns slug as { current: "..." }
+              const slug =
+                typeof raw?.slug === "string"
+                  ? raw.slug
+                  : raw?.slug?.current || "";
 
-              <FeatureList features={s.features} />
+              const stripeMode = raw?.stripeMode || "one_time";
+              const ctaLabel = raw?.ctaLabel || "Get Started";
 
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 16 }}>
-                <Link className="tab" href={`/services/${s.slug}`}>
-                  Details
-                </Link>
+              return (
+                <div key={raw._id || slug} className="container-card" style={{ padding: 18 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                    <h2 className="h1" style={{ fontSize: 18 }}>
+                      {raw?.title || "Untitled Service"}
+                    </h2>
+                    <span className="small" style={{ opacity: 0.85, whiteSpace: "nowrap" }}>
+                      {stripeMode === "subscription" ? "Monthly" : "One-time"}
+                    </span>
+                  </div>
 
-                <form action="/api/checkout/start" method="POST">
-                  <input type="hidden" name="slug" value={s.slug} />
-                  <button className="tab" type="submit">
-                    {s.ctaLabel || "Get Started"}
-                  </button>
-                </form>
-              </div>
+                  {raw?.shortDescription ? (
+                    <p className="p" style={{ marginTop: 10 }}>
+                      {raw.shortDescription}
+                    </p>
+                  ) : (
+                    <p className="p" style={{ marginTop: 10, opacity: 0.85 }}>
+                      No description yet.
+                    </p>
+                  )}
 
-              <p className="small" style={{ marginTop: 10, opacity: 0.8 }}>
-                You’ll be redirected to Stripe Checkout.
-              </p>
-            </div>
-          ))}
-        </div>
+                  <FeatureList features={raw?.features} />
+
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 10,
+                      flexWrap: "wrap",
+                      marginTop: 16,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Link className="tab" href={slug ? `/services/${slug}` : "/services"}>
+                      Details
+                    </Link>
+
+                    <form action="/api/checkout/start" method="POST">
+                      <input type="hidden" name="slug" value={slug} />
+                      <button className="tab" type="submit" disabled={!slug}>
+                        {ctaLabel}
+                      </button>
+                    </form>
+                  </div>
+
+                  <p className="small" style={{ marginTop: 10, opacity: 0.8 }}>
+                    You’ll be redirected to Stripe Checkout.
+                  </p>
+
+                  {!slug ? (
+                    <p className="small" style={{ marginTop: 8, opacity: 0.75 }}>
+                      This service is missing a slug in Sanity — publish the slug to enable
+                      Details / Checkout.
+                    </p>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
     </>
   );
