@@ -12,12 +12,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 async function getPriceIdFromLookupKey(lookupKey) {
   if (!lookupKey) return null;
 
-  // Find the currently active price tied to this lookup_key
   const prices = await stripe.prices.list({
     lookup_keys: [lookupKey],
     active: true,
     limit: 1,
-    expand: ["data.product"],
   });
 
   return prices?.data?.[0]?.id || null;
@@ -38,50 +36,47 @@ export async function POST(req) {
       return NextResponse.json({ error: "Service not found." }, { status: 404 });
     }
 
-    // Prefer lookupKey. Fallback to stripePriceId for backward compatibility.
-    let priceId = null;
+    // ✅ Use the field you actually have in Sanity
+    const lookupKey = service.stripeLookupKey;
 
-    if (service.lookupKey) {
-      priceId = await getPriceIdFromLookupKey(service.lookupKey);
-      if (!priceId) {
-        return NextResponse.json(
-          {
-            error:
-              "No active Stripe price found for this lookup key. Make sure the Price is active and has the same lookup_key.",
-            lookupKey: service.lookupKey,
-          },
-          { status: 400 }
-        );
-      }
-    } else if (service.stripePriceId) {
-      priceId = service.stripePriceId;
-    } else {
+    if (!lookupKey) {
       return NextResponse.json(
-        { error: "Service is missing lookupKey and stripePriceId." },
+        { error: "Service is missing stripeLookupKey." },
         { status: 400 }
       );
     }
 
-    const stripeMode =
-      service.stripeMode === "subscription" ? "subscription" : "payment";
+    const priceId = await getPriceIdFromLookupKey(lookupKey);
+
+    if (!priceId) {
+      return NextResponse.json(
+        {
+          error:
+            "No active Stripe price found for this lookup key. Make sure the Price is active and has the same lookup_key.",
+          lookupKey,
+        },
+        { status: 400 }
+      );
+    }
+
+    const mode = service.stripeMode === "subscription" ? "subscription" : "payment";
 
     const origin =
       req.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "";
 
-    const successUrl = `${origin}/onboarding/${slug}?session_id={CHECKOUT_SESSION_ID}`;
+    const successPath = service.successPath || `/onboarding/${slug}`;
+    const successUrl = `${origin}${successPath}?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${origin}/services`;
 
     const session = await stripe.checkout.sessions.create({
-      mode: stripeMode,
+      mode,
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: successUrl,
       cancel_url: cancelUrl,
-
-      // Helpful metadata for debugging / fulfillment
       metadata: {
         serviceSlug: slug,
         serviceTitle: service.title || "",
-        lookupKey: service.lookupKey || "",
+        stripeLookupKey: lookupKey,
       },
     });
 
