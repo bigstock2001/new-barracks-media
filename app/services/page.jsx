@@ -20,6 +20,49 @@ function FeatureList({ features }) {
   );
 }
 
+function ServiceImage({ raw }) {
+  // Supports either:
+  // 1) image.asset.url (if your GROQ expands asset->url)
+  // 2) imageUrl (if you choose to alias it in GROQ)
+  const url =
+    raw?.image?.asset?.url ||
+    raw?.imageUrl ||
+    raw?.image?.url ||
+    "";
+
+  if (!url) return null;
+
+  const alt = raw?.image?.alt || raw?.title || "Service image";
+
+  return (
+    <div
+      style={{
+        width: 92,
+        height: 92,
+        borderRadius: 14,
+        overflow: "hidden",
+        border: "1px solid rgba(255,255,255,0.10)",
+        background: "rgba(255,255,255,0.04)",
+        flex: "0 0 auto",
+      }}
+      aria-hidden={false}
+    >
+      {/* Using plain img avoids Next remote image config issues */}
+      <img
+        src={url}
+        alt={alt}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          display: "block",
+        }}
+        loading="lazy"
+      />
+    </div>
+  );
+}
+
 export default async function ServicesPage() {
   let services = [];
   let sanityError = "";
@@ -43,7 +86,6 @@ export default async function ServicesPage() {
       </section>
 
       <section className="section">
-        {/* Empty state + debug (won’t break production UI, but gives you a real clue) */}
         {sanityError ? (
           <div className="container-card" style={{ padding: 18, marginBottom: 16 }}>
             <h2 className="h1" style={{ fontSize: 18 }}>
@@ -79,35 +121,63 @@ export default async function ServicesPage() {
             }}
           >
             {services.map((raw) => {
-              // Normalize in case Sanity returns slug as { current: "..." }
               const slug =
                 typeof raw?.slug === "string"
                   ? raw.slug
                   : raw?.slug?.current || "";
 
-              const stripeMode = raw?.stripeMode || "one_time";
+              const stripeMode = raw?.stripeMode || "payment";
               const ctaLabel = raw?.ctaLabel || "Get Started";
 
               return (
-                <div key={raw._id || slug} className="container-card" style={{ padding: 18 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                    <h2 className="h1" style={{ fontSize: 18 }}>
-                      {raw?.title || "Untitled Service"}
-                    </h2>
-                    <span className="small" style={{ opacity: 0.85, whiteSpace: "nowrap" }}>
-                      {stripeMode === "subscription" ? "Monthly" : "One-time"}
-                    </span>
-                  </div>
+                <div
+                  key={raw._id || slug}
+                  className="container-card"
+                  style={{ padding: 18 }}
+                >
+                  {/* Header row with image + title/mode */}
+                  <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                    <ServiceImage raw={raw} />
 
-                  {raw?.shortDescription ? (
-                    <p className="p" style={{ marginTop: 10 }}>
-                      {raw.shortDescription}
-                    </p>
-                  ) : (
-                    <p className="p" style={{ marginTop: 10, opacity: 0.85 }}>
-                      No description yet.
-                    </p>
-                  )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: 12,
+                          alignItems: "baseline",
+                        }}
+                      >
+                        <h2
+                          className="h1"
+                          style={{
+                            fontSize: 18,
+                            margin: 0,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                          title={raw?.title || "Untitled Service"}
+                        >
+                          {raw?.title || "Untitled Service"}
+                        </h2>
+
+                        <span className="small" style={{ opacity: 0.85, whiteSpace: "nowrap" }}>
+                          {stripeMode === "subscription" ? "Monthly" : "One-time"}
+                        </span>
+                      </div>
+
+                      {raw?.shortDescription ? (
+                        <p className="p" style={{ marginTop: 10 }}>
+                          {raw.shortDescription}
+                        </p>
+                      ) : (
+                        <p className="p" style={{ marginTop: 10, opacity: 0.85 }}>
+                          No description yet.
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
                   <FeatureList features={raw?.features} />
 
