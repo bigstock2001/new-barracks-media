@@ -10,7 +10,7 @@ export const metadata = {
 function FeatureList({ features }) {
   if (!Array.isArray(features) || features.length === 0) return null;
   return (
-    <ul style={{ marginTop: 10, paddingLeft: 18 }}>
+    <ul style={{ marginTop: 12, paddingLeft: 18 }}>
       {features.slice(0, 6).map((f, idx) => (
         <li key={idx} className="p" style={{ marginTop: 6 }}>
           {f}
@@ -20,16 +20,8 @@ function FeatureList({ features }) {
   );
 }
 
-function ServiceImage({ raw }) {
-  // Supports either:
-  // 1) image.asset.url (if your GROQ expands asset->url)
-  // 2) imageUrl (if you choose to alias it in GROQ)
-  const url =
-    raw?.image?.asset?.url ||
-    raw?.imageUrl ||
-    raw?.image?.url ||
-    "";
-
+function ServiceBanner({ raw }) {
+  const url = raw?.image?.asset?.url || "";
   if (!url) return null;
 
   const alt = raw?.image?.alt || raw?.title || "Service image";
@@ -37,17 +29,16 @@ function ServiceImage({ raw }) {
   return (
     <div
       style={{
-        width: 92,
-        height: 92,
-        borderRadius: 14,
+        width: "100%",
+        height: 180,
+        borderRadius: 16,
         overflow: "hidden",
         border: "1px solid rgba(255,255,255,0.10)",
         background: "rgba(255,255,255,0.04)",
-        flex: "0 0 auto",
+        marginBottom: 14,
+        position: "relative",
       }}
-      aria-hidden={false}
     >
-      {/* Using plain img avoids Next remote image config issues */}
       <img
         src={url}
         alt={alt}
@@ -56,8 +47,20 @@ function ServiceImage({ raw }) {
           height: "100%",
           objectFit: "cover",
           display: "block",
+          transform: "scale(1.02)",
         }}
         loading="lazy"
+      />
+
+      {/* subtle readability overlay (doesn't cover the whole image) */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.12), rgba(0,0,0,0))",
+        }}
       />
     </div>
   );
@@ -117,7 +120,8 @@ export default async function ServicesPage() {
             style={{
               display: "grid",
               gap: 16,
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+              alignItems: "stretch",
             }}
           >
             {services.map((raw) => {
@@ -133,53 +137,38 @@ export default async function ServicesPage() {
                 <div
                   key={raw._id || slug}
                   className="container-card"
-                  style={{ padding: 18 }}
+                  style={{
+                    padding: 18,
+                    display: "flex",
+                    flexDirection: "column",
+                    minHeight: 0,
+                  }}
                 >
-                  {/* Header row with image + title/mode */}
-                  <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-                    <ServiceImage raw={raw} />
+                  {/* BIG IMAGE BANNER */}
+                  <ServiceBanner raw={raw} />
 
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          gap: 12,
-                          alignItems: "baseline",
-                        }}
-                      >
-                        <h2
-                          className="h1"
-                          style={{
-                            fontSize: 18,
-                            margin: 0,
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                          title={raw?.title || "Untitled Service"}
-                        >
-                          {raw?.title || "Untitled Service"}
-                        </h2>
-
-                        <span className="small" style={{ opacity: 0.85, whiteSpace: "nowrap" }}>
-                          {stripeMode === "subscription" ? "Monthly" : "One-time"}
-                        </span>
-                      </div>
-
-                      {raw?.shortDescription ? (
-                        <p className="p" style={{ marginTop: 10 }}>
-                          {raw.shortDescription}
-                        </p>
-                      ) : (
-                        <p className="p" style={{ marginTop: 10, opacity: 0.85 }}>
-                          No description yet.
-                        </p>
-                      )}
-                    </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                    <h2 className="h1" style={{ fontSize: 18, margin: 0 }}>
+                      {raw?.title || "Untitled Service"}
+                    </h2>
+                    <span className="small" style={{ opacity: 0.85, whiteSpace: "nowrap" }}>
+                      {stripeMode === "subscription" ? "Monthly" : "One-time"}
+                    </span>
                   </div>
 
+                  {raw?.shortDescription ? (
+                    <p className="p" style={{ marginTop: 10 }}>
+                      {raw.shortDescription}
+                    </p>
+                  ) : (
+                    <p className="p" style={{ marginTop: 10, opacity: 0.85 }}>
+                      No description yet.
+                    </p>
+                  )}
+
                   <FeatureList features={raw?.features} />
+
+                  <div style={{ flex: 1 }} />
 
                   <div
                     style={{
