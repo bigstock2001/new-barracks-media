@@ -2,6 +2,9 @@
 import Link from "next/link";
 import { getServices } from "@/lib/sanity";
 
+export const dynamic = "force-dynamic"; // ✅ prevents Next from caching this page
+export const revalidate = 0; // ✅ always fetch fresh
+
 export const metadata = {
   title: "Services | Barracks Media",
   description: "Services offered by Barracks Media.",
@@ -52,7 +55,6 @@ function ServiceBanner({ raw }) {
         loading="lazy"
       />
 
-      {/* subtle readability overlay (doesn't cover the whole image) */}
       <div
         aria-hidden="true"
         style={{
@@ -144,7 +146,6 @@ export default async function ServicesPage() {
                     minHeight: 0,
                   }}
                 >
-                  {/* BIG IMAGE BANNER */}
                   <ServiceBanner raw={raw} />
 
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
