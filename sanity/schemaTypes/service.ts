@@ -28,6 +28,24 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    // ✅ NEW: Service Image (upload inside Sanity)
+    defineField({
+      name: "image",
+      title: "Service Image",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alt Text",
+          type: "string",
+          description: "Short description for accessibility & SEO.",
+        }),
+      ],
+    }),
+
     defineField({
       name: "longDescription",
       title: "Long Description (Page)",
@@ -64,7 +82,7 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // ✅ NEW: lookup key replaces price ID
+    // ✅ lookup key replaces price ID
     defineField({
       name: "stripeLookupKey",
       title: "Stripe Lookup Key",
