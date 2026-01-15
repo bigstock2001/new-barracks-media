@@ -38,21 +38,9 @@ function toNumber(v) {
   return Number.isFinite(n) ? n : 0;
 }
 
-export default async function AdvertiseWithUsPage({ searchParams }) {
-  // ✅ If you visit /advertise?debug=1 it will show debug info on the page
-  const debugMode = searchParams?.debug === "1";
+export default async function AdvertiseWithUsPage() {
+  const m = await getNetworkMetrics().catch(() => null);
 
-  let m = null;
-  let fetchError = null;
-
-  try {
-    m = await getNetworkMetrics();
-  } catch (e) {
-    fetchError = e?.message || String(e);
-    m = null;
-  }
-
-  // ✅ Normalize numbers (handles undefined / strings / null)
   const periodDays = toNumber(m?.periodDays) || 30;
   const downloads30d = toNumber(m?.podcastDownloads30d);
   const estReach30d = toNumber(m?.estimatedTotalReach30d);
@@ -63,8 +51,6 @@ export default async function AdvertiseWithUsPage({ searchParams }) {
   )}&body=${encodeURIComponent(
     "Hi Donald,\n\nI’m interested in advertising with Barracks Media.\n\nBusiness/Brand:\nBudget Range:\nStart Date:\nPreferred Placement (podcast / social / video / bundle):\nNotes:\n\nThanks!"
   )}`;
-
-  const notFound = !m?._id;
 
   return (
     <main className="main">
@@ -78,111 +64,23 @@ export default async function AdvertiseWithUsPage({ searchParams }) {
           reporting.
         </p>
 
-        {/* ✅ Debug / Status (only shows when notFound OR debug=1) */}
-        {(notFound || debugMode) && (
-          <section
+        {!m?._id && (
+          <div
             className="container-card"
             style={{
               marginTop: 16,
-              border: "1px solid rgba(255, 205, 0, 0.35)",
-              background: "rgba(255, 205, 0, 0.06)",
+              border: "1px solid rgba(255,255,255,0.14)",
+              background: "rgba(255,255,255,0.04)",
+              padding: 14,
             }}
           >
-            <h3 style={{ margin: 0, fontSize: 16, fontWeight: 900 }}>
-              Metrics Status
-            </h3>
-
-            {notFound ? (
-              <p className="subtle" style={{ marginTop: 8, lineHeight: 1.6 }}>
-                Your site is not finding a <strong>published</strong>{" "}
-                <code>networkMetrics</code> document in the dataset your website
-                is connected to.
-                <br />
-                <strong>Common causes:</strong> the document is still in draft,
-                the site is pointed at a different dataset/project than Studio,
-                or the read request is blocked by project CORS settings.
-              </p>
-            ) : (
-              <p className="subtle" style={{ marginTop: 8 }}>
-                ✅ Metrics document loaded.
-              </p>
-            )}
-
-            {fetchError && (
-              <p
-                className="subtle"
-                style={{
-                  marginTop: 10,
-                  whiteSpace: "pre-wrap",
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-                  fontSize: 12,
-                  opacity: 0.9,
-                }}
-              >
-                Fetch error: {fetchError}
-              </p>
-            )}
-
-            <div
-              style={{
-                marginTop: 10,
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: 10,
-              }}
-            >
-              <div
-                style={{
-                  borderRadius: 14,
-                  padding: 12,
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  background: "rgba(255,255,255,0.03)",
-                  fontSize: 13,
-                }}
-              >
-                <div style={{ opacity: 0.8 }}>Doc ID</div>
-                <div style={{ marginTop: 6, fontWeight: 800 }}>
-                  {m?._id || "—"}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  borderRadius: 14,
-                  padding: 12,
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  background: "rgba(255,255,255,0.03)",
-                  fontSize: 13,
-                }}
-              >
-                <div style={{ opacity: 0.8 }}>Raw Values</div>
-                <div style={{ marginTop: 6, fontWeight: 800 }}>
-                  downloads: {downloads30d} • reach: {estReach30d} • updated:{" "}
-                  {formatDate(lastUpdated)}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  borderRadius: 14,
-                  padding: 12,
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  background: "rgba(255,255,255,0.03)",
-                  fontSize: 13,
-                }}
-              >
-                <div style={{ opacity: 0.8 }}>Quick Debug Link</div>
-                <div style={{ marginTop: 6 }}>
-                  <Link
-                    href="/advertise?debug=1"
-                    style={{ textDecoration: "underline" }}
-                  >
-                    Open Debug View
-                  </Link>
-                </div>
-              </div>
+            <div style={{ fontWeight: 900 }}>Metrics not loading</div>
+            <div className="subtle" style={{ marginTop: 6, lineHeight: 1.6 }}>
+              The site can’t load the published Network Metrics document yet.
+              This usually means the GROQ query failed or the document isn’t
+              published. After the latest deploy, this message should disappear.
             </div>
-          </section>
+          </div>
         )}
 
         {/* Metrics */}
@@ -325,14 +223,7 @@ export default async function AdvertiseWithUsPage({ searchParams }) {
             a simple package and timeline.
           </p>
 
-          <div
-            style={{
-              marginTop: 14,
-              display: "flex",
-              gap: 10,
-              flexWrap: "wrap",
-            }}
-          >
+          <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <a
               className="btn"
               href={mailto}
