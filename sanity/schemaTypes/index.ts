@@ -1,13 +1,13 @@
-import { type SchemaTypeDefinition } from "sanity";
+import type { SchemaTypeDefinition } from "sanity";
 import service from "./service";
 import networkMetrics from "./networkMetrics";
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   service,
-  networkMetrics,
+  networkMetrics as SchemaTypeDefinition,
 ];
 
-// ✅ Compatibility export: sanity.config.ts expects { schema }
+// ✅ sanity.config.ts expects this export name
 export const schema = {
   types: schemaTypes,
 };
