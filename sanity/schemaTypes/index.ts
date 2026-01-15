@@ -6,3 +6,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   service,
   networkMetrics,
 ];
+
+// ✅ Compatibility export: sanity.config.ts expects { schema }
+export const schema = {
+  types: schemaTypes,
+};
