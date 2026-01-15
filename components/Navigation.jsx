@@ -5,17 +5,27 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 export default function Navigation() {
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const [commandOpen, setCommandOpen] = useState(false);
+  const [advertiseOpen, setAdvertiseOpen] = useState(false);
+
+  const commandRef = useRef(null);
+  const advertiseRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!dropdownRef.current) return;
-      if (!dropdownRef.current.contains(e.target)) setOpen(false);
+      if (commandRef.current && !commandRef.current.contains(e.target)) {
+        setCommandOpen(false);
+      }
+      if (advertiseRef.current && !advertiseRef.current.contains(e.target)) {
+        setAdvertiseOpen(false);
+      }
     };
 
     const handleEscape = (e) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setCommandOpen(false);
+        setAdvertiseOpen(false);
+      }
     };
 
     window.addEventListener("mousedown", handleClickOutside);
@@ -60,40 +70,32 @@ export default function Navigation() {
               Services
             </Link>
 
-            {/* NEW: Advertise */}
-            <Link className="tab" href="/advertise">
-              Advertise
-            </Link>
-
-            {/* Command dropdown */}
-            <div className="dropWrap" ref={dropdownRef}>
+            {/* ✅ NEW: Advertise dropdown (hover + click) */}
+            <div
+              className="dropWrap"
+              ref={advertiseRef}
+              onMouseEnter={() => setAdvertiseOpen(true)}
+              onMouseLeave={() => setAdvertiseOpen(false)}
+            >
               <button
                 type="button"
                 className="dropBtn"
-                aria-expanded={open}
+                aria-expanded={advertiseOpen}
                 aria-haspopup="menu"
-                onClick={() => setOpen((v) => !v)}
+                onClick={() => {
+                  setAdvertiseOpen((v) => !v);
+                  setCommandOpen(false);
+                }}
               >
-                Command {open ? "▴" : "▾"}
+                Advertise {advertiseOpen ? "▴" : "▾"}
               </button>
 
-              {open && (
+              {advertiseOpen && (
                 <div className="dropdown" role="menu">
                   <Link
                     className="dropItem"
-                    href="/services"
-                    onClick={() => setOpen(false)}
-                  >
-                    Start a Project
-                  </Link>
-
-                  <div className="divider" />
-
-                  {/* NEW: Biz pages */}
-                  <Link
-                    className="dropItem"
                     href="/advertise"
-                    onClick={() => setOpen(false)}
+                    onClick={() => setAdvertiseOpen(false)}
                   >
                     Advertise With Us
                   </Link>
@@ -101,7 +103,7 @@ export default function Navigation() {
                   <Link
                     className="dropItem"
                     href="/sponsorship"
-                    onClick={() => setOpen(false)}
+                    onClick={() => setAdvertiseOpen(false)}
                   >
                     Sponsorship
                   </Link>
@@ -109,9 +111,42 @@ export default function Navigation() {
                   <Link
                     className="dropItem"
                     href="/testimonials"
-                    onClick={() => setOpen(false)}
+                    onClick={() => setAdvertiseOpen(false)}
                   >
                     Testimonials
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Command dropdown */}
+            <div
+              className="dropWrap"
+              ref={commandRef}
+              onMouseEnter={() => setCommandOpen(true)}
+              onMouseLeave={() => setCommandOpen(false)}
+            >
+              <button
+                type="button"
+                className="dropBtn"
+                aria-expanded={commandOpen}
+                aria-haspopup="menu"
+                onClick={() => {
+                  setCommandOpen((v) => !v);
+                  setAdvertiseOpen(false);
+                }}
+              >
+                Command {commandOpen ? "▴" : "▾"}
+              </button>
+
+              {commandOpen && (
+                <div className="dropdown" role="menu">
+                  <Link
+                    className="dropItem"
+                    href="/services"
+                    onClick={() => setCommandOpen(false)}
+                  >
+                    Start a Project
                   </Link>
 
                   <div className="divider" />
@@ -119,21 +154,21 @@ export default function Navigation() {
                   <Link
                     className="dropItem"
                     href="/privacy"
-                    onClick={() => setOpen(false)}
+                    onClick={() => setCommandOpen(false)}
                   >
                     Privacy Policy
                   </Link>
                   <Link
                     className="dropItem"
                     href="/terms"
-                    onClick={() => setOpen(false)}
+                    onClick={() => setCommandOpen(false)}
                   >
                     Terms
                   </Link>
                   <Link
                     className="dropItem"
                     href="/copyright"
-                    onClick={() => setOpen(false)}
+                    onClick={() => setCommandOpen(false)}
                   >
                     Copyright
                   </Link>
