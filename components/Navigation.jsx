@@ -60,6 +60,11 @@ export default function Navigation() {
               Services
             </Link>
 
+            {/* NEW: Advertise */}
+            <Link className="tab" href="/advertise">
+              Advertise
+            </Link>
+
             {/* Command dropdown */}
             <div className="dropWrap" ref={dropdownRef}>
               <button
@@ -74,19 +79,62 @@ export default function Navigation() {
 
               {open && (
                 <div className="dropdown" role="menu">
-                  <Link className="dropItem" href="/services" onClick={() => setOpen(false)}>
+                  <Link
+                    className="dropItem"
+                    href="/services"
+                    onClick={() => setOpen(false)}
+                  >
                     Start a Project
                   </Link>
 
                   <div className="divider" />
 
-                  <Link className="dropItem" href="/privacy" onClick={() => setOpen(false)}>
+                  {/* NEW: Biz pages */}
+                  <Link
+                    className="dropItem"
+                    href="/advertise"
+                    onClick={() => setOpen(false)}
+                  >
+                    Advertise With Us
+                  </Link>
+
+                  <Link
+                    className="dropItem"
+                    href="/sponsorship"
+                    onClick={() => setOpen(false)}
+                  >
+                    Sponsorship
+                  </Link>
+
+                  <Link
+                    className="dropItem"
+                    href="/testimonials"
+                    onClick={() => setOpen(false)}
+                  >
+                    Testimonials
+                  </Link>
+
+                  <div className="divider" />
+
+                  <Link
+                    className="dropItem"
+                    href="/privacy"
+                    onClick={() => setOpen(false)}
+                  >
                     Privacy Policy
                   </Link>
-                  <Link className="dropItem" href="/terms" onClick={() => setOpen(false)}>
+                  <Link
+                    className="dropItem"
+                    href="/terms"
+                    onClick={() => setOpen(false)}
+                  >
                     Terms
                   </Link>
-                  <Link className="dropItem" href="/copyright" onClick={() => setOpen(false)}>
+                  <Link
+                    className="dropItem"
+                    href="/copyright"
+                    onClick={() => setOpen(false)}
+                  >
                     Copyright
                   </Link>
                 </div>
