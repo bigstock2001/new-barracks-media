@@ -20,10 +20,10 @@ export default function RootLayout({ children }) {
           <Navigation />
           <main className="main">{children}</main>
           <Footer />
-        </div>
 
-        {/* Floating site-wide voice assistant */}
-        <FloatingVoiceBot />
+          {/* Floating site-wide voice assistant */}
+          <FloatingVoiceBot />
+        </div>
       </body>
     </html>
   );
