@@ -39,9 +39,37 @@ function tokenize(text) {
   if (!t) return [];
   const parts = t.split(" ");
   const stop = new Set([
-    "the","and","for","with","that","this","from","your","youre","about","what",
-    "when","where","which","into","them","they","their","there","have","has",
-    "had","been","being","are","was","were","just","like","want","need"
+    "the",
+    "and",
+    "for",
+    "with",
+    "that",
+    "this",
+    "from",
+    "your",
+    "youre",
+    "about",
+    "what",
+    "when",
+    "where",
+    "which",
+    "into",
+    "them",
+    "they",
+    "their",
+    "there",
+    "have",
+    "has",
+    "had",
+    "been",
+    "being",
+    "are",
+    "was",
+    "were",
+    "just",
+    "like",
+    "want",
+    "need",
   ]);
   return parts.filter((w) => w.length >= 3 && !stop.has(w));
 }
@@ -109,7 +137,9 @@ function buildKnowledge(services, candidates) {
           ? ` Tags: ${e.tags.slice(0, 10).join(", ")}`
           : "";
 
-      return `- Episode ${idx + 1}: "${e.title}" (Show: ${e.showTitle || "Barracks Media"}) — ${shortDesc}${tags}`;
+      return `- Episode ${idx + 1}: "${e.title}" (Show: ${
+        e.showTitle || "Barracks Media"
+      }) — ${shortDesc}${tags}`;
     })
     .join("\n");
 
@@ -122,13 +152,60 @@ ${episodesBlock || "- (No matching episodes found for this question yet)"}
   `.trim();
 }
 
-async function generateKateText({ userMessage, knowledge, hasCandidates }) {
+/**
+ * Deterministic spoken recommendation (used when OpenAI fails or is missing)
+ * Never reads URLs.
+ */
+function deterministicRecommendationText(candidates) {
+  if (!Array.isArray(candidates) || candidates.length === 0) {
+    return `Tell me what you’re in the mood for — like veterans, entrepreneurship, writing, healing, or content creation — and I’ll match you to a specific episode.`;
+  }
+
+  const best = candidates[0];
+  const alts = candidates.slice(1, 3);
+
+  const bestShow = best?.showTitle || "Barracks Media";
+  const bestTitle = best?.title || "a great episode";
+  const bestDesc = String(best?.description || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 220);
+
+  let out = `Here’s the best match: ${bestShow} — "${bestTitle}".`;
+  if (bestDesc) out += ` It’s a good fit because ${bestDesc}.`;
+
+  if (alts.length) {
+    out += ` If you want an alternate: `;
+    out += alts
+      .map((e) => {
+        const s = e?.showTitle || "Barracks Media";
+        const t = e?.title || "another episode";
+        return `${s} — "${t}"`;
+      })
+      .join(" — or — ");
+    out += `.`;
+  }
+
+  return out;
+}
+
+async function generateKateText({
+  userMessage,
+  knowledge,
+  hasCandidates,
+  candidates,
+  debugMeta,
+}) {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
-  // If OpenAI not configured, return a very clear message (not the generic loop)
+  // If OpenAI not configured, return deterministic if possible
   if (!apiKey) {
-    return `Hey, I’m Kate — the Barracks Media assistant. I can recommend episodes and help with services, but the AI key isn’t connected yet.`;
+    return {
+      text: deterministicRecommendationText(candidates),
+      openaiStatus: "missing_key",
+      openaiError: "",
+    };
   }
 
   const instructions = `
@@ -153,7 +230,6 @@ Hard rules (must follow):
 ${knowledge}
   `.trim();
 
-  // ✅ Correct Responses API shape: instructions + input
   const payload = {
     model,
     instructions,
@@ -161,25 +237,38 @@ ${knowledge}
     max_output_tokens: 350,
   };
 
-  const res = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(payload),
-  });
+  let res;
+  let rawErr = "";
 
-  if (!res.ok) {
-    const errText = await res.text().catch(() => "");
-    // if candidates exist but OpenAI failed, we can still return a deterministic recommendation
-    if (hasCandidates) {
-      return `I’ve got a solid match for you. What kind of vibe do you want: practical, inspiring, or deep and reflective?`;
-    }
-    return `Tell me what you’re in the mood for — like veterans, entrepreneurship, writing, healing, or content creation — and I’ll match you to a specific episode.`;
+  try {
+    res = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    rawErr = e?.message || "fetch_failed";
+    return {
+      text: deterministicRecommendationText(candidates),
+      openaiStatus: "fetch_error",
+      openaiError: rawErr,
+    };
   }
 
-  const data = await res.json();
+  if (!res.ok) {
+    rawErr = await res.text().catch(() => "");
+    // ✅ IMPORTANT CHANGE: if we have candidates, recommend them directly (no “vibe” loop)
+    return {
+      text: deterministicRecommendationText(candidates),
+      openaiStatus: String(res.status),
+      openaiError: String(rawErr || "").slice(0, 220),
+    };
+  }
+
+  const data = await res.json().catch(() => ({}));
 
   // Responses API often returns output_text
   let text = typeof data.output_text === "string" ? data.output_text : "";
@@ -190,7 +279,33 @@ ${knowledge}
     .replace(/\s{2,}/g, " ")
     .trim();
 
-  return text || `Tell me what you’re in the mood for and I’ll recommend an episode.`;
+  // Guard: if the model still dodges despite candidates, force deterministic
+  if (hasCandidates) {
+    const t = normalize(text);
+    const looksLikeDodge =
+      t.includes("what kind of vibe") ||
+      t.includes("tell me what you're in the mood") ||
+      t.includes("tell me what youre in the mood") ||
+      t === "ready";
+
+    if (!text || looksLikeDodge) {
+      return {
+        text: deterministicRecommendationText(candidates),
+        openaiStatus: "ok_but_dodged",
+        openaiError: "",
+      };
+    }
+  }
+
+  return {
+    text:
+      text ||
+      (hasCandidates
+        ? deterministicRecommendationText(candidates)
+        : `Tell me what you’re in the mood for and I’ll recommend an episode.`),
+    openaiStatus: "200",
+    openaiError: "",
+  };
 }
 
 async function elevenLabsTTS(text) {
@@ -240,10 +355,12 @@ export async function POST(req) {
       req.headers.get("x-real-ip") ||
       "unknown";
 
-    if (!rateLimit(ip)) return jsonError("Rate limit hit. Try again in a minute.", 429);
+    if (!rateLimit(ip))
+      return jsonError("Rate limit hit. Try again in a minute.", 429);
 
     const { message } = await req.json().catch(() => ({}));
-    if (!message || typeof message !== "string") return jsonError("Missing 'message'");
+    if (!message || typeof message !== "string")
+      return jsonError("Missing 'message'");
 
     const userMessage = message.slice(0, 1500).trim();
     if (!userMessage) return jsonError("Message is empty");
@@ -259,10 +376,11 @@ export async function POST(req) {
     const candidates = pickTopEpisodes(episodes, userMessage, 8);
     const knowledge = buildKnowledge(services, candidates);
 
-    const text = await generateKateText({
+    const { text, openaiStatus, openaiError } = await generateKateText({
       userMessage,
       knowledge,
       hasCandidates: candidates.length > 0,
+      candidates,
     });
 
     const ttsText = text.length > 900 ? text.slice(0, 900) + "…" : text;
@@ -280,6 +398,8 @@ export async function POST(req) {
       ? {
           openaiKeyPresent: Boolean(process.env.OPENAI_API_KEY),
           openaiModel: process.env.OPENAI_MODEL || "gpt-4.1-mini",
+          openaiStatus,
+          openaiError,
           elevenKeyPresent: Boolean(process.env.ELEVENLABS_API_KEY),
           elevenVoicePresent: Boolean(process.env.ELEVENLABS_VOICE_ID),
           episodesLoaded: Array.isArray(episodes) ? episodes.length : 0,
