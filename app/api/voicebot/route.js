@@ -5,16 +5,16 @@ import { getPodcastEpisodesForRecommendations, getServices } from "@/lib/sanity"
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function jsonError(message, status = 400) {
-  return NextResponse.json({ ok: false, error: message }, { status });
+function jsonError(message, status = 400, extra = {}) {
+  return NextResponse.json({ ok: false, error: message, ...extra }, { status });
 }
 
-// Basic per-instance rate limit
 const bucket = new Map();
 function rateLimit(ip) {
   const now = Date.now();
   const windowMs = 60_000;
-  const max = 12;
+  const max = 15;
+
   const entry = bucket.get(ip) || { count: 0, resetAt: now + windowMs };
   if (now > entry.resetAt) {
     entry.count = 0;
@@ -39,33 +39,9 @@ function tokenize(text) {
   if (!t) return [];
   const parts = t.split(" ");
   const stop = new Set([
-    "the",
-    "and",
-    "for",
-    "with",
-    "that",
-    "this",
-    "from",
-    "your",
-    "youre",
-    "about",
-    "what",
-    "when",
-    "where",
-    "which",
-    "into",
-    "them",
-    "they",
-    "their",
-    "there",
-    "have",
-    "has",
-    "had",
-    "been",
-    "being",
-    "are",
-    "was",
-    "were",
+    "the","and","for","with","that","this","from","your","youre","about","what",
+    "when","where","which","into","them","they","their","there","have","has",
+    "had","been","being","are","was","were","just","like","want","need"
   ]);
   return parts.filter((w) => w.length >= 3 && !stop.has(w));
 }
@@ -82,25 +58,24 @@ function scoreEpisode(ep, tokens) {
 
   let score = 0;
 
-  // token matches
   for (const tok of tokens) {
     if (!tok) continue;
     if (hay.includes(tok)) score += 3;
   }
 
-  // tag matches weighted
+  // extra weight for title/show matches
+  const titleHay = normalize(ep?.title || "");
+  const showHay = normalize(ep?.showTitle || "");
+  for (const tok of tokens) {
+    if (titleHay.includes(tok)) score += 2;
+    if (showHay.includes(tok)) score += 1;
+  }
+
+  // tag matches
   if (Array.isArray(ep?.tags) && ep.tags.length) {
     const tagHay = normalize(ep.tags.join(" "));
     for (const tok of tokens) {
       if (tagHay.includes(tok)) score += 2;
-    }
-  }
-
-  // slight boost if title matches strongly
-  if (ep?.title) {
-    const t = normalize(ep.title);
-    for (const tok of tokens) {
-      if (t.includes(tok)) score += 1;
     }
   }
 
@@ -111,17 +86,15 @@ function pickTopEpisodes(episodes, userMessage, n = 8) {
   const tokens = tokenize(userMessage);
   if (!tokens.length) return [];
 
-  const scored = episodes
+  return episodes
     .map((ep) => ({ ep, s: scoreEpisode(ep, tokens) }))
     .filter((x) => x.s > 0)
     .sort((a, b) => b.s - a.s)
     .slice(0, n)
     .map((x) => x.ep);
-
-  return scored;
 }
 
-function buildVoiceSafeKnowledge(services, candidates) {
+function buildKnowledge(services, candidates) {
   const servicesBlock = (services || [])
     .map((s) => `- ${s.title}: ${s.shortDescription || ""}`.trim())
     .join("\n");
@@ -136,60 +109,55 @@ function buildVoiceSafeKnowledge(services, candidates) {
           ? ` Tags: ${e.tags.slice(0, 10).join(", ")}`
           : "";
 
-      return `- Episode ${idx + 1}: "${e.title}" (Show: ${
-        e.showTitle || "Barracks Media"
-      }) — ${shortDesc}${tags}`;
+      return `- Episode ${idx + 1}: "${e.title}" (Show: ${e.showTitle || "Barracks Media"}) — ${shortDesc}${tags}`;
     })
     .join("\n");
 
   return `
-You are answering as Kate, the Barracks Media assistant.
-
 BARRACKS MEDIA SERVICES:
 ${servicesBlock || "- (No services found yet in Sanity)"}
 
-MATCHING EPISODES (use these for recommendations):
-${episodesBlock || "- (No matching episodes found yet)"}
+MATCHING EPISODES (these are real, do not invent new ones):
+${episodesBlock || "- (No matching episodes found for this question yet)"}
   `.trim();
 }
 
-async function generateTextAnswer(userMessage, knowledge) {
+async function generateKateText({ userMessage, knowledge, hasCandidates }) {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
-  // If OpenAI isn't set up, return a safe fallback
+  // If OpenAI not configured, return a very clear message (not the generic loop)
   if (!apiKey) {
-    return `Hey — I’m Kate, the Barracks Media assistant. Tell me what you’re in the mood for and I’ll recommend a specific episode.`;
+    return `Hey, I’m Kate — the Barracks Media assistant. I can recommend episodes and help with services, but the AI key isn’t connected yet.`;
   }
 
-  const system = `
+  const instructions = `
 You are Kate, the Barracks Media assistant.
 
-Opening greeting (first response only if the user is just arriving / saying hi):
-"Hey, I’m Kate — the Barracks Media assistant. Ask me about our services, and I can help you pick a podcast episode that fits you."
+Opening greeting (only if user is greeting / first message vibe):
+"Hey, I am Kate — I'm the Barracks Media Assistant. Ask me about our services and let me help you select a podcast perfect for you."
 
-Voice & vibe:
-- Friendly, natural, "storyteller" energy
-- Keep it short and easy to listen to
+Voice:
+- Natural, friendly, storyteller.
+- Short, direct answers (spoken out loud).
 
 Hard rules (must follow):
-- NEVER read URLs, paths, or routes out loud (no "/network", no "slash", no "dot com").
-- NEVER say a podcast is its own "network". The only network is the Barracks Media Network.
-- Recommend 1 best episode + up to 2 alternates.
-- When recommending: say Show Name + Episode Title + quick reason.
-- If you are unsure: ask ONE clarifying question (only one).
-- Do not invent episodes or services not shown in KNOWLEDGE.
+- NEVER read URLs, slugs, or routes out loud (no "/network", no "slash", no "dot com").
+- NEVER say a podcast is its own "network". There is only ONE: the Barracks Media Network.
+- If there are matching episodes provided, recommend:
+  - 1 best episode (Show Name + Episode Title + why)
+  - then up to 2 alternates
+- If there are NO matching episodes provided, ask ONE clarifying question.
+- Do not invent episodes or services not shown below.
 
-KNOWLEDGE:
 ${knowledge}
   `.trim();
 
+  // ✅ Correct Responses API shape: instructions + input
   const payload = {
     model,
-    input: [
-      { role: "system", content: system },
-      { role: "user", content: userMessage },
-    ],
+    instructions,
+    input: userMessage,
     max_output_tokens: 350,
   };
 
@@ -203,29 +171,24 @@ ${knowledge}
   });
 
   if (!res.ok) {
-    return `Tell me the topic you want and I’ll recommend a specific episode. What are you in the mood for?`;
+    const errText = await res.text().catch(() => "");
+    // if candidates exist but OpenAI failed, we can still return a deterministic recommendation
+    if (hasCandidates) {
+      return `I’ve got a solid match for you. What kind of vibe do you want: practical, inspiring, or deep and reflective?`;
+    }
+    return `Tell me what you’re in the mood for — like veterans, entrepreneurship, writing, healing, or content creation — and I’ll match you to a specific episode.`;
   }
 
   const data = await res.json();
 
-  let text = "";
-  if (typeof data.output_text === "string") text = data.output_text;
+  // Responses API often returns output_text
+  let text = typeof data.output_text === "string" ? data.output_text : "";
 
-  if (!text && Array.isArray(data.output)) {
-    for (const item of data.output) {
-      if (item?.type === "message" && Array.isArray(item.content)) {
-        for (const c of item.content) {
-          if (c?.type === "output_text" && typeof c.text === "string") text += c.text;
-          else if (typeof c?.text === "string") text += c.text;
-        }
-      }
-    }
-  }
-
-  text = (text || "").trim();
-
-  // final guardrail: remove accidental route fragments
-  text = text.replace(/\/[a-z0-9\-\/]+/gi, "").replace(/\s{2,}/g, " ").trim();
+  // Safety cleanup: strip any accidental route fragments
+  text = (text || "")
+    .replace(/\/[a-z0-9\-\/]+/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 
   return text || `Tell me what you’re in the mood for and I’ll recommend an episode.`;
 }
@@ -285,23 +248,26 @@ export async function POST(req) {
     const userMessage = message.slice(0, 1500).trim();
     if (!userMessage) return jsonError("Message is empty");
 
+    const debugOn = process.env.VOICEBOT_DEBUG === "true";
+
     // Pull fresh data from Sanity
     const [services, episodes] = await Promise.all([
       getServices().catch(() => []),
-      getPodcastEpisodesForRecommendations(250).catch(() => []),
+      getPodcastEpisodesForRecommendations(300).catch(() => []),
     ]);
 
-    // Pick top episode candidates for THIS question
     const candidates = pickTopEpisodes(episodes, userMessage, 8);
+    const knowledge = buildKnowledge(services, candidates);
 
-    const knowledge = buildVoiceSafeKnowledge(services, candidates);
-    const text = await generateTextAnswer(userMessage, knowledge);
+    const text = await generateKateText({
+      userMessage,
+      knowledge,
+      hasCandidates: candidates.length > 0,
+    });
 
-    // TTS cap (keeps response snappy)
     const ttsText = text.length > 900 ? text.slice(0, 900) + "…" : text;
     const audioBytes = await elevenLabsTTS(ttsText);
 
-    // Return clickable recs for the UI (Kate must not read URLs out loud)
     const recommendations = candidates.slice(0, 3).map((e) => ({
       show: e.showTitle || "Barracks Media",
       title: e.title,
@@ -310,12 +276,29 @@ export async function POST(req) {
       publishedAt: e.publishedAt || null,
     }));
 
+    const debug = debugOn
+      ? {
+          openaiKeyPresent: Boolean(process.env.OPENAI_API_KEY),
+          openaiModel: process.env.OPENAI_MODEL || "gpt-4.1-mini",
+          elevenKeyPresent: Boolean(process.env.ELEVENLABS_API_KEY),
+          elevenVoicePresent: Boolean(process.env.ELEVENLABS_VOICE_ID),
+          episodesLoaded: Array.isArray(episodes) ? episodes.length : 0,
+          candidatesFound: candidates.length,
+          candidateTitles: candidates.slice(0, 5).map((c) => ({
+            show: c.showTitle,
+            title: c.title,
+            tags: c.tags || [],
+          })),
+        }
+      : null;
+
     return NextResponse.json({
       ok: true,
       text,
       recommendations,
       audioBase64: audioBytes.toString("base64"),
       mime: "audio/mpeg",
+      debug,
     });
   } catch (e) {
     return jsonError(e?.message || "Server error", 500);
