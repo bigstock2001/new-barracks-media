@@ -1,3 +1,4 @@
+// components/FloatingVoiceBot.jsx
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -26,6 +27,9 @@ export default function FloatingVoiceBot() {
   const [error, setError] = useState("");
   const [debug, setDebug] = useState(null);
 
+  // NEW: nudge tooltip
+  const [showNudge, setShowNudge] = useState(true);
+
   const audioRef = useRef(null);
   const busyRef = useRef(false);
   const lastAudioUrlRef = useRef(null);
@@ -33,7 +37,6 @@ export default function FloatingVoiceBot() {
   const canAsk = useMemo(() => {
     const trimmed = input.trim();
     if (!trimmed) return false;
-    // Block while thinking OR speaking to prevent overlapping requests
     if (status === "thinking" || status === "speaking") return false;
     return true;
   }, [input, status]);
@@ -63,7 +66,6 @@ export default function FloatingVoiceBot() {
     if (!audioRef.current) return;
     setStatus("speaking");
 
-    // Play and return to idle when done
     await audioRef.current.play();
     audioRef.current.onended = () => {
       busyRef.current = false;
@@ -105,9 +107,6 @@ export default function FloatingVoiceBot() {
         const data = await callVoicebot(GREETING_TEXT);
         if (cancelled) return;
 
-        // Don't show greeting as "answer text" unless you want to
-        // setAnswerText(data.text || "");
-
         await playAudioFromResponse(data);
         setHasGreeted(true);
       } catch {
@@ -139,8 +138,6 @@ export default function FloatingVoiceBot() {
     try {
       const data = await callVoicebot(msg);
 
-      // ✅ THIS is what you were missing:
-      // store recommendations and render them
       const recs = Array.isArray(data?.recommendations)
         ? data.recommendations
         : [];
@@ -148,12 +145,10 @@ export default function FloatingVoiceBot() {
 
       setAnswerText(safeStr(data?.text));
 
-      // Optional debug section from API (when VOICEBOT_DEBUG=true)
       if (data?.debug) setDebug(data.debug);
 
       await playAudioFromResponse(data);
 
-      // If there was no audio for any reason, return to idle
       if (!safeStr(data?.audioBase64)) {
         busyRef.current = false;
         setStatus("idle");
@@ -184,13 +179,30 @@ export default function FloatingVoiceBot() {
   return (
     <div className="floating-bot-root">
       {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="flex items-center gap-2 rounded-full bg-black/70 px-4 py-3 text-sm font-semibold text-white shadow-xl backdrop-blur border border-white/10 hover:bg-black/80"
-        >
-          <span className="h-2 w-2 rounded-full bg-green-400" />
-          Ask Barracks
-        </button>
+        <>
+          {showNudge && (
+            <div className="mb-2 max-w-[240px] rounded-2xl bg-black/85 border border-white/20 px-4 py-3 text-xs text-white shadow-2xl backdrop-blur">
+              <div className="font-semibold">Need a podcast or service?</div>
+              <div className="mt-1 text-white/70">
+                Click to talk to Kate — she’ll recommend the best episode.
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={() => {
+              setShowNudge(false);
+              setOpen(true);
+            }}
+            className="flex items-center gap-3 rounded-full bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 text-sm font-bold text-white shadow-2xl backdrop-blur border border-white/20 hover:scale-[1.03] hover:from-red-500 hover:to-red-600 transition-all"
+          >
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-white" />
+            </span>
+            Talk to Kate
+          </button>
+        </>
       )}
 
       {open && (
@@ -256,7 +268,7 @@ export default function FloatingVoiceBot() {
               </div>
             )}
 
-            {/* ✅ Recommendations UI */}
+            {/* Recommendations UI */}
             {recommendations?.length > 0 && (
               <div className="rounded-xl bg-black/60 border border-white/10 p-3">
                 <div className="text-xs font-semibold text-white/80 mb-2">
@@ -303,6 +315,9 @@ export default function FloatingVoiceBot() {
                 <div className="font-semibold text-white/80 mb-2">Debug</div>
                 <div>episodesLoaded: {String(debug.episodesLoaded)}</div>
                 <div>candidatesFound: {String(debug.candidatesFound)}</div>
+                {"openaiStatus" in debug && (
+                  <div>openaiStatus: {String(debug.openaiStatus)}</div>
+                )}
               </div>
             )}
 
