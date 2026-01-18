@@ -1,5 +1,4 @@
 // app/api/voicebot/route.js
-
 import { NextResponse } from "next/server";
 import { formatKnowledgeForPrompt, SERVICES, PODCASTS } from "@/lib/voicebot/knowledge";
 
@@ -10,7 +9,7 @@ function jsonError(message, status = 400) {
   return NextResponse.json({ ok: false, error: message }, { status });
 }
 
-// Best-effort simple rate limit (per instance)
+// Basic per-instance rate limit
 const bucket = new Map();
 function rateLimit(ip) {
   const now = Date.now();
@@ -26,6 +25,32 @@ function rateLimit(ip) {
   return entry.count <= max;
 }
 
+function pickServiceFromText(q) {
+  const wantsWebsite =
+    q.includes("website") || q.includes("web design") || q.includes("site") || q.includes("seo");
+  const wantsEditing =
+    q.includes("edit") || q.includes("editing") || q.includes("premiere") || q.includes("audio");
+  const wantsHosting = q.includes("hosting") || q.includes("host");
+  const wantsPodcast =
+    q.includes("podcast") || q.includes("show") || q.includes("episode");
+
+  if (wantsWebsite) return SERVICES.find((s) => s.key === "web_design");
+  if (wantsEditing) return SERVICES.find((s) => s.key === "editing");
+  if (wantsPodcast) return SERVICES.find((s) => s.key === "podcast_production");
+  if (wantsHosting) return SERVICES.find((s) => s.key === "hosting");
+  return SERVICES.find((s) => s.key === "hosting");
+}
+
+function fallbackPodcastAnswer() {
+  const primary = PODCASTS[0];
+  const alt1 = PODCASTS[1];
+  const alt2 = PODCASTS[2];
+
+  return `Tell me what you're in the mood for — something inspiring, practical, or more reflective — and I’ll match you to the right show.
+A great starting point is "${primary.title}" — ${primary.vibe}
+Two good alternates are "${alt1.title}" and "${alt2.title}".`;
+}
+
 function fallbackAnswer(userMessage) {
   const q = (userMessage || "").toLowerCase();
 
@@ -33,63 +58,50 @@ function fallbackAnswer(userMessage) {
     q.includes("schedule") || q.includes("book") || q.includes("appointment") || q.includes("call");
   const wantsPodcast =
     q.includes("podcast") || q.includes("listen") || q.includes("episode") || q.includes("show");
-  const wantsWebsite =
-    q.includes("website") || q.includes("web design") || q.includes("site") || q.includes("seo");
-  const wantsEditing =
-    q.includes("edit") || q.includes("editing") || q.includes("premiere") || q.includes("audio");
-  const wantsHosting = q.includes("hosting") || q.includes("host");
 
   if (wantsSchedule) {
-    let service = SERVICES.find((s) => s.key === "hosting");
-    if (wantsWebsite) service = SERVICES.find((s) => s.key === "web_design") || service;
-    if (wantsEditing) service = SERVICES.find((s) => s.key === "editing") || service;
-    if (wantsHosting) service = SERVICES.find((s) => s.key === "hosting") || service;
-
+    const service = pickServiceFromText(q);
     return `Absolutely — I can help you schedule that. The fastest way is to book here: ${
       service?.bookingUrl || "/onboarding/hosting"
     }.
-If you tell me what you're trying to accomplish, I’ll point you to the best option.`;
+What are you trying to accomplish, so I can point you to the best option?`;
   }
 
-  if (wantsPodcast) {
-    const primary = PODCASTS[0];
-    const alt1 = PODCASTS[1];
-    const alt2 = PODCASTS[2];
+  if (wantsPodcast) return fallbackPodcastAnswer();
 
-    return `Tell me what you're in the mood for — something inspiring, practical, or more deep and reflective — and I’ll match you to the right show.
-If you want a strong starting point: "${primary.title}" (${primary.url}).
-Alternates: "${alt1.title}" (${alt1.url}) and "${alt2.title}" (${alt2.url}).`;
-  }
-
-  return `I can help you pick the right service (web design, editing, hosting, podcast production), recommend the best show in the network, and route you to the right booking link.
-What are you trying to accomplish today?`;
+  return `I can help you with Barracks Media services (web design, podcast production, editing, hosting), recommend the best show on the Barracks Media Network, and point you to the right booking link.
+What are you trying to do today?`;
 }
 
 async function generateTextAnswer(userMessage) {
   const apiKey = process.env.OPENAI_API_KEY;
-  const model = process.env.OPENAI_MODEL;
+  const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
-  if (!apiKey || !model) return fallbackAnswer(userMessage);
+  // If OpenAI isn't configured, use safe fallback
+  if (!apiKey) return fallbackAnswer(userMessage);
 
   const knowledge = formatKnowledgeForPrompt();
 
   const system = `
-You are the Barracks Media site assistant.
-Voice & vibe: friendly, natural, storyteller energy — but still concise.
+You are Kate, the Barracks Media assistant.
 
-Goals:
-- Answer questions about services clearly.
-- Recommend the best podcast(s) from the network based on what the visitor says they like.
-- Help schedule appointments by pointing to the correct booking link.
+Voice & vibe:
+- Friendly, natural, storyteller energy
+- Short, confident answers (designed to be read out loud)
 
-Rules:
-- Ask at most ONE clarifying question if needed.
-- If the visitor asks to schedule, give the best matching booking link.
-- Do not invent podcasts or services not listed in the KNOWLEDGE.
-- When recommending podcasts: 1 primary pick + up to 2 alternates with quick reasons.
-- Keep it readable out loud. Avoid overly long paragraphs.
+Hard rules (do not break these):
+- NEVER read URLs, paths, or internal links out loud.
+- NEVER say: "slash", "/network", or any route.
+- NEVER call a show a "network". The only network is the Barracks Media Network.
+- Refer to podcasts ONLY by title and a short vibe description.
+- If asked to schedule: provide the correct booking link (you may show the link, but DO NOT speak it as a URL—say it like "I’ll send you to the booking page for Web Design").
 
-KNOWLEDGE:
+Behavior:
+- If the user asks for a podcast: give 1 primary recommendation + up to 2 alternates, each with a quick reason.
+- If unsure: ask ONE clarifying question (only one).
+- Do not invent podcasts or services not in the knowledge below.
+
+KNOWLEDGE (voice-safe):
 ${knowledge}
 `.trim();
 
@@ -111,9 +123,7 @@ ${knowledge}
     body: JSON.stringify(payload),
   });
 
-  if (!res.ok) {
-    return fallbackAnswer(userMessage);
-  }
+  if (!res.ok) return fallbackAnswer(userMessage);
 
   const data = await res.json();
 
@@ -132,6 +142,10 @@ ${knowledge}
   }
 
   text = (text || "").trim();
+
+  // Final guardrail: strip any accidental "/something" tokens
+  text = text.replace(/\/[a-z0-9\-\/]+/gi, "").replace(/\s{2,}/g, " ").trim();
+
   return text || fallbackAnswer(userMessage);
 }
 
@@ -146,10 +160,6 @@ async function elevenLabsTTS(text) {
     voiceId
   )}?output_format=mp3_44100_128`;
 
-  // Storyteller / natural / friendly tuning:
-  // - slightly lower stability (more human)
-  // - high similarity (keeps the chosen voice)
-  // - moderate style (adds expression without going “cartoon”)
   const body = {
     text,
     model_id: "eleven_multilingual_v2",
