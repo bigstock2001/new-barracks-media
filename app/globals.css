@@ -49,6 +49,9 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+
+  /* IMPORTANT: allow floating UI (chat bot/modals) to display correctly */
+  overflow: visible !important;
 }
 
 .main {
@@ -115,69 +118,6 @@ body {
   padding-top: 14px;
 }
 
-/* Sound-wave light sweep behind nav */
-.nav::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 6px;
-  transform: translateX(-50%);
-  width: min(1100px, calc(100% - 36px));
-  height: 64px;
-  border-radius: 22px;
-  pointer-events: none;
-  z-index: -1;
-
-  background:
-    radial-gradient(800px 60px at 50% 50%, rgba(255, 255, 255, 0.18), transparent 65%),
-    repeating-linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.12) 0px,
-      rgba(255, 255, 255, 0.12) 2px,
-      transparent 2px,
-      transparent 9px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.06) 0px,
-      rgba(255, 255, 255, 0.06) 1px,
-      transparent 1px,
-      transparent 14px
-    );
-
-  opacity: 0.65;
-  mix-blend-mode: screen;
-  filter: blur(0.2px);
-
-  animation: navWaveSweep 6.5s linear infinite;
-}
-
-.nav-inner,
-.nav-bar {
-  position: relative;
-  z-index: 1;
-}
-
-@keyframes navWaveSweep {
-  0% {
-    background-position: 0% 50%, 0px 0, 0px 0;
-    opacity: 0.35;
-  }
-  40% {
-    opacity: 0.7;
-  }
-  100% {
-    background-position: 220% 50%, 420px 0, 260px 0;
-    opacity: 0.35;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .nav::before {
-    animation: none;
-  }
-}
-
 .nav-inner {
   width: 100%;
   max-width: 1100px;
@@ -208,7 +148,6 @@ body {
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
 }
 
 .brandText {
@@ -300,22 +239,6 @@ body {
   height: 1px;
   background: rgba(255, 255, 255, 0.15);
   margin: 10px 0;
-}
-
-/* =============================
-   Show layout
-============================= */
-.showLayout {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 18px;
-  align-items: start;
-}
-
-@media (max-width: 860px) {
-  .showLayout {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* =============================
@@ -492,203 +415,4 @@ body {
 .podCta {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.75);
-}
-
-/* =============================
-   Subscribe cards + Player + Episodes
-============================= */
-.subscribeGrid {
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-@media (max-width: 760px) {
-  .subscribeGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.subscribeCard {
-  text-decoration: none;
-  color: rgba(255, 255, 255, 0.92);
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
-}
-
-.subscribeCard:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-.subscribeIcon {
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.07);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  font-size: 18px;
-}
-
-.subscribeText {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  flex: 1;
-}
-
-.subscribeTitle {
-  font-weight: 900;
-  letter-spacing: 0.2px;
-}
-
-.subscribeSmall {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.subscribeArrow {
-  font-size: 18px;
-  opacity: 0.9;
-}
-
-.episodesHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.episodesMeta {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.playerWrap {
-  margin-top: 14px;
-  padding: 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.playerLabel {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 800;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-}
-
-.playerTitle {
-  margin-top: 6px;
-  font-weight: 900;
-  font-size: 16px;
-  line-height: 1.25;
-}
-
-.playerSub {
-  margin-top: 6px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.audioPlayer {
-  width: 100%;
-  margin-top: 14px;
-}
-
-.playerActions {
-  margin-top: 14px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.episodeList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.episodeCard {
-  width: 100%;
-  text-align: left;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 18px;
-  padding: 14px;
-  display: flex;
-  gap: 12px;
-  justify-content: space-between;
-  align-items: flex-start;
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.episodeCard:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-.episodeActive {
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.09);
-}
-
-.episodeTitle {
-  font-weight: 900;
-  font-size: 14px;
-  line-height: 1.25;
-}
-
-.episodeSub {
-  margin-top: 6px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.68);
-}
-
-.episodeDesc {
-  margin-top: 10px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.45;
-  max-height: 3.1em;
-  overflow: hidden;
-}
-
-.episodePlay {
-  padding: 9px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
-  font-weight: 900;
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-.youtubeWrap {
-  margin-top: 14px;
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(0, 0, 0, 0.25);
-}
-
-.youtubeFrame {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border: 0;
-  display: block;
 }
