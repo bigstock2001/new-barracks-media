@@ -416,3 +416,13 @@ body {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.75);
 }
+/* =============================
+   Floating Bot (Force on top)
+============================= */
+.floating-bot-root {
+  position: fixed !important;
+  bottom: 16px !important;
+  right: 16px !important;
+  z-index: 2147483646 !important; /* just under the debug pill */
+  pointer-events: auto !important;
+}
