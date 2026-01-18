@@ -3,8 +3,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+const GREETING_TEXT =
+  "Hey, I’m Kate — the Barracks Media assistant. Ask me about our services, or let me help you select a podcast that’s perfect for you.";
+
 export default function FloatingVoiceBot() {
   const [open, setOpen] = useState(false);
+  const [hasGreeted, setHasGreeted] = useState(false);
   const [input, setInput] = useState("");
   const [status, setStatus] = useState("idle");
   const [answerText, setAnswerText] = useState("");
@@ -22,6 +26,42 @@ export default function FloatingVoiceBot() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // 🔊 Auto-speak greeting ONCE when opened the first time
+  useEffect(() => {
+    if (!open || hasGreeted) return;
+
+    async function speakGreeting() {
+      try {
+        setStatus("speaking");
+
+        const res = await fetch("/api/voicebot", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: GREETING_TEXT }),
+        });
+
+        const data = await res.json();
+        if (!data?.ok) throw new Error("Greeting failed");
+
+        const bytes = Uint8Array.from(atob(data.audioBase64), (c) =>
+          c.charCodeAt(0)
+        );
+        const blob = new Blob([bytes], { type: data.mime || "audio/mpeg" });
+        const url = URL.createObjectURL(blob);
+
+        audioRef.current.src = url;
+        await audioRef.current.play();
+
+        audioRef.current.onended = () => setStatus("idle");
+        setHasGreeted(true);
+      } catch {
+        setStatus("idle");
+      }
+    }
+
+    speakGreeting();
+  }, [open, hasGreeted]);
+
   async function onAsk() {
     setError("");
     setAnswerText("");
@@ -35,12 +75,13 @@ export default function FloatingVoiceBot() {
       });
 
       const data = await res.json();
-
       if (!res.ok || !data?.ok) throw new Error(data?.error || "Error");
 
       setAnswerText(data.text || "");
 
-      const bytes = Uint8Array.from(atob(data.audioBase64), (c) => c.charCodeAt(0));
+      const bytes = Uint8Array.from(atob(data.audioBase64), (c) =>
+        c.charCodeAt(0)
+      );
       const blob = new Blob([bytes], { type: data.mime || "audio/mpeg" });
       const url = URL.createObjectURL(blob);
 
@@ -89,10 +130,10 @@ export default function FloatingVoiceBot() {
           {/* Body */}
           <div className="px-4 py-3 space-y-3">
             <div className="text-xs text-white/60">
-              {status === "thinking"
-                ? "Thinking…"
-                : status === "speaking"
+              {status === "speaking"
                 ? "Speaking…"
+                : status === "thinking"
+                ? "Thinking…"
                 : "Ready"}
             </div>
 
@@ -103,25 +144,15 @@ export default function FloatingVoiceBot() {
               onChange={(e) => setInput(e.target.value)}
             />
 
-            <div className="flex gap-2">
-              <button
-                onClick={onAsk}
-                disabled={!canAsk}
-                className="flex-1 rounded-xl bg-white text-black py-2 text-sm font-semibold disabled:opacity-50"
-              >
-                Answer
-              </button>
-              <button
-                onClick={() => setOpen(false)}
-                className="rounded-xl border border-white/10 px-3 text-sm text-white/80 hover:text-white"
-              >
-                Close
-              </button>
-            </div>
+            <button
+              onClick={onAsk}
+              disabled={!canAsk}
+              className="w-full rounded-xl bg-white text-black py-2 text-sm font-semibold disabled:opacity-50"
+            >
+              Answer
+            </button>
 
-            {error && (
-              <div className="text-xs text-red-400">{error}</div>
-            )}
+            {error && <div className="text-xs text-red-400">{error}</div>}
 
             {answerText && (
               <div className="rounded-xl bg-black/60 border border-white/10 p-3 text-sm text-white/90">
