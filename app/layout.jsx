@@ -2,7 +2,7 @@
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import FloatingVoiceBot from "@/app/components/FloatingVoiceBot";
+import FloatingVoiceBot from "@/components/FloatingVoiceBot";
 
 export const metadata = {
   title: "Barracks Media",
@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
           <Footer />
         </div>
 
-        {/* Floating site-wide voice bot */}
+        {/* Floating site-wide voice assistant */}
         <FloatingVoiceBot />
       </body>
     </html>

@@ -1,4 +1,4 @@
-// app/components/FloatingVoiceBot.jsx
+// components/FloatingVoiceBot.jsx
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -16,7 +16,6 @@ export default function FloatingVoiceBot() {
     [input, status]
   );
 
-  // Close on ESC
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") setOpen(false);
@@ -85,7 +84,6 @@ export default function FloatingVoiceBot() {
 
   return (
     <div className="fixed bottom-4 right-4 z-[9999]">
-      {/* Launcher button */}
       {!open ? (
         <button
           onClick={() => setOpen(true)}
@@ -97,7 +95,6 @@ export default function FloatingVoiceBot() {
         </button>
       ) : null}
 
-      {/* Panel */}
       {open ? (
         <div className="w-[340px] overflow-hidden rounded-2xl border border-white/10 bg-black/70 shadow-2xl backdrop-blur">
           <div className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-3">
@@ -170,9 +167,7 @@ export default function FloatingVoiceBot() {
 
             {answerText ? (
               <div className="mt-3 rounded-xl border border-white/10 bg-black/30 p-2">
-                <div className="text-[11px] uppercase tracking-wide text-white/60">
-                  Text Answer
-                </div>
+                <div className="text-[11px] uppercase tracking-wide text-white/60">Text Answer</div>
                 <div className="mt-1 max-h-[140px] overflow-auto whitespace-pre-wrap text-sm text-white/90">
                   {answerText}
                 </div>
