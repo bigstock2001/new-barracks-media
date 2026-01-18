@@ -1,6 +1,6 @@
 // app/api/voicebot/route.js
 import { NextResponse } from "next/server";
-import { formatKnowledgeForPrompt, SERVICES, PODCASTS } from "@/lib/voicebot/knowledge";
+import { getPodcastEpisodesForRecommendations, getServices } from "@/lib/sanity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,85 +25,164 @@ function rateLimit(ip) {
   return entry.count <= max;
 }
 
-function pickServiceFromText(q) {
-  const wantsWebsite =
-    q.includes("website") || q.includes("web design") || q.includes("site") || q.includes("seo");
-  const wantsEditing =
-    q.includes("edit") || q.includes("editing") || q.includes("premiere") || q.includes("audio");
-  const wantsHosting = q.includes("hosting") || q.includes("host");
-  const wantsPodcast =
-    q.includes("podcast") || q.includes("show") || q.includes("episode");
-
-  if (wantsWebsite) return SERVICES.find((s) => s.key === "web_design");
-  if (wantsEditing) return SERVICES.find((s) => s.key === "editing");
-  if (wantsPodcast) return SERVICES.find((s) => s.key === "podcast_production");
-  if (wantsHosting) return SERVICES.find((s) => s.key === "hosting");
-  return SERVICES.find((s) => s.key === "hosting");
+function normalize(text = "") {
+  return String(text)
+    .toLowerCase()
+    .replace(/https?:\/\/\S+/g, " ")
+    .replace(/[^\p{L}\p{N}\s]+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-function fallbackPodcastAnswer() {
-  const primary = PODCASTS[0];
-  const alt1 = PODCASTS[1];
-  const alt2 = PODCASTS[2];
-
-  return `Tell me what you're in the mood for — something inspiring, practical, or more reflective — and I’ll match you to the right show.
-A great starting point is "${primary.title}" — ${primary.vibe}
-Two good alternates are "${alt1.title}" and "${alt2.title}".`;
+function tokenize(text) {
+  const t = normalize(text);
+  if (!t) return [];
+  const parts = t.split(" ");
+  const stop = new Set([
+    "the",
+    "and",
+    "for",
+    "with",
+    "that",
+    "this",
+    "from",
+    "your",
+    "youre",
+    "about",
+    "what",
+    "when",
+    "where",
+    "which",
+    "into",
+    "them",
+    "they",
+    "their",
+    "there",
+    "have",
+    "has",
+    "had",
+    "been",
+    "being",
+    "are",
+    "was",
+    "were",
+  ]);
+  return parts.filter((w) => w.length >= 3 && !stop.has(w));
 }
 
-function fallbackAnswer(userMessage) {
-  const q = (userMessage || "").toLowerCase();
+function scoreEpisode(ep, tokens) {
+  const hay = normalize(
+    [
+      ep?.title,
+      ep?.showTitle,
+      ep?.description,
+      Array.isArray(ep?.tags) ? ep.tags.join(" ") : "",
+    ].join(" ")
+  );
 
-  const wantsSchedule =
-    q.includes("schedule") || q.includes("book") || q.includes("appointment") || q.includes("call");
-  const wantsPodcast =
-    q.includes("podcast") || q.includes("listen") || q.includes("episode") || q.includes("show");
+  let score = 0;
 
-  if (wantsSchedule) {
-    const service = pickServiceFromText(q);
-    return `Absolutely — I can help you schedule that. The fastest way is to book here: ${
-      service?.bookingUrl || "/onboarding/hosting"
-    }.
-What are you trying to accomplish, so I can point you to the best option?`;
+  // token matches
+  for (const tok of tokens) {
+    if (!tok) continue;
+    if (hay.includes(tok)) score += 3;
   }
 
-  if (wantsPodcast) return fallbackPodcastAnswer();
+  // tag matches weighted
+  if (Array.isArray(ep?.tags) && ep.tags.length) {
+    const tagHay = normalize(ep.tags.join(" "));
+    for (const tok of tokens) {
+      if (tagHay.includes(tok)) score += 2;
+    }
+  }
 
-  return `I can help you with Barracks Media services (web design, podcast production, editing, hosting), recommend the best show on the Barracks Media Network, and point you to the right booking link.
-What are you trying to do today?`;
+  // slight boost if title matches strongly
+  if (ep?.title) {
+    const t = normalize(ep.title);
+    for (const tok of tokens) {
+      if (t.includes(tok)) score += 1;
+    }
+  }
+
+  return score;
 }
 
-async function generateTextAnswer(userMessage) {
+function pickTopEpisodes(episodes, userMessage, n = 8) {
+  const tokens = tokenize(userMessage);
+  if (!tokens.length) return [];
+
+  const scored = episodes
+    .map((ep) => ({ ep, s: scoreEpisode(ep, tokens) }))
+    .filter((x) => x.s > 0)
+    .sort((a, b) => b.s - a.s)
+    .slice(0, n)
+    .map((x) => x.ep);
+
+  return scored;
+}
+
+function buildVoiceSafeKnowledge(services, candidates) {
+  const servicesBlock = (services || [])
+    .map((s) => `- ${s.title}: ${s.shortDescription || ""}`.trim())
+    .join("\n");
+
+  const episodesBlock = (candidates || [])
+    .map((e, idx) => {
+      const desc = String(e?.description || "").replace(/\s+/g, " ").trim();
+      const shortDesc = desc.length > 260 ? desc.slice(0, 260) + "…" : desc;
+
+      const tags =
+        Array.isArray(e?.tags) && e.tags.length
+          ? ` Tags: ${e.tags.slice(0, 10).join(", ")}`
+          : "";
+
+      return `- Episode ${idx + 1}: "${e.title}" (Show: ${
+        e.showTitle || "Barracks Media"
+      }) — ${shortDesc}${tags}`;
+    })
+    .join("\n");
+
+  return `
+You are answering as Kate, the Barracks Media assistant.
+
+BARRACKS MEDIA SERVICES:
+${servicesBlock || "- (No services found yet in Sanity)"}
+
+MATCHING EPISODES (use these for recommendations):
+${episodesBlock || "- (No matching episodes found yet)"}
+  `.trim();
+}
+
+async function generateTextAnswer(userMessage, knowledge) {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
-  // If OpenAI isn't configured, use safe fallback
-  if (!apiKey) return fallbackAnswer(userMessage);
-
-  const knowledge = formatKnowledgeForPrompt();
+  // If OpenAI isn't set up, return a safe fallback
+  if (!apiKey) {
+    return `Hey — I’m Kate, the Barracks Media assistant. Tell me what you’re in the mood for and I’ll recommend a specific episode.`;
+  }
 
   const system = `
 You are Kate, the Barracks Media assistant.
 
+Opening greeting (first response only if the user is just arriving / saying hi):
+"Hey, I’m Kate — the Barracks Media assistant. Ask me about our services, and I can help you pick a podcast episode that fits you."
+
 Voice & vibe:
-- Friendly, natural, storyteller energy
-- Short, confident answers (designed to be read out loud)
+- Friendly, natural, "storyteller" energy
+- Keep it short and easy to listen to
 
-Hard rules (do not break these):
-- NEVER read URLs, paths, or internal links out loud.
-- NEVER say: "slash", "/network", or any route.
-- NEVER call a show a "network". The only network is the Barracks Media Network.
-- Refer to podcasts ONLY by title and a short vibe description.
-- If asked to schedule: provide the correct booking link (you may show the link, but DO NOT speak it as a URL—say it like "I’ll send you to the booking page for Web Design").
+Hard rules (must follow):
+- NEVER read URLs, paths, or routes out loud (no "/network", no "slash", no "dot com").
+- NEVER say a podcast is its own "network". The only network is the Barracks Media Network.
+- Recommend 1 best episode + up to 2 alternates.
+- When recommending: say Show Name + Episode Title + quick reason.
+- If you are unsure: ask ONE clarifying question (only one).
+- Do not invent episodes or services not shown in KNOWLEDGE.
 
-Behavior:
-- If the user asks for a podcast: give 1 primary recommendation + up to 2 alternates, each with a quick reason.
-- If unsure: ask ONE clarifying question (only one).
-- Do not invent podcasts or services not in the knowledge below.
-
-KNOWLEDGE (voice-safe):
+KNOWLEDGE:
 ${knowledge}
-`.trim();
+  `.trim();
 
   const payload = {
     model,
@@ -123,7 +202,9 @@ ${knowledge}
     body: JSON.stringify(payload),
   });
 
-  if (!res.ok) return fallbackAnswer(userMessage);
+  if (!res.ok) {
+    return `Tell me the topic you want and I’ll recommend a specific episode. What are you in the mood for?`;
+  }
 
   const data = await res.json();
 
@@ -143,10 +224,10 @@ ${knowledge}
 
   text = (text || "").trim();
 
-  // Final guardrail: strip any accidental "/something" tokens
+  // final guardrail: remove accidental route fragments
   text = text.replace(/\/[a-z0-9\-\/]+/gi, "").replace(/\s{2,}/g, " ").trim();
 
-  return text || fallbackAnswer(userMessage);
+  return text || `Tell me what you’re in the mood for and I’ll recommend an episode.`;
 }
 
 async function elevenLabsTTS(text) {
@@ -204,16 +285,35 @@ export async function POST(req) {
     const userMessage = message.slice(0, 1500).trim();
     if (!userMessage) return jsonError("Message is empty");
 
-    const text = await generateTextAnswer(userMessage);
+    // Pull fresh data from Sanity
+    const [services, episodes] = await Promise.all([
+      getServices().catch(() => []),
+      getPodcastEpisodesForRecommendations(250).catch(() => []),
+    ]);
 
-    // Keep TTS manageable
+    // Pick top episode candidates for THIS question
+    const candidates = pickTopEpisodes(episodes, userMessage, 8);
+
+    const knowledge = buildVoiceSafeKnowledge(services, candidates);
+    const text = await generateTextAnswer(userMessage, knowledge);
+
+    // TTS cap (keeps response snappy)
     const ttsText = text.length > 900 ? text.slice(0, 900) + "…" : text;
-
     const audioBytes = await elevenLabsTTS(ttsText);
+
+    // Return clickable recs for the UI (Kate must not read URLs out loud)
+    const recommendations = candidates.slice(0, 3).map((e) => ({
+      show: e.showTitle || "Barracks Media",
+      title: e.title,
+      url: e.youtubeUrl || e.episodePageUrl || "",
+      tags: Array.isArray(e.tags) ? e.tags : [],
+      publishedAt: e.publishedAt || null,
+    }));
 
     return NextResponse.json({
       ok: true,
       text,
+      recommendations,
       audioBase64: audioBytes.toString("base64"),
       mime: "audio/mpeg",
     });
