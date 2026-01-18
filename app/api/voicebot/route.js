@@ -39,41 +39,99 @@ function tokenize(text) {
   if (!t) return [];
   const parts = t.split(" ");
   const stop = new Set([
-    "the",
-    "and",
-    "for",
-    "with",
-    "that",
-    "this",
-    "from",
-    "your",
-    "youre",
-    "about",
-    "what",
-    "when",
-    "where",
-    "which",
-    "into",
-    "them",
-    "they",
-    "their",
-    "there",
-    "have",
-    "has",
-    "had",
-    "been",
-    "being",
-    "are",
-    "was",
-    "were",
-    "just",
-    "like",
-    "want",
-    "need",
+    "the","and","for","with","that","this","from","your","youre","about","what",
+    "when","where","which","into","them","they","their","there","have","has",
+    "had","been","being","are","was","were","just","like","want","need","help",
+    "tell","give"
   ]);
   return parts.filter((w) => w.length >= 3 && !stop.has(w));
 }
 
+/**
+ * Intent routing
+ * - If user is asking about SERVICES (pricing, packages, requirements, booking),
+ *   we should answer services first and NOT recommend podcasts unless explicitly asked.
+ */
+function detectIntent(userMessage = "") {
+  const t = normalize(userMessage);
+
+  // Strong service intent keywords
+  const serviceSignals = [
+    "service", "services", "price", "pricing", "cost", "quote", "rates", "rate",
+    "how much", "package", "packages", "plan", "plans", "basic", "starter",
+    "website", "web design", "site", "landing page", "seo", "hosting", "maintenance",
+    "podcast editing", "editing", "video editing", "audio editing",
+    "appointment", "book", "booking", "schedule", "consult", "consultation",
+    "onboarding", "requirements", "need from me", "what do i need"
+  ];
+
+  // Podcast intent keywords
+  const podcastSignals = [
+    "podcast", "episode", "listen", "recommend", "recommendation",
+    "show", "shows", "network", "what should i listen", "what do i listen"
+  ];
+
+  const serviceHit = serviceSignals.some((k) => t.includes(k));
+  const podcastHit = podcastSignals.some((k) => t.includes(k));
+
+  // If they explicitly mention podcasts/recommendations → podcast intent.
+  // Otherwise, if service signals present → service intent.
+  if (podcastHit && !serviceHit) return "podcast";
+  if (serviceHit && !podcastHit) return "service";
+
+  // Mixed: decide by weighting. Pricing/cost/quote should dominate.
+  if (serviceHit && podcastHit) {
+    if (t.includes("price") || t.includes("cost") || t.includes("how much") || t.includes("quote")) {
+      return "service";
+    }
+    return "podcast";
+  }
+
+  return "general";
+}
+
+/**
+ * Score + pick SERVICES
+ */
+function scoreService(svc, tokens) {
+  const hay = normalize(
+    [
+      svc?.title,
+      svc?.shortDescription,
+      svc?.longDescription,
+      Array.isArray(svc?.features) ? svc.features.join(" ") : "",
+    ].join(" ")
+  );
+
+  let score = 0;
+  for (const tok of tokens) {
+    if (!tok) continue;
+    if (hay.includes(tok)) score += 3;
+  }
+
+  const titleHay = normalize(svc?.title || "");
+  for (const tok of tokens) {
+    if (titleHay.includes(tok)) score += 2;
+  }
+
+  return score;
+}
+
+function pickTopServices(services, userMessage, n = 4) {
+  const tokens = tokenize(userMessage);
+  if (!tokens.length) return [];
+
+  return (services || [])
+    .map((s) => ({ s, sc: scoreService(s, tokens) }))
+    .filter((x) => x.sc > 0)
+    .sort((a, b) => b.sc - a.sc)
+    .slice(0, n)
+    .map((x) => x.s);
+}
+
+/**
+ * Score + pick EPISODES
+ */
 function scoreEpisode(ep, tokens) {
   const hay = normalize(
     [
@@ -122,12 +180,26 @@ function pickTopEpisodes(episodes, userMessage, n = 8) {
     .map((x) => x.ep);
 }
 
-function buildKnowledge(services, candidates) {
-  const servicesBlock = (services || [])
-    .map((s) => `- ${s.title}: ${s.shortDescription || ""}`.trim())
+function buildKnowledge({ intent, serviceCandidates, episodeCandidates }) {
+  const servicesBlock = (serviceCandidates || [])
+    .map((s, idx) => {
+      const title = s?.title || "Service";
+      const short = (s?.shortDescription || "").toString().trim();
+
+      // Optional fields if your schema has them (won't break if missing)
+      const pricing =
+        s?.startingPrice || s?.price || s?.pricing || s?.priceNote || "";
+      const pricingLine = pricing ? ` Pricing: ${pricing}` : "";
+
+      const booking =
+        s?.successPath || s?.bookingUrl || (s?.slug ? `/onboarding/${s.slug}` : "");
+      const bookingLine = booking ? ` Booking: ${booking}` : "";
+
+      return `- Service ${idx + 1}: ${title} — ${short}${pricingLine}${bookingLine}`.trim();
+    })
     .join("\n");
 
-  const episodesBlock = (candidates || [])
+  const episodesBlock = (episodeCandidates || [])
     .map((e, idx) => {
       const desc = String(e?.description || "").replace(/\s+/g, " ").trim();
       const shortDesc = desc.length > 260 ? desc.slice(0, 260) + "…" : desc;
@@ -137,75 +209,27 @@ function buildKnowledge(services, candidates) {
           ? ` Tags: ${e.tags.slice(0, 10).join(", ")}`
           : "";
 
-      return `- Episode ${idx + 1}: "${e.title}" (Show: ${
-        e.showTitle || "Barracks Media"
-      }) — ${shortDesc}${tags}`;
+      return `- Episode ${idx + 1}: "${e.title}" (Show: ${e.showTitle || "Barracks Media"}) — ${shortDesc}${tags}`;
     })
     .join("\n");
 
   return `
-BARRACKS MEDIA SERVICES:
-${servicesBlock || "- (No services found yet in Sanity)"}
+INTENT: ${intent}
 
-MATCHING EPISODES (these are real, do not invent new ones):
+MATCHING SERVICES (use these when the user asks about costs, packages, requirements, or booking):
+${servicesBlock || "- (No matching services found yet)"}
+
+MATCHING EPISODES (ONLY use these if the user is asking what to listen to / podcast recommendations):
 ${episodesBlock || "- (No matching episodes found for this question yet)"}
   `.trim();
 }
 
-/**
- * Deterministic spoken recommendation (used when OpenAI fails or is missing)
- * Never reads URLs.
- */
-function deterministicRecommendationText(candidates) {
-  if (!Array.isArray(candidates) || candidates.length === 0) {
-    return `Tell me what you’re in the mood for — like veterans, entrepreneurship, writing, healing, or content creation — and I’ll match you to a specific episode.`;
-  }
-
-  const best = candidates[0];
-  const alts = candidates.slice(1, 3);
-
-  const bestShow = best?.showTitle || "Barracks Media";
-  const bestTitle = best?.title || "a great episode";
-  const bestDesc = String(best?.description || "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 220);
-
-  let out = `Here’s the best match: ${bestShow} — "${bestTitle}".`;
-  if (bestDesc) out += ` It’s a good fit because ${bestDesc}.`;
-
-  if (alts.length) {
-    out += ` If you want an alternate: `;
-    out += alts
-      .map((e) => {
-        const s = e?.showTitle || "Barracks Media";
-        const t = e?.title || "another episode";
-        return `${s} — "${t}"`;
-      })
-      .join(" — or — ");
-    out += `.`;
-  }
-
-  return out;
-}
-
-async function generateKateText({
-  userMessage,
-  knowledge,
-  hasCandidates,
-  candidates,
-  debugMeta,
-}) {
+async function generateKateText({ userMessage, knowledge, intent }) {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
-  // If OpenAI not configured, return deterministic if possible
   if (!apiKey) {
-    return {
-      text: deterministicRecommendationText(candidates),
-      openaiStatus: "missing_key",
-      openaiError: "",
-    };
+    return `Hey, I’m Kate — the Barracks Media assistant. I can recommend episodes and help with services, but the AI key isn’t connected yet.`;
   }
 
   const instructions = `
@@ -221,11 +245,13 @@ Voice:
 Hard rules (must follow):
 - NEVER read URLs, slugs, or routes out loud (no "/network", no "slash", no "dot com").
 - NEVER say a podcast is its own "network". There is only ONE: the Barracks Media Network.
-- If there are matching episodes provided, recommend:
-  - 1 best episode (Show Name + Episode Title + why)
-  - then up to 2 alternates
-- If there are NO matching episodes provided, ask ONE clarifying question.
-- Do not invent episodes or services not shown below.
+- Do not invent services, prices, or episodes not shown in the knowledge block.
+
+Routing rules (VERY IMPORTANT):
+- If INTENT is "service": Answer the service question FIRST. Do NOT recommend podcasts unless the user explicitly asked for podcast recommendations.
+- If user asks price/cost/quote: If the exact price is NOT provided in the knowledge block, say you can’t quote an exact number yet and offer to book the right service. Ask ONE quick clarifying question (scope) if needed.
+- If INTENT is "podcast": Recommend 1 best episode (Show + Episode Title + why), then up to 2 alternates.
+- If no matching items exist for the intent: ask ONE clarifying question.
 
 ${knowledge}
   `.trim();
@@ -237,40 +263,24 @@ ${knowledge}
     max_output_tokens: 350,
   };
 
-  let res;
-  let rawErr = "";
-
-  try {
-    res = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(payload),
-    });
-  } catch (e) {
-    rawErr = e?.message || "fetch_failed";
-    return {
-      text: deterministicRecommendationText(candidates),
-      openaiStatus: "fetch_error",
-      openaiError: rawErr,
-    };
-  }
+  const res = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(payload),
+  });
 
   if (!res.ok) {
-    rawErr = await res.text().catch(() => "");
-    // ✅ IMPORTANT CHANGE: if we have candidates, recommend them directly (no “vibe” loop)
-    return {
-      text: deterministicRecommendationText(candidates),
-      openaiStatus: String(res.status),
-      openaiError: String(rawErr || "").slice(0, 220),
-    };
+    // Fallback response if OpenAI fails
+    if (intent === "service") {
+      return `I can help with that. Which service are you asking about: web design, podcast production, editing, or hosting?`;
+    }
+    return `Tell me what you’re in the mood for — veterans, entrepreneurship, writing, healing, or content creation — and I’ll match you to an episode.`;
   }
 
-  const data = await res.json().catch(() => ({}));
-
-  // Responses API often returns output_text
+  const data = await res.json();
   let text = typeof data.output_text === "string" ? data.output_text : "";
 
   // Safety cleanup: strip any accidental route fragments
@@ -279,33 +289,7 @@ ${knowledge}
     .replace(/\s{2,}/g, " ")
     .trim();
 
-  // Guard: if the model still dodges despite candidates, force deterministic
-  if (hasCandidates) {
-    const t = normalize(text);
-    const looksLikeDodge =
-      t.includes("what kind of vibe") ||
-      t.includes("tell me what you're in the mood") ||
-      t.includes("tell me what youre in the mood") ||
-      t === "ready";
-
-    if (!text || looksLikeDodge) {
-      return {
-        text: deterministicRecommendationText(candidates),
-        openaiStatus: "ok_but_dodged",
-        openaiError: "",
-      };
-    }
-  }
-
-  return {
-    text:
-      text ||
-      (hasCandidates
-        ? deterministicRecommendationText(candidates)
-        : `Tell me what you’re in the mood for and I’ll recommend an episode.`),
-    openaiStatus: "200",
-    openaiError: "",
-  };
+  return text || `Tell me what you’re looking for and I’ll help.`;
 }
 
 async function elevenLabsTTS(text) {
@@ -355,17 +339,16 @@ export async function POST(req) {
       req.headers.get("x-real-ip") ||
       "unknown";
 
-    if (!rateLimit(ip))
-      return jsonError("Rate limit hit. Try again in a minute.", 429);
+    if (!rateLimit(ip)) return jsonError("Rate limit hit. Try again in a minute.", 429);
 
     const { message } = await req.json().catch(() => ({}));
-    if (!message || typeof message !== "string")
-      return jsonError("Missing 'message'");
+    if (!message || typeof message !== "string") return jsonError("Missing 'message'");
 
     const userMessage = message.slice(0, 1500).trim();
     if (!userMessage) return jsonError("Message is empty");
 
     const debugOn = process.env.VOICEBOT_DEBUG === "true";
+    const intent = detectIntent(userMessage);
 
     // Pull fresh data from Sanity
     const [services, episodes] = await Promise.all([
@@ -373,20 +356,26 @@ export async function POST(req) {
       getPodcastEpisodesForRecommendations(300).catch(() => []),
     ]);
 
-    const candidates = pickTopEpisodes(episodes, userMessage, 8);
-    const knowledge = buildKnowledge(services, candidates);
+    const serviceCandidates = pickTopServices(services, userMessage, 4);
+    const episodeCandidates = pickTopEpisodes(episodes, userMessage, 8);
 
-    const { text, openaiStatus, openaiError } = await generateKateText({
+    const knowledge = buildKnowledge({
+      intent,
+      serviceCandidates,
+      episodeCandidates,
+    });
+
+    const text = await generateKateText({
       userMessage,
       knowledge,
-      hasCandidates: candidates.length > 0,
-      candidates,
+      intent,
     });
 
     const ttsText = text.length > 900 ? text.slice(0, 900) + "…" : text;
     const audioBytes = await elevenLabsTTS(ttsText);
 
-    const recommendations = candidates.slice(0, 3).map((e) => ({
+    // Only return episode recommendations (UI already expects this)
+    const recommendations = episodeCandidates.slice(0, 3).map((e) => ({
       show: e.showTitle || "Barracks Media",
       title: e.title,
       url: e.youtubeUrl || e.episodePageUrl || "",
@@ -396,15 +385,17 @@ export async function POST(req) {
 
     const debug = debugOn
       ? {
+          intent,
           openaiKeyPresent: Boolean(process.env.OPENAI_API_KEY),
           openaiModel: process.env.OPENAI_MODEL || "gpt-4.1-mini",
-          openaiStatus,
-          openaiError,
           elevenKeyPresent: Boolean(process.env.ELEVENLABS_API_KEY),
           elevenVoicePresent: Boolean(process.env.ELEVENLABS_VOICE_ID),
+          servicesLoaded: Array.isArray(services) ? services.length : 0,
+          serviceCandidatesFound: serviceCandidates.length,
           episodesLoaded: Array.isArray(episodes) ? episodes.length : 0,
-          candidatesFound: candidates.length,
-          candidateTitles: candidates.slice(0, 5).map((c) => ({
+          candidatesFound: episodeCandidates.length,
+          topServiceTitles: serviceCandidates.map((s) => s?.title).slice(0, 5),
+          topEpisodeTitles: episodeCandidates.slice(0, 5).map((c) => ({
             show: c.showTitle,
             title: c.title,
             tags: c.tags || [],
