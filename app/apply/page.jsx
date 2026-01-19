@@ -11,13 +11,8 @@ const EMBED_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSfmKm2Pq0TmS1hV6tOc1wuLfZzEAPll9CwnVSABvi3UwANkTw/viewform?embedded=true";
 
 export default function ApplyPage() {
-  function scrollTo(id) {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  }
-
   return (
-    <main className="relative overflow-hidden">
+    <main className="relative overflow-hidden scroll-smooth">
       {/* Background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
@@ -41,11 +36,12 @@ export default function ApplyPage() {
             or creative control.
           </p>
 
-          {/* BUTTONS */}
+          {/* BUTTON-LOOKING LINKS (SERVER SAFE) */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
-            <button
-              type="button"
-              onClick={() => scrollTo("apply")}
+            <a
+              href="#apply"
+              role="button"
+              aria-label="Start application"
               className="
                 inline-flex items-center justify-center
                 rounded-xl
@@ -56,14 +52,16 @@ export default function ApplyPage() {
                 hover:bg-white/90 hover:shadow-xl
                 focus:outline-none focus:ring-2 focus:ring-white/60
                 transition-all
+                no-underline
               "
             >
               Start Application
-            </button>
+            </a>
 
-            <button
-              type="button"
-              onClick={() => scrollTo("terms")}
+            <a
+              href="#terms"
+              role="button"
+              aria-label="View terms"
               className="
                 inline-flex items-center justify-center
                 rounded-xl
@@ -75,10 +73,11 @@ export default function ApplyPage() {
                 hover:bg-white/10 hover:border-white/50
                 focus:outline-none focus:ring-2 focus:ring-white/40
                 transition-all
+                no-underline
               "
             >
               View Terms
-            </button>
+            </a>
           </div>
         </section>
 
@@ -119,10 +118,7 @@ export default function ApplyPage() {
 
         {/* WHO IT'S FOR */}
         <section className="mt-24 rounded-3xl border border-white/10 bg-white/[0.02] p-10">
-          <SectionTitle
-            title="Who This Network Is For"
-            subtitle="Selective by design."
-          />
+          <SectionTitle title="Who This Network Is For" subtitle="Selective by design." />
 
           <ul className="mt-8 grid md:grid-cols-2 gap-y-4 text-white/80">
             <li>• Podcasters producing consistent, meaningful content</li>
@@ -135,7 +131,7 @@ export default function ApplyPage() {
         {/* APPLY */}
         <section
           id="apply"
-          className="mt-24 rounded-3xl border border-white/10 bg-white/[0.03] p-10"
+          className="mt-24 rounded-3xl border border-white/10 bg-white/[0.03] p-10 scroll-mt-24"
         >
           <SectionTitle
             title="Submit Your Application"
@@ -173,7 +169,7 @@ export default function ApplyPage() {
         {/* TERMS */}
         <section
           id="terms"
-          className="mt-24 rounded-3xl border border-white/10 bg-black/40 p-10"
+          className="mt-24 rounded-3xl border border-white/10 bg-black/40 p-10 scroll-mt-24"
         >
           <SectionTitle
             title="Application Terms & Conditions"
@@ -204,9 +200,10 @@ export default function ApplyPage() {
             we’d be proud to review your application.
           </p>
 
-          <button
-            type="button"
-            onClick={() => scrollTo("apply")}
+          <a
+            href="#apply"
+            role="button"
+            aria-label="Apply now"
             className="
               inline-flex items-center justify-center
               mt-6 rounded-xl
@@ -216,10 +213,11 @@ export default function ApplyPage() {
               shadow-lg shadow-black/40
               hover:bg-white/90 hover:shadow-xl
               transition-all
+              no-underline
             "
           >
             Apply Now
-          </button>
+          </a>
         </section>
       </div>
     </main>
@@ -322,9 +320,7 @@ const TERMS = [
   {
     n: 10,
     title: "Professional Conduct",
-    body: [
-      "Harassment, hate speech, or illegal activity may result in removal",
-    ],
+    body: ["Harassment, hate speech, or illegal activity may result in removal"],
   },
   {
     n: 11,
