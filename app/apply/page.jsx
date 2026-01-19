@@ -38,44 +38,49 @@ export default function ApplyPage() {
 
           {/* BUTTONS */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
+            {/* External form button */}
             <a
               href={FORM_URL}
               target="_blank"
               rel="noreferrer"
               role="button"
-              aria-label="Start application"
+              aria-label="Start application (opens in a new tab)"
               className="
                 inline-flex items-center justify-center
-                rounded-xl
-                bg-white text-black
+                rounded-full
                 px-7 py-3
                 text-sm font-semibold tracking-wide
                 shadow-lg shadow-black/40
-                hover:bg-white/90 hover:shadow-xl
-                focus:outline-none focus:ring-2 focus:ring-white/60
                 transition-all
-                no-underline
+                hover:shadow-xl
+                focus:outline-none focus:ring-2 focus:ring-white/60
+                cursor-pointer select-none appearance-none
+
+                !bg-white !text-black !no-underline
+                hover:!bg-white/90
               "
             >
               Start Application
             </a>
 
+            {/* Scroll to terms button */}
             <a
               href="#terms"
               role="button"
               aria-label="View terms"
               className="
                 inline-flex items-center justify-center
-                rounded-xl
-                border border-white/30
-                bg-white/5 text-white
+                rounded-full
                 px-7 py-3
                 text-sm font-semibold tracking-wide
                 backdrop-blur
-                hover:bg-white/10 hover:border-white/50
-                focus:outline-none focus:ring-2 focus:ring-white/40
                 transition-all
-                no-underline
+                hover:border-white/50
+                focus:outline-none focus:ring-2 focus:ring-white/40
+                cursor-pointer select-none appearance-none
+
+                !border !border-white/30 !bg-white/5 !text-white !no-underline
+                hover:!bg-white/10
               "
             >
               View Terms
@@ -207,17 +212,20 @@ export default function ApplyPage() {
             target="_blank"
             rel="noreferrer"
             role="button"
-            aria-label="Apply now"
+            aria-label="Apply now (opens in a new tab)"
             className="
               inline-flex items-center justify-center
-              mt-6 rounded-xl
-              bg-white text-black
+              mt-6 rounded-full
               px-8 py-3
               text-sm font-semibold tracking-wide
               shadow-lg shadow-black/40
-              hover:bg-white/90 hover:shadow-xl
               transition-all
-              no-underline
+              hover:shadow-xl
+              focus:outline-none focus:ring-2 focus:ring-white/60
+              cursor-pointer select-none appearance-none
+
+              !bg-white !text-black !no-underline
+              hover:!bg-white/90
             "
           >
             Apply Now
