@@ -70,7 +70,12 @@ export default function Navigation() {
               Services
             </Link>
 
-            {/* ✅ NEW: Advertise dropdown (hover + click) */}
+            {/* NEW: Join Network */}
+            <Link className="tab" href="/apply">
+              Join Network
+            </Link>
+
+            {/* Advertise dropdown */}
             <div
               className="dropWrap"
               ref={advertiseRef}
