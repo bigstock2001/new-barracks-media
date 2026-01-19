@@ -11,6 +11,42 @@ const EMBED_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSfmKm2Pq0TmS1hV6tOc1wuLfZzEAPll9CwnVSABvi3UwANkTw/viewform?embedded=true";
 
 export default function ApplyPage() {
+  // Inline styles to defeat ANY global link styling
+  const primaryBtnStyle = {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "12px 28px",
+    borderRadius: "9999px",
+    backgroundColor: "#ffffff",
+    color: "#000000",
+    textDecoration: "none",
+    fontWeight: 700,
+    letterSpacing: "0.02em",
+    border: "1px solid rgba(255,255,255,0.25)",
+    cursor: "pointer",
+    userSelect: "none",
+    WebkitTapHighlightColor: "transparent",
+  };
+
+  const secondaryBtnStyle = {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "12px 28px",
+    borderRadius: "9999px",
+    backgroundColor: "rgba(255,255,255,0.06)",
+    color: "#ffffff",
+    textDecoration: "none",
+    fontWeight: 700,
+    letterSpacing: "0.02em",
+    border: "1px solid rgba(255,255,255,0.35)",
+    cursor: "pointer",
+    userSelect: "none",
+    backdropFilter: "blur(8px)",
+    WebkitTapHighlightColor: "transparent",
+  };
+
   return (
     <main className="relative overflow-hidden scroll-smooth">
       {/* Background */}
@@ -38,50 +74,24 @@ export default function ApplyPage() {
 
           {/* BUTTONS */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
-            {/* External form button */}
             <a
               href={FORM_URL}
               target="_blank"
               rel="noreferrer"
               role="button"
               aria-label="Start application (opens in a new tab)"
-              className="
-                inline-flex items-center justify-center
-                rounded-full
-                px-7 py-3
-                text-sm font-semibold tracking-wide
-                shadow-lg shadow-black/40
-                transition-all
-                hover:shadow-xl
-                focus:outline-none focus:ring-2 focus:ring-white/60
-                cursor-pointer select-none appearance-none
-
-                !bg-white !text-black !no-underline
-                hover:!bg-white/90
-              "
+              style={primaryBtnStyle}
+              className="shadow-lg shadow-black/40 transition-all hover:shadow-xl hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white/60"
             >
               Start Application
             </a>
 
-            {/* Scroll to terms button */}
             <a
               href="#terms"
               role="button"
               aria-label="View terms"
-              className="
-                inline-flex items-center justify-center
-                rounded-full
-                px-7 py-3
-                text-sm font-semibold tracking-wide
-                backdrop-blur
-                transition-all
-                hover:border-white/50
-                focus:outline-none focus:ring-2 focus:ring-white/40
-                cursor-pointer select-none appearance-none
-
-                !border !border-white/30 !bg-white/5 !text-white !no-underline
-                hover:!bg-white/10
-              "
+              style={secondaryBtnStyle}
+              className="transition-all hover:bg-white/10 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40"
             >
               View Terms
             </a>
@@ -213,20 +223,8 @@ export default function ApplyPage() {
             rel="noreferrer"
             role="button"
             aria-label="Apply now (opens in a new tab)"
-            className="
-              inline-flex items-center justify-center
-              mt-6 rounded-full
-              px-8 py-3
-              text-sm font-semibold tracking-wide
-              shadow-lg shadow-black/40
-              transition-all
-              hover:shadow-xl
-              focus:outline-none focus:ring-2 focus:ring-white/60
-              cursor-pointer select-none appearance-none
-
-              !bg-white !text-black !no-underline
-              hover:!bg-white/90
-            "
+            style={primaryBtnStyle}
+            className="mt-6 shadow-lg shadow-black/40 transition-all hover:shadow-xl hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white/60"
           >
             Apply Now
           </a>
