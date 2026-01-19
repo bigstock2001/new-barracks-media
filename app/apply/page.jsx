@@ -1,5 +1,3 @@
-// app/apply/page.jsx
-
 export const metadata = {
   title: "Apply to Join the Barracks Media Network",
   description:
@@ -13,6 +11,11 @@ const EMBED_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSfmKm2Pq0TmS1hV6tOc1wuLfZzEAPll9CwnVSABvi3UwANkTw/viewform?embedded=true";
 
 export default function ApplyPage() {
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }
+
   return (
     <main className="relative overflow-hidden">
       {/* Background */}
@@ -38,10 +41,11 @@ export default function ApplyPage() {
             or creative control.
           </p>
 
-          {/* FIXED BUTTONS (NO BLUE LINKS) */}
+          {/* BUTTONS */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
-            <a
-              href="#apply"
+            <button
+              type="button"
+              onClick={() => scrollTo("apply")}
               className="
                 inline-flex items-center justify-center
                 rounded-xl
@@ -55,10 +59,11 @@ export default function ApplyPage() {
               "
             >
               Start Application
-            </a>
+            </button>
 
-            <a
-              href="#terms"
+            <button
+              type="button"
+              onClick={() => scrollTo("terms")}
               className="
                 inline-flex items-center justify-center
                 rounded-xl
@@ -73,7 +78,7 @@ export default function ApplyPage() {
               "
             >
               View Terms
-            </a>
+            </button>
           </div>
         </section>
 
@@ -199,8 +204,9 @@ export default function ApplyPage() {
             we’d be proud to review your application.
           </p>
 
-          <a
-            href="#apply"
+          <button
+            type="button"
+            onClick={() => scrollTo("apply")}
             className="
               inline-flex items-center justify-center
               mt-6 rounded-xl
@@ -213,7 +219,7 @@ export default function ApplyPage() {
             "
           >
             Apply Now
-          </a>
+          </button>
         </section>
       </div>
     </main>
