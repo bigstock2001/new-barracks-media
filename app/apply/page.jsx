@@ -3,7 +3,7 @@
 export const metadata = {
   title: "Apply to Join the Barracks Media Network",
   description:
-    "Apply to join the Barracks Media Network — a professional, values-driven podcast ecosystem built for growth and credibility.",
+    "Apply to join the Barracks Media Network — a professional, values-driven podcast ecosystem built for growth without sacrificing ownership.",
 };
 
 const FORM_URL =
@@ -15,16 +15,16 @@ const EMBED_URL =
 export default function ApplyPage() {
   return (
     <main className="relative overflow-hidden">
-      {/* Background polish */}
+      {/* Background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.06),transparent_55%)]" />
       </div>
 
-      <div className="mx-auto w-full max-w-6xl px-5 py-16">
+      <div className="mx-auto max-w-6xl px-5 py-16">
         {/* HERO */}
-        <section className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur p-8 md:p-12">
-          <span className="inline-block text-xs uppercase tracking-widest text-white/60">
+        <section className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur p-10">
+          <span className="text-xs uppercase tracking-widest text-white/60">
             Barracks Media Network
           </span>
 
@@ -38,23 +38,46 @@ export default function ApplyPage() {
             or creative control.
           </p>
 
+          {/* FIXED BUTTONS (NO BLUE LINKS) */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <a
               href="#apply"
-              className="rounded-xl bg-white text-black px-6 py-3 text-sm font-semibold hover:bg-white/90 transition"
+              className="
+                inline-flex items-center justify-center
+                rounded-xl
+                bg-white text-black
+                px-7 py-3
+                text-sm font-semibold tracking-wide
+                shadow-lg shadow-black/40
+                hover:bg-white/90 hover:shadow-xl
+                focus:outline-none focus:ring-2 focus:ring-white/60
+                transition-all
+              "
             >
               Start Application
             </a>
+
             <a
               href="#terms"
-              className="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/5 transition"
+              className="
+                inline-flex items-center justify-center
+                rounded-xl
+                border border-white/30
+                bg-white/5 text-white
+                px-7 py-3
+                text-sm font-semibold tracking-wide
+                backdrop-blur
+                hover:bg-white/10 hover:border-white/50
+                focus:outline-none focus:ring-2 focus:ring-white/40
+                transition-all
+              "
             >
               View Terms
             </a>
           </div>
         </section>
 
-        {/* VALUE BLOCK */}
+        {/* WHY JOIN */}
         <section className="mt-20">
           <SectionTitle
             title="Why Creators Join Barracks Media"
@@ -63,28 +86,28 @@ export default function ApplyPage() {
 
           <div className="mt-10 grid md:grid-cols-2 gap-6">
             <Card
-              title="Full Ownership. Always."
-              text="You retain full ownership and intellectual property rights to your podcast. Barracks Media never claims ownership of your content."
+              title="Full Ownership & Creative Control"
+              text="You retain full ownership and intellectual property rights to your show. Barracks Media never claims ownership of your content."
             />
             <Card
               title="Professional, Values-Driven Network"
-              text="We protect creators, audiences, and sponsors by enforcing standards around professionalism, integrity, and alignment."
+              text="We maintain standards that protect creators, audiences, and sponsors. Explicit sexual content or pornography is not accepted."
             />
             <Card
               title="Growth Without Hype"
-              text="No fake promises. We provide systems for discovery, analytics, and promotion that support long-term growth."
+              text="No guaranteed sponsorships or empty promises. We provide real systems for discovery, analytics, and long-term growth."
             />
             <Card
               title="Eligibility-Based Network Benefits"
-              text="Cross-promotion, AI-powered discovery, website listings, social promotion, and sponsorship opportunities as your show grows."
+              text="Cross-promotion, AI-powered discovery, website listings, social promotion, and potential sponsorship opportunities."
             />
             <Card
-              title="Simple Network Credit"
-              text='A short spoken acknowledgment such as “Proud member of the Barracks Media Network” — no logos or forced branding.'
+              title="Simple Network Attribution"
+              text="A brief spoken acknowledgment such as “Proud member of the Barracks Media Network.” No logos or forced branding."
             />
             <Card
               title="Freedom to Exit"
-              text="Leave at any time unless actively under a Barracks-arranged sponsorship. Clean exits. No lock-ins."
+              text="Leave the network at any time unless under an active Barracks-arranged sponsorship. No lock-ins."
             />
           </div>
         </section>
@@ -92,12 +115,12 @@ export default function ApplyPage() {
         {/* WHO IT'S FOR */}
         <section className="mt-24 rounded-3xl border border-white/10 bg-white/[0.02] p-10">
           <SectionTitle
-            title="Who This Network Is Built For"
-            subtitle="Not everyone is a fit — by design."
+            title="Who This Network Is For"
+            subtitle="Selective by design."
           />
 
           <ul className="mt-8 grid md:grid-cols-2 gap-y-4 text-white/80">
-            <li>• Podcasters releasing consistent, meaningful content</li>
+            <li>• Podcasters producing consistent, meaningful content</li>
             <li>• Creators who want growth without surrendering control</li>
             <li>• Shows built on credibility, education, or impact</li>
             <li>• Voices aligned with purpose, service, or storytelling</li>
@@ -111,12 +134,12 @@ export default function ApplyPage() {
         >
           <SectionTitle
             title="Submit Your Application"
-            subtitle="Each show is reviewed individually."
+            subtitle="Every show is reviewed individually."
           />
 
           <p className="mt-4 max-w-3xl text-white/80">
-            Submitting an application does not guarantee acceptance. We evaluate
-            quality, intent, alignment, and long-term fit within the network.
+            Submitting an application does not guarantee acceptance. We review
+            each show for quality, intent, alignment, and long-term fit.
           </p>
 
           <div className="mt-8 overflow-hidden rounded-2xl border border-white/10">
@@ -152,7 +175,7 @@ export default function ApplyPage() {
             subtitle="Clear expectations protect everyone."
           />
 
-          <div className="mt-8 space-y-6 text-white/80 leading-relaxed text-sm">
+          <div className="mt-8 space-y-6 text-sm text-white/80 leading-relaxed">
             {TERMS.map((t) => (
               <div key={t.n}>
                 <h3 className="font-semibold text-white">
@@ -170,16 +193,24 @@ export default function ApplyPage() {
 
         {/* FINAL CTA */}
         <section className="mt-24 text-center">
-          <h2 className="text-3xl font-bold">
-            Build Something That Lasts
-          </h2>
+          <h2 className="text-3xl font-bold">Build Something That Lasts</h2>
           <p className="mt-3 text-white/80 max-w-2xl mx-auto">
             If your show values professionalism, integrity, and long-term growth,
             we’d be proud to review your application.
           </p>
+
           <a
             href="#apply"
-            className="inline-block mt-6 rounded-xl bg-white text-black px-7 py-3 text-sm font-semibold hover:bg-white/90 transition"
+            className="
+              inline-flex items-center justify-center
+              mt-6 rounded-xl
+              bg-white text-black
+              px-8 py-3
+              text-sm font-semibold tracking-wide
+              shadow-lg shadow-black/40
+              hover:bg-white/90 hover:shadow-xl
+              transition-all
+            "
           >
             Apply Now
           </a>
@@ -189,7 +220,7 @@ export default function ApplyPage() {
   );
 }
 
-/* ---------- Components ---------- */
+/* ---------- COMPONENTS ---------- */
 
 function SectionTitle({ title, subtitle }) {
   return (
@@ -203,13 +234,13 @@ function SectionTitle({ title, subtitle }) {
 function Card({ title, text }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 hover:bg-white/[0.06] transition">
-      <h3 className="font-semibold text-lg">{title}</h3>
+      <h3 className="text-lg font-semibold">{title}</h3>
       <p className="mt-2 text-white/80 leading-relaxed">{text}</p>
     </div>
   );
 }
 
-/* ---------- Terms Data ---------- */
+/* ---------- TERMS DATA ---------- */
 
 const TERMS = [
   {
@@ -233,7 +264,7 @@ const TERMS = [
     n: 3,
     title: "Ownership & Rights",
     body: [
-      "Creators retain full ownership and IP rights",
+      "Creators retain full ownership and intellectual property rights",
       "Barracks Media does not claim ownership of shows",
     ],
   },
@@ -241,7 +272,7 @@ const TERMS = [
     n: 4,
     title: "Monetization & Sponsorships",
     body: [
-      "No revenue or sponsorship guarantees",
+      "No guarantees are made regarding revenue or sponsorships",
       "Opportunities depend on performance and growth",
     ],
   },
@@ -272,9 +303,7 @@ const TERMS = [
   {
     n: 8,
     title: "Content Responsibility",
-    body: [
-      "Creators are solely responsible for their content",
-    ],
+    body: ["Creators are solely responsible for their content"],
   },
   {
     n: 9,
@@ -294,9 +323,7 @@ const TERMS = [
   {
     n: 11,
     title: "Program Changes",
-    body: [
-      "Network policies may evolve over time",
-    ],
+    body: ["Network policies may evolve over time"],
   },
   {
     n: 12,
