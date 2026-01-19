@@ -36,10 +36,12 @@ export default function ApplyPage() {
             or creative control.
           </p>
 
-          {/* BUTTON-LOOKING LINKS (SERVER SAFE) */}
+          {/* BUTTONS */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <a
-              href="#apply"
+              href={FORM_URL}
+              target="_blank"
+              rel="noreferrer"
               role="button"
               aria-label="Start application"
               className="
@@ -201,7 +203,9 @@ export default function ApplyPage() {
           </p>
 
           <a
-            href="#apply"
+            href={FORM_URL}
+            target="_blank"
+            rel="noreferrer"
             role="button"
             aria-label="Apply now"
             className="
