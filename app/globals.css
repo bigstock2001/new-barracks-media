@@ -416,6 +416,7 @@ body {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.75);
 }
+
 /* =============================
    Floating Bot (Force on top)
 ============================= */
@@ -425,4 +426,71 @@ body {
   right: 16px !important;
   z-index: 2147483646 !important; /* just under the debug pill */
   pointer-events: auto !important;
+}
+
+/* =============================
+   Nicer long-form text + episode cards
+   (Use these to stop RSS descriptions looking like a document)
+============================= */
+.copy {
+  max-width: 72ch;
+  line-height: 1.65;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.clamp-5 {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.episodeCard {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.episodeCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.episodeTitle {
+  font-weight: 900;
+  line-height: 1.2;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.episodeMeta {
+  opacity: 0.72;
+  font-size: 12px;
+  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.episodeActions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
