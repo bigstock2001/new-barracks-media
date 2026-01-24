@@ -48,6 +48,14 @@ export default function PodcastCarousel() {
         image: "/podcasts/mystery-at-the-windham-inn.jpg",
         href: "/network",
       },
+
+      // ✅ NEW: Radio Paranormal
+      {
+        title: "Radio Paranormal",
+        image: "/podcasts/radioparanormal.jpg",
+        href: "/network",
+      },
+
       {
         title: "Spirits and Stories",
         image: "/podcasts/spirits-and-stories-with-donald-dunn.jpg",
@@ -84,14 +92,29 @@ export default function PodcastCarousel() {
   return (
     <section className="section">
       <div className="container-card">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+          }}
+        >
           <h2 className="h2">Shows & Podcasts</h2>
 
           <div style={{ display: "flex", gap: 8 }}>
-            <button className="btn btnGhost" type="button" onClick={() => scrollByCards(-1)}>
+            <button
+              className="btn btnGhost"
+              type="button"
+              onClick={() => scrollByCards(-1)}
+            >
               ‹
             </button>
-            <button className="btn btnGhost" type="button" onClick={() => scrollByCards(1)}>
+            <button
+              className="btn btnGhost"
+              type="button"
+              onClick={() => scrollByCards(1)}
+            >
               ›
             </button>
           </div>
@@ -142,7 +165,9 @@ export default function PodcastCarousel() {
                 </div>
 
                 <div style={{ padding: 12 }}>
-                  <div style={{ fontWeight: 800, lineHeight: 1.2 }}>{item.title}</div>
+                  <div style={{ fontWeight: 800, lineHeight: 1.2 }}>
+                    {item.title}
+                  </div>
                   <div style={{ opacity: 0.75, marginTop: 6, fontSize: 13 }}>
                     Tap to view
                   </div>
