@@ -432,12 +432,23 @@ body {
    (Use these classes in your show/episode pages)
 ============================= */
 
-/* Long-form copy (episode + show descriptions) */
-.copy {
+/* Long-form copy (episode + show descriptions)
+   IMPORTANT: RSS content often includes nested tags with their own styling.
+   So we force white on the container AND all children. */
+.copy,
+.copy * {
   max-width: 72ch;
-  font-size: 18px;                 /* bigger */
-  line-height: 1.75;               /* more readable */
-  color: rgba(255, 255, 255, 0.96);/* brighter */
+  font-size: 19px;      /* bigger */
+  line-height: 1.75;    /* more readable */
+  color: #ffffff !important; /* force white */
+}
+
+/* Links inside RSS content */
+.copy a {
+  color: #ffffff !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0.95;
 }
 
 /* Clamp helpers (prevents "document wall") */
@@ -467,16 +478,19 @@ body {
 }
 
 .episodeTitle {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 900;
   line-height: 1.25;
-  color: rgba(255, 255, 255, 0.98);
+  color: #ffffff !important;
 }
 
-.episodeMeta {
+/* Meta text stays readable but secondary */
+.episodeMeta,
+.episodeMeta * {
   font-size: 13px;
   margin-top: 8px;
-  opacity: 0.85;
+  color: rgba(255, 255, 255, 0.82) !important;
+  opacity: 1;
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
