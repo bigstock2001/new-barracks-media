@@ -502,3 +502,35 @@ body {
   gap: 12px;
   flex-wrap: wrap;
 }
+/* =====================================================
+   FORCE WHITE TEXT FOR SHOW + EPISODE CONTENT
+   (No background changes)
+===================================================== */
+
+/* Anything inside container cards should be readable */
+.container-card p,
+.container-card span,
+.container-card li,
+.container-card div,
+.container-card a {
+  color: #ffffff !important;
+}
+
+/* Override muted utility inside cards */
+.container-card .p {
+  color: #ffffff !important;
+}
+
+/* Links still readable */
+.container-card a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0.95;
+}
+
+/* Make long descriptions readable */
+.container-card p {
+  font-size: 18px;
+  line-height: 1.75;
+}
+
