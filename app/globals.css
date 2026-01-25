@@ -416,6 +416,7 @@ body {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.75);
 }
+
 /* =============================
    Floating Bot (Force on top)
 ============================= */
@@ -502,6 +503,7 @@ body {
   gap: 12px;
   flex-wrap: wrap;
 }
+
 /* =====================================================
    FORCE WHITE TEXT FOR SHOW + EPISODE CONTENT
    (No background changes)
@@ -534,3 +536,56 @@ body {
   line-height: 1.75;
 }
 
+/* =============================
+   Leaderboard helpers (NEW)
+   (Only adds new classes; won’t affect existing pages.)
+============================= */
+.lb-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.lb-rank {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.lb-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.lb-stat {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.lb-stat-label {
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.lb-stat-value {
+  margin-top: 2px;
+  font-size: 16px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);
+}
