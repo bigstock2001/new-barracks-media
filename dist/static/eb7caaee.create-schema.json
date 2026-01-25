@@ -1,0 +1,756 @@
+[
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "shortDescription",
+        "type": "text",
+        "title": "Short Description (Card)"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "fields": [
+          {
+            "description": "Short description for accessibility & SEO.",
+            "name": "alt",
+            "type": "string",
+            "title": "Alt Text"
+          }
+        ],
+        "name": "image",
+        "type": "image",
+        "title": "Service Image"
+      },
+      {
+        "of": [
+          {
+            "marks": {
+              "annotations": [
+                {
+                  "i18nTitleKey": "inputs.portable-text.annotation.link",
+                  "options": {
+                    "modal": {
+                      "type": "popover"
+                    }
+                  },
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/",
+                                    "/^tel$/",
+                                    "/^mailto$/"
+                                  ],
+                                  "allowRelative": true,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ],
+                          "level": "error"
+                        }
+                      ],
+                      "description": "A valid web, email, phone, or relative link.",
+                      "name": "href",
+                      "type": "url",
+                      "title": "Link"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object"
+                }
+              ],
+              "decorators": [
+                {
+                  "value": "strong",
+                  "title": "Strong"
+                },
+                {
+                  "value": "em",
+                  "title": "Italic"
+                },
+                {
+                  "value": "code",
+                  "title": "Code"
+                },
+                {
+                  "value": "underline",
+                  "title": "Underline"
+                },
+                {
+                  "value": "strike-through",
+                  "title": "Strike"
+                }
+              ]
+            },
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bulleted list"
+              },
+              {
+                "value": "number",
+                "title": "Numbered list"
+              }
+            ],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              },
+              {
+                "value": "h1",
+                "title": "Heading 1"
+              },
+              {
+                "value": "h2",
+                "title": "Heading 2"
+              },
+              {
+                "value": "h3",
+                "title": "Heading 3"
+              },
+              {
+                "value": "h4",
+                "title": "Heading 4"
+              },
+              {
+                "value": "h5",
+                "title": "Heading 5"
+              },
+              {
+                "value": "h6",
+                "title": "Heading 6"
+              },
+              {
+                "value": "blockquote",
+                "title": "Quote"
+              }
+            ],
+            "of": [],
+            "type": "block"
+          }
+        ],
+        "name": "longDescription",
+        "type": "array",
+        "title": "Long Description (Page)"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "features",
+        "type": "array",
+        "title": "Features (Bullets)"
+      },
+      {
+        "initialValue": "Get Started",
+        "name": "ctaLabel",
+        "type": "string",
+        "title": "CTA Label"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "One-time payment",
+              "value": "payment"
+            },
+            {
+              "title": "Subscription",
+              "value": "subscription"
+            }
+          ],
+          "layout": "radio"
+        },
+        "initialValue": "payment",
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "payment",
+                  "subscription"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "stripeMode",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 3
+              },
+              {
+                "flag": "max",
+                "constraint": 128
+              },
+              {
+                "flag": "regex",
+                "constraint": {
+                  "pattern": "/^[a-z0-9_-]+$/",
+                  "name": "lookupKeyFormat",
+                  "invert": false
+                }
+              }
+            ],
+            "level": "error",
+            "message": "Use lowercase letters/numbers with underscores or hyphens only (example: starter_website)."
+          }
+        ],
+        "description": "Matches the Stripe PRICE lookup key (not the Product). Example: starter_website",
+        "name": "stripeLookupKey",
+        "type": "string"
+      },
+      {
+        "description": "Example: /onboarding/web-design",
+        "name": "successPath",
+        "type": "string",
+        "title": "Success Path (Onboarding Page)"
+      },
+      {
+        "initialValue": true,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "active",
+        "type": "boolean"
+      },
+      {
+        "initialValue": 10,
+        "name": "sortOrder",
+        "type": "number"
+      }
+    ],
+    "name": "service",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "initialValue": "Rolling 30-Day Network Metrics",
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "initialValue": 30,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              },
+              {
+                "flag": "max",
+                "constraint": 365
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "periodDays",
+        "type": "number",
+        "title": "Rolling Period (Days)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "podcastDownloads30d",
+        "type": "number",
+        "title": "Podcast Downloads (Rolling 30 Days)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "socialReach30d",
+        "type": "number",
+        "title": "Social Reach / Impressions (Rolling 30 Days)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Optional — only used if included in total.",
+        "name": "videoViews30d",
+        "type": "number",
+        "title": "Video Views (Rolling 30 Days)"
+      },
+      {
+        "initialValue": false,
+        "name": "includeVideoInTotal",
+        "type": "boolean",
+        "title": "Include Video Views in Estimated Total?"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "lastUpdated",
+        "type": "datetime"
+      },
+      {
+        "description": "Optional explanation shown on the Sponsorship page. Keep sponsor-friendly.",
+        "name": "publicMethodology",
+        "type": "text",
+        "title": "Public Methodology (Optional)"
+      },
+      {
+        "description": "Internal only — where the numbers came from (Captivate report date, Metricool range, etc.)",
+        "name": "notes",
+        "type": "text",
+        "title": "Internal Notes"
+      }
+    ],
+    "name": "networkMetrics",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "title",
+        "type": "string",
+        "title": "Show Title"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "rows": 3,
+        "description": "One to two sentences about the show (voice-safe).",
+        "name": "shortDescription",
+        "type": "text"
+      },
+      {
+        "options": {
+          "layout": "tags"
+        },
+        "description": "Show-level tags (optional).",
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "tags",
+        "type": "array"
+      },
+      {
+        "description": "Update these numbers from Captivate. The leaderboard page will automatically reorder cards based on score.",
+        "fields": [
+          {
+            "initialValue": 0,
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "min",
+                    "constraint": 0
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "description": "Captivate → Summary → Downloads → Last 7 days. Drives Trending.",
+            "name": "downloads7",
+            "type": "number",
+            "title": "Downloads (Last 7 days)"
+          },
+          {
+            "initialValue": 0,
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "min",
+                    "constraint": 0
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "description": "Captivate → Summary → Downloads → Last 28 days. Stabilizes rankings.",
+            "name": "downloads28",
+            "type": "number",
+            "title": "Downloads (Last 28 days)"
+          },
+          {
+            "initialValue": 0,
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "min",
+                    "constraint": 0
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "description": "Captivate → Summary/Audience → Unique Listeners → Last 28 days. Rewards real audience size.",
+            "name": "uniqueListeners28",
+            "type": "number",
+            "title": "Unique Listeners (Last 28 days)"
+          },
+          {
+            "initialValue": 50,
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "min",
+                    "constraint": 0
+                  },
+                  {
+                    "flag": "max",
+                    "constraint": 100
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "description": "Your quick rating of listener quality/engagement. Keep it consistent week to week.",
+            "name": "engagementScore",
+            "type": "number",
+            "title": "Engagement Score (0–100)"
+          },
+          {
+            "initialValue": 5,
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "min",
+                    "constraint": 0
+                  },
+                  {
+                    "flag": "max",
+                    "constraint": 10
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "description": "0–3 inconsistent, 4–6 mostly consistent, 7–10 rock solid schedule.",
+            "name": "consistency",
+            "type": "number",
+            "title": "Consistency (0–10)"
+          },
+          {
+            "description": "Optional. Helps you remember when you last refreshed Captivate stats.",
+            "name": "lastUpdated",
+            "type": "datetime",
+            "title": "Metrics Last Updated"
+          }
+        ],
+        "name": "leaderboard",
+        "type": "object",
+        "title": "Leaderboard Metrics"
+      },
+      {
+        "initialValue": true,
+        "name": "active",
+        "type": "boolean"
+      },
+      {
+        "initialValue": 100,
+        "name": "sortOrder",
+        "type": "number"
+      }
+    ],
+    "name": "podcastShow",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "title",
+        "type": "string",
+        "title": "Episode Title"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "to": [
+          {
+            "type": "podcastShow"
+          }
+        ],
+        "name": "show",
+        "type": "reference"
+      },
+      {
+        "name": "publishedAt",
+        "type": "datetime",
+        "title": "Published Date"
+      },
+      {
+        "rows": 10,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Paste your YouTube description here. Kate uses this + tags to recommend episodes.",
+        "name": "description",
+        "type": "text",
+        "title": "Episode Description (YouTube Description)"
+      },
+      {
+        "options": {
+          "layout": "tags"
+        },
+        "description": "Use tags like entrepreneurship, veterans, healing, writing, podcasting, etc.",
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "tags",
+        "type": "array",
+        "title": "Tags (YouTube Tags)"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Optional: link to the YouTube episode.",
+        "name": "youtubeUrl",
+        "type": "url",
+        "title": "YouTube URL"
+      },
+      {
+        "description": "Optional: internal site path (example: /podcasts/authors-after-action/ep-12).",
+        "name": "episodePageUrl",
+        "type": "string",
+        "title": "Episode Page URL"
+      },
+      {
+        "initialValue": true,
+        "name": "active",
+        "type": "boolean"
+      },
+      {
+        "initialValue": 100,
+        "name": "sortOrder",
+        "type": "number"
+      }
+    ],
+    "name": "podcastEpisode",
+    "type": "document"
+  }
+]

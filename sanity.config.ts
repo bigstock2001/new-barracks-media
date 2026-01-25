@@ -3,23 +3,24 @@ import { defineConfig } from "sanity";
 import { deskTool } from "sanity/desk";
 import { visionTool } from "@sanity/vision";
 
-import { apiVersion, dataset, projectId } from "./sanity/env";
 import { schema } from "./sanity/schemaTypes";
 import { deskStructure } from "./sanity/deskStructure";
 
 export default defineConfig({
   name: "default",
   title: "Barracks Media",
-  projectId,
-  dataset,
-  apiVersion,
+
+  // 🔒 HARD LOCK — avoids CLI/env conflicts
+  projectId: "jemktqop",
+  dataset: "production",
+  apiVersion: "2024-01-01",
+
   basePath: "/studio",
 
   plugins: [
     deskTool({ structure: deskStructure }),
-    visionTool({ defaultApiVersion: apiVersion }),
+    visionTool({ defaultApiVersion: "2024-01-01" }),
   ],
 
-  // ✅ Your schemaTypes file already exports { types: [] }
   schema,
 });
