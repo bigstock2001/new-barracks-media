@@ -2,83 +2,18 @@
 
 import Image from "next/image";
 import { useMemo, useRef } from "react";
+import { shows } from "@/lib/shows";
 
 export default function PodcastCarousel() {
   const trackRef = useRef(null);
 
-  const items = useMemo(
-    () => [
-      {
-        title: "After the Uniform",
-        image: "/podcasts/after-the-uniform.jpg",
-        href: "/network",
-      },
-      {
-        title: "Authors After Action",
-        image: "/podcasts/authors-after-action.jpg",
-        href: "/network",
-      },
-      {
-        title: "Built From Scratch",
-        image: "/podcasts/built-from-scratch.jpg",
-        href: "/network",
-      },
-      {
-        title: "Creators at Work",
-        image: "/podcasts/creators-at-work.jpg",
-        href: "/network",
-      },
-      {
-        title: "Driven: Automotive World",
-        image: "/podcasts/driven-automotive-world.jpg",
-        href: "/network",
-      },
-      {
-        title: "Finding the Why",
-        image: "/podcasts/finding-the-why.jpg",
-        href: "/network",
-      },
-      {
-        title: "History Told Forward",
-        image: "/podcasts/history-told-forward.jpg",
-        href: "/network",
-      },
-      {
-        title: "Mystery at the Windham Inn",
-        image: "/podcasts/mystery-at-the-windham-inn.jpg",
-        href: "/network",
-      },
-
-      // ✅ NEW: Radio Paranormal
-      {
-        title: "Radio Paranormal",
-        image: "/podcasts/radioparanormal.jpg",
-        href: "/network",
-      },
-
-      {
-        title: "Spirits and Stories",
-        image: "/podcasts/spirits-and-stories-with-donald-dunn.jpg",
-        href: "/network",
-      },
-      {
-        title: "The Healing Side",
-        image: "/podcasts/the-healing-side.jpg",
-        href: "/network",
-      },
-      {
-        title: "The Real Leadership Brief",
-        image: "/podcasts/the-real-leadership-brief.jpg",
-        href: "/network",
-      },
-      {
-        title: "Veteran Spiritual Task Force",
-        image: "/podcasts/the-veterans-spiritual-task-force.jpg",
-        href: "/network",
-      },
-    ],
-    []
-  );
+  const items = useMemo(() => {
+    return shows.map((s) => ({
+      title: s.title,
+      image: s.image,
+      href: `/network/${s.slug}`,
+    }));
+  }, []);
 
   function scrollByCards(dir = 1) {
     const el = trackRef.current;
