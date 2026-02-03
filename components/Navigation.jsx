@@ -66,6 +66,11 @@ export default function Navigation() {
               Network
             </Link>
 
+            {/* NEW: Live Webinar */}
+            <Link className="tab" href="/webinars">
+              Live Webinar
+            </Link>
+
             <Link className="tab" href="/services">
               Services
             </Link>
