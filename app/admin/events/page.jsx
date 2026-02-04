@@ -315,12 +315,12 @@ export default function AdminEventsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold">Replay URL (optional)</label>
+              <label className="text-sm font-semibold text-white">Replay URL (optional)</label>
               <input
                 value={replayUrl}
                 onChange={(e) => setReplayUrl(e.target.value)}
-                placeholder="https://youtube.com/… or Vimeo link"
-                className="w-full"
+                className="mt-2 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                placeholder="https://youtube.com/... or Vimeo link"
               />
             </div>
 

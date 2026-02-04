@@ -291,6 +291,7 @@ export default function PortalPage() {
   }
 
   const eventLink = selectedEvent?.streamyard_url || DEFAULT_STREAMYARD;
+  const replayLink = selectedEvent?.replay_url;
 
   return (
     <main className="relative overflow-hidden min-h-screen">
@@ -405,19 +406,29 @@ export default function PortalPage() {
                     Copy link
                   </button>
                 </div>
-                <div className="mt-3 flex flex-col gap-2">
-                  {selectedEvent?.replay_url && (
+                {replayLink ? (
+                  <div className="mt-4 flex flex-col sm:flex-row gap-3">
                     <a
-                      href={selectedEvent.replay_url}
+                      href={replayLink}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2 text-white hover:bg-white/10"
+                      className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 font-bold text-white hover:bg-white/[0.10]"
                     >
                       Watch Replay
                     </a>
-                  )}
-
-                  {selectedEvent?.resources_url && (
+                    {selectedEvent?.resources_url ? (
+                      <a
+                        href={selectedEvent.resources_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2 text-white hover:bg-white/10"
+                      >
+                        Resources
+                      </a>
+                    ) : null}
+                  </div>
+                ) : selectedEvent?.resources_url ? (
+                  <div className="mt-3">
                     <a
                       href={selectedEvent.resources_url}
                       target="_blank"
@@ -426,8 +437,8 @@ export default function PortalPage() {
                     >
                       Resources
                     </a>
-                  )}
-                </div>
+                  </div>
+                ) : null}
 
                 <div className="mt-4 text-xs text-white/55">
                   Default link is set to your StreamYard room until you start creating events.
