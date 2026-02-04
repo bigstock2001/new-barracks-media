@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 export default function AdminAnnouncementsPage() {
   return (
     <main style={{ padding: 24 }}>
