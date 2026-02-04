@@ -1,27 +1,31 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseBrowser";
 
-const DEFAULT_STREAMYARD = "https://streamyard.com/mktvjvvtvn";
+const ADMIN_EMAIL = "ddunn@barracksmedia.com";
 
 export default function AdminEventsPage() {
+  const router = useRouter();
+
   const [session, setSession] = useState(null);
   const [checking, setChecking] = useState(true);
 
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
-  const [okMsg, setOkMsg] = useState("");
+  const [msg, setMsg] = useState("");
 
   const [events, setEvents] = useState([]);
 
-  const [form, setForm] = useState({
-    title: "Monthly Network Call",
-    starts_at: "",
-    streamyard_url: DEFAULT_STREAMYARD,
-    description: "",
-  });
+  // Form state
+  const [editingId, setEditingId] = useState(null);
+  const [title, setTitle] = useState("");
+  const [startsAtLocal, setStartsAtLocal] = useState(""); // yyyy-mm-ddThh:mm
+  const [streamyardUrl, setStreamyardUrl] = useState("https://streamyard.com/mktvjvvtvn");
 
+  // ---------- AUTH ----------
   useEffect(() => {
     let mounted = true;
 
@@ -45,106 +49,189 @@ export default function AdminEventsPage() {
     };
   }, []);
 
-  const token = session?.access_token || "";
+  const userEmail = session?.user?.email || "";
+  const isAuthed = !!session?.user?.id;
+  const isAdmin = isAuthed && userEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
+  // If not authed → send to portal
+  useEffect(() => {
+    if (!checking && !isAuthed) router.push("/portal");
+  }, [checking, isAuthed, router]);
+
+  // ---------- LOAD EVENTS ----------
   async function loadEvents() {
     setLoading(true);
     setErr("");
-    setOkMsg("");
+    try {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .order("starts_at", { ascending: true })
+        .limit(50);
 
-    const res = await fetch("/api/admin/events", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      setErr(data?.error || "Failed to load events.");
+      if (error) throw new Error(error.message);
+      setEvents(data || []);
+    } catch (e) {
+      setErr(e?.message || "Failed to load events.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setEvents(data.data || []);
-    setLoading(false);
   }
 
   useEffect(() => {
-    if (!token) return;
+    if (!isAdmin) return;
     loadEvents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [isAdmin]);
 
-  async function createEvent(e) {
+  // ---------- HELPERS ----------
+  function resetForm() {
+    setEditingId(null);
+    setTitle("");
+    setStartsAtLocal("");
+    setStreamyardUrl("https://streamyard.com/mktvjvvtvn");
+    setMsg("");
+    setErr("");
+  }
+
+  function toISOFromLocal(localValue) {
+    // localValue like "2026-02-04T19:00"
+    // Convert to Date (local time) then to ISO
+    const d = new Date(localValue);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toISOString();
+    // Stored as timestamptz ISO in Supabase
+  }
+
+  function toLocalInputValue(isoString) {
+    if (!isoString) return "";
+    const d = new Date(isoString);
+    if (Number.isNaN(d.getTime())) return "";
+    // format yyyy-mm-ddThh:mm in local time
+    const pad = (n) => String(n).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    const mm = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+    const hh = pad(d.getHours());
+    const min = pad(d.getMinutes());
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+  }
+
+  function startEdit(ev) {
+    setEditingId(ev.id);
+    setTitle(ev.title || "");
+    setStartsAtLocal(toLocalInputValue(ev.starts_at));
+    setStreamyardUrl(ev.streamyard_url || "https://streamyard.com/mktvjvvtvn");
+    setMsg("");
+    setErr("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ---------- SAVE / DELETE ----------
+  async function saveEvent(e) {
     e.preventDefault();
     setErr("");
-    setOkMsg("");
+    setMsg("");
 
-    if (!form.title.trim()) {
-      setErr("Title is required.");
-      return;
-    }
+    const cleanTitle = title.trim();
+    const cleanUrl = streamyardUrl.trim();
+
+    if (!cleanTitle) return setErr("Title is required.");
+    if (!cleanUrl.startsWith("http")) return setErr("StreamYard URL must start with http(s).");
+    if (!startsAtLocal) return setErr("Date/time is required.");
+
+    const starts_at = toISOFromLocal(startsAtLocal);
+    if (!starts_at) return setErr("Invalid date/time.");
 
     setLoading(true);
-    const res = await fetch("/api/admin/events", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        ...form,
-        starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : null,
-      }),
-    });
+    try {
+      if (editingId) {
+        const { error } = await supabase
+          .from("events")
+          .update({
+            title: cleanTitle,
+            starts_at,
+            streamyard_url: cleanUrl,
+          })
+          .eq("id", editingId);
 
-    const data = await res.json();
-    if (!res.ok) {
-      setErr(data?.error || "Failed to create event.");
+        if (error) throw new Error(error.message);
+        setMsg("Event updated.");
+      } else {
+        const { error } = await supabase.from("events").insert({
+          title: cleanTitle,
+          starts_at,
+          streamyard_url: cleanUrl,
+        });
+
+        if (error) throw new Error(error.message);
+        setMsg("Event created.");
+      }
+
+      await loadEvents();
+      resetForm();
+    } catch (e2) {
+      setErr(e2?.message || "Save failed.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setOkMsg("Event created.");
-    setForm({ ...form, description: "" });
-    await loadEvents();
-    setLoading(false);
   }
 
   async function deleteEvent(id) {
     if (!confirm("Delete this event?")) return;
-
     setLoading(true);
     setErr("");
-    setOkMsg("");
-
-    const res = await fetch(`/api/admin/events?id=${encodeURIComponent(id)}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      setErr(data?.error || "Failed to delete event.");
+    setMsg("");
+    try {
+      const { error } = await supabase.from("events").delete().eq("id", id);
+      if (error) throw new Error(error.message);
+      setMsg("Event deleted.");
+      await loadEvents();
+    } catch (e) {
+      setErr(e?.message || "Delete failed.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setOkMsg("Event deleted.");
-    await loadEvents();
-    setLoading(false);
   }
 
+  const sortedEvents = useMemo(() => {
+    return [...events].sort((a, b) => {
+      const da = a?.starts_at ? new Date(a.starts_at).getTime() : 0;
+      const db = b?.starts_at ? new Date(b.starts_at).getTime() : 0;
+      return da - db;
+    });
+  }, [events]);
+
+  // ---------- UI ----------
   if (checking) {
     return (
-      <main className="min-h-[60vh] flex items-center justify-center text-white/80">
+      <main className="min-h-[70vh] flex items-center justify-center text-white/80">
         Loading…
       </main>
     );
   }
 
-  if (!session) {
+  if (!isAuthed) {
+    return null; // we redirect to /portal
+  }
+
+  if (!isAdmin) {
     return (
-      <main className="min-h-[60vh] flex items-center justify-center text-white/80">
-        Please sign in at <a className="underline" href="/portal">/portal</a> first.
+      <main className="min-h-[70vh] flex items-center justify-center px-6 text-center">
+        <div className="max-w-md rounded-3xl border border-white/10 bg-white/[0.05] backdrop-blur p-8 text-white">
+          <div className="text-xs uppercase tracking-widest text-white/60">Barracks Media Network</div>
+          <h1 className="mt-3 text-2xl font-extrabold">Admin Only</h1>
+          <p className="mt-3 text-white/70 text-sm">
+            You’re signed in as <span className="text-white/90 font-semibold">{userEmail}</span>.
+            This page is restricted to admins.
+          </p>
+          <Link
+            href="/portal"
+            className="mt-6 inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-extrabold text-black"
+          >
+            Back to Portal
+          </Link>
+        </div>
       </main>
     );
   }
@@ -159,76 +246,79 @@ export default function AdminEventsPage() {
       <div className="mx-auto max-w-6xl px-5 py-14">
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-extrabold text-white">Admin — Events</h1>
+            <div className="text-xs uppercase tracking-widest text-white/60">Admin</div>
+            <h1 className="mt-2 text-4xl font-extrabold text-white">Manage Events</h1>
             <p className="mt-2 text-white/70">
-              Create and manage calls/webinars shown in the member portal.
+              Create the monthly network call, webinars, and any special sessions.
             </p>
           </div>
-          <a
-            href="/portal"
-            className="rounded-full border border-white/15 bg-white/[0.06] px-5 py-2 font-semibold text-white hover:bg-white/[0.10]"
-          >
-            Back to Portal
-          </a>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/portal"
+              className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10]"
+            >
+              Back to Portal
+            </Link>
+          </div>
         </header>
 
-        {(err || okMsg) && (
+        {(err || msg) && (
           <div className="mt-6 space-y-3">
             {err ? (
               <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100">
                 {err}
               </div>
             ) : null}
-            {okMsg ? (
+            {msg ? (
               <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-100">
-                {okMsg}
+                {msg}
               </div>
             ) : null}
           </div>
         )}
 
-        <div className="mt-10 grid lg:grid-cols-2 gap-6">
-          <section className="rounded-3xl border border-white/10 bg-white/[0.05] backdrop-blur p-8">
-            <h2 className="text-2xl font-bold text-white">Create Event</h2>
+        <div className="mt-10 grid lg:grid-cols-3 gap-6">
+          {/* FORM */}
+          <section className="lg:col-span-1 rounded-3xl border border-white/10 bg-white/[0.05] backdrop-blur p-8">
+            <h2 className="text-2xl font-bold text-white">
+              {editingId ? "Edit Event" : "Create Event"}
+            </h2>
+            <p className="mt-2 text-white/70 text-sm">
+              These events populate the member dropdown on the portal.
+            </p>
 
-            <form onSubmit={createEvent} className="mt-6 space-y-4">
+            <form onSubmit={saveEvent} className="mt-6 space-y-4">
               <div>
                 <label className="text-sm font-semibold text-white">Title</label>
                 <input
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   className="mt-2 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                  placeholder="Monthly Network Call"
                 />
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-white">
-                  Start date/time (local)
-                </label>
+                <label className="text-sm font-semibold text-white">Date & time</label>
                 <input
+                  value={startsAtLocal}
+                  onChange={(e) => setStartsAtLocal(e.target.value)}
                   type="datetime-local"
-                  value={form.starts_at}
-                  onChange={(e) => setForm({ ...form, starts_at: e.target.value })}
                   className="mt-2 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
                 />
+                <p className="mt-2 text-xs text-white/55">
+                  This uses your local timezone for input. It will display in each member’s local time.
+                </p>
               </div>
 
               <div>
                 <label className="text-sm font-semibold text-white">StreamYard link</label>
                 <input
-                  value={form.streamyard_url}
-                  onChange={(e) => setForm({ ...form, streamyard_url: e.target.value })}
+                  value={streamyardUrl}
+                  onChange={(e) => setStreamyardUrl(e.target.value)}
                   className="mt-2 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-white">Description (optional)</label>
-                <textarea
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="mt-2 w-full min-h-[120px] rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
-                  placeholder="Agenda, what this call is for, etc."
+                  placeholder="https://streamyard.com/..."
                 />
               </div>
 
@@ -237,52 +327,69 @@ export default function AdminEventsPage() {
                 disabled={loading}
                 className="w-full rounded-full bg-white px-6 py-3 font-extrabold text-black disabled:opacity-60"
               >
-                {loading ? "Working…" : "Create Event"}
+                {loading ? "Saving…" : editingId ? "Save Changes" : "Create Event"}
               </button>
+
+              {editingId ? (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="w-full rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 font-bold text-white hover:bg-white/[0.10]"
+                >
+                  Cancel Edit
+                </button>
+              ) : null}
             </form>
           </section>
 
-          <section className="rounded-3xl border border-white/10 bg-white/[0.05] backdrop-blur p-8">
-            <div className="flex items-center justify-between gap-4">
-              <h2 className="text-2xl font-bold text-white">Existing Events</h2>
-              <button
-                onClick={loadEvents}
-                className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10]"
-              >
-                Refresh
-              </button>
-            </div>
+          {/* LIST */}
+          <section className="lg:col-span-2 rounded-3xl border border-white/10 bg-white/[0.05] backdrop-blur p-8">
+            <h2 className="text-2xl font-bold text-white">Events</h2>
+            <p className="mt-2 text-white/70 text-sm">
+              Tip: keep one event called “Monthly Network Call” and update the date each month.
+            </p>
 
             <div className="mt-6 space-y-3">
-              {loading ? (
+              {loading && !sortedEvents.length ? (
                 <div className="text-white/70 text-sm">Loading…</div>
-              ) : events.length ? (
-                events.map((ev) => (
+              ) : sortedEvents.length ? (
+                sortedEvents.map((ev) => (
                   <div
                     key={ev.id}
-                    className="rounded-2xl border border-white/10 bg-black/30 p-4"
+                    className="rounded-2xl border border-white/10 bg-black/30 p-5"
                   >
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                       <div>
-                        <div className="text-white font-semibold">{ev.title}</div>
+                        <div className="text-white font-extrabold text-lg">{ev.title}</div>
                         <div className="mt-1 text-sm text-white/70">
                           {ev.starts_at ? new Date(ev.starts_at).toLocaleString() : "No date set"}
                         </div>
                         <div className="mt-2 text-xs text-white/55 break-all">
-                          {ev.streamyard_url || DEFAULT_STREAMYARD}
+                          {ev.streamyard_url || "No StreamYard link"}
                         </div>
                       </div>
-                      <button
-                        onClick={() => deleteEvent(ev.id)}
-                        className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10]"
-                      >
-                        Delete
-                      </button>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => startEdit(ev)}
+                          className="rounded-full bg-white px-4 py-2 text-sm font-extrabold text-black"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => deleteEvent(ev.id)}
+                          className="rounded-full border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-bold text-red-100 hover:bg-red-500/15"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-white/70 text-sm">No events yet.</div>
+                <div className="rounded-2xl border border-white/10 bg-black/30 p-5 text-white/70 text-sm">
+                  No events yet. Create your first one on the left.
+                </div>
               )}
             </div>
           </section>

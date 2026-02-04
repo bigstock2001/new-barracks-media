@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabaseBrowser";
 
 const DEFAULT_STREAMYARD = "https://streamyard.com/mktvjvvtvn";
+const ADMIN_EMAIL = "ddunn@barracksmedia.com";
 
 export default function PortalPage() {
   const [session, setSession] = useState(null);
@@ -83,6 +85,9 @@ export default function PortalPage() {
 
   // ---------- DATA ----------
   const isAuthed = !!session?.user?.id;
+  const isAdmin =
+    isAuthed &&
+    (session?.user?.email || "").toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
   const upcomingEvents = useMemo(() => {
     // Sort ascending by starts_at if present
@@ -305,16 +310,36 @@ export default function PortalPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col items-end gap-3">
             <div className="text-xs text-white/60">
               Signed in as <span className="text-white/85">{session?.user?.email}</span>
             </div>
-            <button
-              onClick={signOut}
-              className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10]"
-            >
-              Sign out
-            </button>
+
+            <div className="flex items-center gap-2">
+              {isAdmin ? (
+                <>
+                  <Link
+                    href="/portal/admin/events"
+                    className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10]"
+                  >
+                    Admin: Events
+                  </Link>
+                  <Link
+                    href="/portal/admin/announcements"
+                    className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10]"
+                  >
+                    Admin: Announcements
+                  </Link>
+                </>
+              ) : null}
+
+              <button
+                onClick={signOut}
+                className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10]"
+              >
+                Sign out
+              </button>
+            </div>
           </div>
         </header>
 
@@ -496,7 +521,7 @@ export default function PortalPage() {
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/70">
                   No announcements yet.
                   <div className="mt-2 text-xs text-white/55">
-                    Next step: we’ll add an admin page so you can post updates here.
+                    Next step: use the admin page to post updates here.
                   </div>
                 </div>
               )}
