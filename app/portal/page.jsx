@@ -291,7 +291,11 @@ export default function PortalPage() {
   }
 
   const eventLink = selectedEvent?.streamyard_url || DEFAULT_STREAMYARD;
-  const replayLink = selectedEvent?.replay_url;
+  const replayLink = selectedEvent?.replay_url || "";
+  const resourcesLink = selectedEvent?.resources_url || "";
+
+  const startsAtMs = selectedEvent?.starts_at ? new Date(selectedEvent.starts_at).getTime() : null;
+  const isPastEvent = startsAtMs ? startsAtMs < Date.now() : false;
 
   return (
     <main className="relative overflow-hidden min-h-screen">
@@ -395,19 +399,19 @@ export default function PortalPage() {
                     href={eventLink}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-extrabold text-black hover:opacity-90"
+                    className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-extrabold text-black"
                   >
-                    Join in StreamYard
+                    Join Live (StreamYard)
                   </a>
+
                   <button
                     onClick={() => copyToClipboard(eventLink)}
-                    className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 font-bold text-white hover:bg-white/[0.10] hover:border-white/30 hover:bg-white/[0.12]"
+                    className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 font-bold text-white hover:bg-white/[0.10]"
                   >
-                    Copy link
+                    Copy live link
                   </button>
-                </div>
-                {replayLink ? (
-                  <div className="mt-4 flex flex-col sm:flex-row gap-3">
+
+                  {replayLink ? (
                     <a
                       href={replayLink}
                       target="_blank"
@@ -416,32 +420,30 @@ export default function PortalPage() {
                     >
                       Watch Replay
                     </a>
-                    {selectedEvent?.resources_url ? (
-                      <a
-                        href={selectedEvent.resources_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2 text-white hover:bg-white/10"
-                      >
-                        Resources
-                      </a>
-                    ) : null}
-                  </div>
-                ) : selectedEvent?.resources_url ? (
-                  <div className="mt-3">
+                  ) : isPastEvent ? (
+                    <div className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-white/70">
+                      Replay pending
+                    </div>
+                  ) : null}
+
+                  {resourcesLink ? (
                     <a
-                      href={selectedEvent.resources_url}
+                      href={resourcesLink}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2 text-white hover:bg-white/10"
+                      className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 font-bold text-white hover:bg-white/[0.10]"
                     >
                       Resources
                     </a>
-                  </div>
-                ) : null}
+                  ) : null}
+                </div>
 
                 <div className="mt-4 text-xs text-white/55">
                   Default link is set to your StreamYard room until you start creating events.
+                </div>
+
+                <div className="mt-3 text-xs text-white/55">
+                  Tip: Use StreamYard URL for the live room. After the call, paste a YouTube/Vimeo link into Replay URL and any docs into Resources URL.
                 </div>
               </div>
 
