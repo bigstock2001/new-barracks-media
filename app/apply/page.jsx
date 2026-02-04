@@ -1,365 +1,294 @@
-export const metadata = {
-  title: "Apply to Join the Barracks Media Network",
-  description:
-    "Apply to join the Barracks Media Network — a professional, values-driven podcast ecosystem built for growth without sacrificing ownership.",
-};
+"use client";
 
-const FORM_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSfmKm2Pq0TmS1hV6tOc1wuLfZzEAPll9CwnVSABvi3UwANkTw/viewform?usp=header";
-
-const EMBED_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSfmKm2Pq0TmS1hV6tOc1wuLfZzEAPll9CwnVSABvi3UwANkTw/viewform?embedded=true";
+import { useMemo, useState } from "react";
 
 export default function ApplyPage() {
-  // Inline styles to defeat ANY global link styling
-  const primaryBtnStyle = {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "12px 28px",
-    borderRadius: "9999px",
-    backgroundColor: "#ffffff",
-    color: "#000000",
-    textDecoration: "none",
-    fontWeight: 700,
-    letterSpacing: "0.02em",
-    border: "1px solid rgba(255,255,255,0.25)",
-    cursor: "pointer",
-    userSelect: "none",
-    WebkitTapHighlightColor: "transparent",
-  };
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
 
-  const secondaryBtnStyle = {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "12px 28px",
-    borderRadius: "9999px",
-    backgroundColor: "rgba(255,255,255,0.06)",
-    color: "#ffffff",
-    textDecoration: "none",
-    fontWeight: 700,
-    letterSpacing: "0.02em",
-    border: "1px solid rgba(255,255,255,0.35)",
-    cursor: "pointer",
-    userSelect: "none",
-    backdropFilter: "blur(8px)",
-    WebkitTapHighlightColor: "transparent",
-  };
+  const [form, setForm] = useState({
+    full_name: "",
+    email: "",
+    show_name: "",
+    show_website: "",
+    rss_url: "",
+    host_platform: "",
+    publish_frequency: "Weekly",
+    focus: "both",
+    primary_topics: "",
+    why_join: "",
+    path: "partner",
+    stats_proof_url: "",
+  });
+
+  const canSubmit = useMemo(() => {
+    return (
+      form.full_name.trim() &&
+      form.email.trim() &&
+      form.show_name.trim() &&
+      form.publish_frequency.trim() &&
+      form.focus.trim() &&
+      form.path.trim() &&
+      form.why_join.trim().length >= 40
+    );
+  }, [form]);
+
+  async function submit(e) {
+    e.preventDefault();
+    setError("");
+    setDone(false);
+
+    if (!canSubmit) {
+      setError(
+        "Please complete all required fields (and write a bit more in the final answer)."
+      );
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Submission failed.");
+
+      setDone(true);
+      setForm({
+        full_name: "",
+        email: "",
+        show_name: "",
+        show_website: "",
+        rss_url: "",
+        host_platform: "",
+        publish_frequency: "Weekly",
+        focus: "both",
+        primary_topics: "",
+        why_join: "",
+        path: "partner",
+        stats_proof_url: "",
+      });
+    } catch (err) {
+      setError(err.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <main className="relative overflow-hidden scroll-smooth">
-      {/* Background */}
+    <main className="relative overflow-hidden">
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.06),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.10),transparent_55%)]" />
       </div>
 
-      <div className="mx-auto max-w-6xl px-5 py-16">
-        {/* HERO */}
-        <section className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur p-10">
+      <div className="mx-auto max-w-5xl px-5 py-16">
+        <section className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur p-10">
           <span className="text-xs uppercase tracking-widest text-white/60">
             Barracks Media Network
           </span>
 
-          <h1 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight">
+          <h1 className="mt-3 text-4xl md:text-5xl font-extrabold tracking-tight text-white">
             Apply to Join the Network
           </h1>
 
           <p className="mt-5 text-lg text-white/80 max-w-3xl leading-relaxed">
-            A curated podcast and media ecosystem built for creators who value
-            integrity, purpose, and long-term growth — without giving up ownership
-            or creative control.
+            We accept podcasts that do <span className="font-semibold text-white">one or both</span>:
+            <br />
+            <span className="font-semibold text-white">helping others</span> or{" "}
+            <span className="font-semibold text-white">meaningful storytelling</span>.
           </p>
 
-          {/* BUTTONS */}
-          <div className="mt-8 flex flex-col sm:flex-row gap-4">
-            <a
-              href={FORM_URL}
-              target="_blank"
-              rel="noreferrer"
-              role="button"
-              aria-label="Start application (opens in a new tab)"
-              style={primaryBtnStyle}
-              className="shadow-lg shadow-black/40 transition-all hover:shadow-xl hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white/60"
-            >
-              Start Application
-            </a>
-
-            <a
-              href="#terms"
-              role="button"
-              aria-label="View terms"
-              style={secondaryBtnStyle}
-              className="transition-all hover:bg-white/10 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40"
-            >
-              View Terms
-            </a>
+          <div className="mt-6 grid md:grid-cols-2 gap-4 text-sm text-white/75">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+              <div className="font-semibold text-white">We’re for:</div>
+              <ul className="mt-2 space-y-1">
+                <li>• Education, transition, healing, leadership, faith</li>
+                <li>• Lived experience, history, culture, real stories</li>
+                <li>• Consistent publishing + quality standards</li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+              <div className="font-semibold text-white">We’re not for:</div>
+              <ul className="mt-2 space-y-1">
+                <li>• Political commentary / partisan platforms</li>
+                <li>• Sales-first / marketing-first / funnel shows</li>
+                <li>• Rage-bait, shock content, or “clout” plays</li>
+              </ul>
+            </div>
           </div>
         </section>
 
-        {/* WHY JOIN */}
-        <section className="mt-20">
-          <SectionTitle
-            title="Why Creators Join Barracks Media"
-            subtitle="This isn’t a directory. It’s infrastructure."
-          />
-
-          <div className="mt-10 grid md:grid-cols-2 gap-6">
-            <Card
-              title="Full Ownership & Creative Control"
-              text="You retain full ownership and intellectual property rights to your show. Barracks Media never claims ownership of your content."
-            />
-            <Card
-              title="Professional, Values-Driven Network"
-              text="We maintain standards that protect creators, audiences, and sponsors. Explicit sexual content or pornography is not accepted."
-            />
-            <Card
-              title="Growth Without Hype"
-              text="No guaranteed sponsorships or empty promises. We provide real systems for discovery, analytics, and long-term growth."
-            />
-            <Card
-              title="Eligibility-Based Network Benefits"
-              text="Cross-promotion, AI-powered discovery, website listings, social promotion, and potential sponsorship opportunities."
-            />
-            <Card
-              title="Simple Network Attribution"
-              text="A brief spoken acknowledgment such as “Proud member of the Barracks Media Network.” No logos or forced branding."
-            />
-            <Card
-              title="Freedom to Exit"
-              text="Leave the network at any time unless under an active Barracks-arranged sponsorship. No lock-ins."
-            />
-          </div>
-        </section>
-
-        {/* WHO IT'S FOR */}
-        <section className="mt-24 rounded-3xl border border-white/10 bg-white/[0.02] p-10">
-          <SectionTitle title="Who This Network Is For" subtitle="Selective by design." />
-
-          <ul className="mt-8 grid md:grid-cols-2 gap-y-4 text-white/80">
-            <li>• Podcasters producing consistent, meaningful content</li>
-            <li>• Creators who want growth without surrendering control</li>
-            <li>• Shows built on credibility, education, or impact</li>
-            <li>• Voices aligned with purpose, service, or storytelling</li>
-          </ul>
-        </section>
-
-        {/* APPLY */}
-        <section
-          id="apply"
-          className="mt-24 rounded-3xl border border-white/10 bg-white/[0.03] p-10 scroll-mt-24"
-        >
-          <SectionTitle
-            title="Submit Your Application"
-            subtitle="Every show is reviewed individually."
-          />
-
-          <p className="mt-4 max-w-3xl text-white/80">
-            Submitting an application does not guarantee acceptance. We review
-            each show for quality, intent, alignment, and long-term fit.
+        <section className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-10">
+          <h2 className="text-2xl font-bold text-white">Application</h2>
+          <p className="mt-2 text-white/70">
+            Submitting doesn’t guarantee acceptance. We review alignment, quality, and consistency.
           </p>
 
-          <div className="mt-8 overflow-hidden rounded-2xl border border-white/10">
-            <iframe
-              src={EMBED_URL}
-              title="Barracks Media Network Application"
-              width="100%"
-              height="1650"
-              frameBorder="0"
-              loading="lazy"
-            />
-          </div>
+          {error ? (
+            <div className="mt-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-100">
+              {error}
+            </div>
+          ) : null}
 
-          <div className="mt-4">
-            <a
-              href={FORM_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm text-white/70 underline hover:text-white"
+          {done ? (
+            <div className="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-100">
+              Application submitted. If it’s a fit, you’ll hear back with next steps.
+            </div>
+          ) : null}
+
+          <form onSubmit={submit} className="mt-8 grid gap-5">
+            <Field label="Your name" required>
+              <input
+                value={form.full_name}
+                onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                placeholder="Full name"
+              />
+            </Field>
+
+            <Field label="Email" required>
+              <input
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                placeholder="you@example.com"
+                type="email"
+              />
+            </Field>
+
+            <div className="grid md:grid-cols-2 gap-5">
+              <Field label="Podcast name" required>
+                <input
+                  value={form.show_name}
+                  onChange={(e) => setForm({ ...form, show_name: e.target.value })}
+                  className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                  placeholder="Show title"
+                />
+              </Field>
+
+              <Field label="Website (optional)">
+                <input
+                  value={form.show_website}
+                  onChange={(e) => setForm({ ...form, show_website: e.target.value })}
+                  className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                  placeholder="https://..."
+                />
+              </Field>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-5">
+              <Field label="RSS feed URL (optional)">
+                <input
+                  value={form.rss_url}
+                  onChange={(e) => setForm({ ...form, rss_url: e.target.value })}
+                  className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                  placeholder="https://.../feed"
+                />
+              </Field>
+
+              <Field label="Host platform (optional)">
+                <input
+                  value={form.host_platform}
+                  onChange={(e) => setForm({ ...form, host_platform: e.target.value })}
+                  className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                  placeholder="Captivate, Buzzsprout, Spotify for Podcasters..."
+                />
+              </Field>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-5">
+              <Field label="Publishing frequency" required>
+                <select
+                  value={form.publish_frequency}
+                  onChange={(e) => setForm({ ...form, publish_frequency: e.target.value })}
+                  className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                >
+                  <option>Weekly</option>
+                  <option>Bi-weekly</option>
+                  <option>Monthly</option>
+                  <option>Seasonal</option>
+                  <option>Inconsistent</option>
+                </select>
+              </Field>
+
+              <Field label="Your show is mainly..." required>
+                <select
+                  value={form.focus}
+                  onChange={(e) => setForm({ ...form, focus: e.target.value })}
+                  className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                >
+                  <option value="helping">Helping others</option>
+                  <option value="storytelling">Storytelling</option>
+                  <option value="both">Both</option>
+                </select>
+              </Field>
+
+              <Field label="Membership path" required>
+                <select
+                  value={form.path}
+                  onChange={(e) => setForm({ ...form, path: e.target.value })}
+                  className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                >
+                  <option value="partner">Network Partner (no RSS transfer)</option>
+                  <option value="full">Full Member (RSS integrated)</option>
+                </select>
+              </Field>
+            </div>
+
+            <Field label="Primary topics (optional)">
+              <input
+                value={form.primary_topics}
+                onChange={(e) => setForm({ ...form, primary_topics: e.target.value })}
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                placeholder="Leadership, transition, recovery, history, faith, etc."
+              />
+            </Field>
+
+            <Field label="Stats proof link (optional)">
+              <input
+                value={form.stats_proof_url}
+                onChange={(e) => setForm({ ...form, stats_proof_url: e.target.value })}
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                placeholder="Google Drive / Dropbox folder link"
+              />
+            </Field>
+
+            <Field label="Why do you want to join Barracks Media Network?" required>
+              <textarea
+                value={form.why_join}
+                onChange={(e) => setForm({ ...form, why_join: e.target.value })}
+                className="w-full min-h-[140px] rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                placeholder="Who your show serves, what it stands for, and why this network is a fit."
+              />
+            </Field>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-2 inline-flex items-center justify-center rounded-full bg-white px-8 py-3 font-extrabold text-black disabled:opacity-60"
             >
-              Open application in a new tab
-            </a>
-          </div>
-        </section>
-
-        {/* TERMS */}
-        <section
-          id="terms"
-          className="mt-24 rounded-3xl border border-white/10 bg-black/40 p-10 scroll-mt-24"
-        >
-          <SectionTitle
-            title="Application Terms & Conditions"
-            subtitle="Clear expectations protect everyone."
-          />
-
-          <div className="mt-8 space-y-6 text-sm text-white/80 leading-relaxed">
-            {TERMS.map((t) => (
-              <div key={t.n}>
-                <h3 className="font-semibold text-white">
-                  {t.n}. {t.title}
-                </h3>
-                <ul className="mt-2 space-y-1">
-                  {t.body.map((b, i) => (
-                    <li key={i}>• {b}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* FINAL CTA */}
-        <section className="mt-24 text-center">
-          <h2 className="text-3xl font-bold">Build Something That Lasts</h2>
-          <p className="mt-3 text-white/80 max-w-2xl mx-auto">
-            If your show values professionalism, integrity, and long-term growth,
-            we’d be proud to review your application.
-          </p>
-
-          <a
-            href={FORM_URL}
-            target="_blank"
-            rel="noreferrer"
-            role="button"
-            aria-label="Apply now (opens in a new tab)"
-            style={primaryBtnStyle}
-            className="mt-6 shadow-lg shadow-black/40 transition-all hover:shadow-xl hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-white/60"
-          >
-            Apply Now
-          </a>
+              {loading ? "Submitting..." : "Submit Application"}
+            </button>
+          </form>
         </section>
       </div>
     </main>
   );
 }
 
-/* ---------- COMPONENTS ---------- */
-
-function SectionTitle({ title, subtitle }) {
+function Field({ label, required, children }) {
   return (
-    <>
-      <h2 className="text-3xl font-bold">{title}</h2>
-      <p className="mt-2 text-white/60">{subtitle}</p>
-    </>
-  );
-}
-
-function Card({ title, text }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 hover:bg-white/[0.06] transition">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="mt-2 text-white/80 leading-relaxed">{text}</p>
+    <div>
+      <div className="flex items-center gap-2">
+        <label className="text-sm font-semibold text-white">{label}</label>
+        {required ? <span className="text-xs text-white/50">*</span> : null}
+      </div>
+      <div className="mt-2">{children}</div>
     </div>
   );
 }
-
-/* ---------- TERMS DATA ---------- */
-
-const TERMS = [
-  {
-    n: 1,
-    title: "Professional Standards & Content Guidelines",
-    body: [
-      "No explicit sexual or pornographic content",
-      "Content must align with network values",
-      "Applications may be declined at Barracks Media’s discretion",
-    ],
-  },
-  {
-    n: 2,
-    title: "Application & Acceptance",
-    body: [
-      "Submitting an application does not guarantee approval",
-      "Each show is reviewed individually",
-    ],
-  },
-  {
-    n: 3,
-    title: "Ownership & Rights",
-    body: [
-      "Creators retain full ownership and intellectual property rights",
-      "Barracks Media does not claim ownership of shows",
-    ],
-  },
-  {
-    n: 4,
-    title: "Monetization & Sponsorships",
-    body: [
-      "No guarantees are made regarding revenue or sponsorships",
-      "Opportunities depend on performance and growth",
-    ],
-  },
-  {
-    n: 5,
-    title: "Removal & Compliance",
-    body: [
-      "Shows may be removed for violations or misalignment",
-      "Removal carries no financial obligation",
-    ],
-  },
-  {
-    n: 6,
-    title: "Network Benefits",
-    body: [
-      "Cross-promotion, discovery tools, analytics, and listings",
-      "Benefits are not guaranteed",
-    ],
-  },
-  {
-    n: 7,
-    title: "Network Attribution",
-    body: [
-      "Simple verbal acknowledgment required",
-      "No logos or visual branding required",
-    ],
-  },
-  {
-    n: 8,
-    title: "Content Responsibility",
-    body: ["Creators are solely responsible for their content"],
-  },
-  {
-    n: 9,
-    title: "Distribution Rights (Non-Exclusive)",
-    body: [
-      "Barracks Media may feature and promote content",
-      "Creators remain free to distribute elsewhere",
-    ],
-  },
-  {
-    n: 10,
-    title: "Professional Conduct",
-    body: ["Harassment, hate speech, or illegal activity may result in removal"],
-  },
-  {
-    n: 11,
-    title: "Program Changes",
-    body: ["Network policies may evolve over time"],
-  },
-  {
-    n: 12,
-    title: "Active Participation",
-    body: [
-      "Shows must maintain an ongoing release schedule",
-      "Dormant shows may be removed",
-    ],
-  },
-  {
-    n: 13,
-    title: "RSS Feed Integration & Analytics",
-    body: [
-      "Shows transition to a Barracks-managed RSS feed",
-      "No ownership transfer occurs",
-      "Used solely for analytics, discovery, and monetization support",
-    ],
-  },
-  {
-    n: 14,
-    title: "Voluntary Exit",
-    body: [
-      "Creators may exit at any time barring active sponsorship contracts",
-      "All obligations must be fulfilled prior to exit",
-    ],
-  },
-];
