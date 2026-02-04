@@ -20,6 +20,7 @@ export default function AdminAnnouncementsPage() {
   const [body, setBody] = useState("");
 
   const isAuthed = !!session?.user?.id;
+  const isAdmin = session?.user?.email === "ddunn@barracksmedia.com";
   const isEditing = useMemo(() => !!editingId, [editingId]);
 
   useEffect(() => {
@@ -178,14 +179,10 @@ export default function AdminAnnouncementsPage() {
     );
   }
 
-  if (!isAuthed) {
+  if (!isAuthed || !isAdmin) {
     return (
       <main className="min-h-[70vh] flex items-center justify-center text-white/80">
-        Please sign in via{" "}
-        <Link className="underline" href="/portal">
-          /portal
-        </Link>{" "}
-        first.
+        Admin access only.
       </main>
     );
   }
