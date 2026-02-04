@@ -59,8 +59,7 @@ export default function PortalPage() {
       return;
     }
 
-    const redirectTo =
-      typeof window !== "undefined" ? `${window.location.origin}/portal` : undefined;
+    const redirectTo = `${window.location.origin}/portal`;
 
     const { error } = await supabase.auth.signInWithOtp({
       email: clean,
