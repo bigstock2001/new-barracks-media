@@ -237,6 +237,7 @@ export default function PortalPage() {
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),transparent_55%)]" />
+          <div className="absolute inset-0 bg-black/50" />
         </div>
 
         <div className="mx-auto max-w-xl px-5 py-16">
@@ -255,7 +256,7 @@ export default function PortalPage() {
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                  className="mt-2 w-full rounded-xl border border-white/10 bg-black/60 placeholder:text-white/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
                   placeholder="you@example.com"
                   type="email"
                 />
@@ -278,7 +279,7 @@ export default function PortalPage() {
 
               <button
                 type="submit"
-                className="w-full rounded-full bg-white px-6 py-3 font-extrabold text-black"
+                className="w-full rounded-full bg-white px-6 py-3 font-extrabold text-black hover:opacity-90"
               >
                 Send Sign-In Link
               </button>
@@ -292,53 +293,56 @@ export default function PortalPage() {
   const eventLink = selectedEvent?.streamyard_url || DEFAULT_STREAMYARD;
 
   return (
-    <main className="relative overflow-hidden">
+    <main className="relative overflow-hidden min-h-screen">
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.10),transparent_55%)]" />
+        <div className="absolute inset-0 bg-black/50" />
       </div>
 
-      <div className="mx-auto max-w-6xl px-5 py-14">
+      <div className="mx-auto max-w-6xl px-5 py-14 text-white">
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-white/60">
-              Barracks Media Network
-            </span>
-            <h1 className="mt-2 text-4xl font-extrabold text-white">Member Portal</h1>
-            <p className="mt-2 text-white/70">
-              Calls, webinars, shared notes, and network updates — all in one place.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-end gap-3">
-            <div className="text-xs text-white/60">
-              Signed in as <span className="text-white/85">{session?.user?.email}</span>
+          <div className="rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur p-8">
+            <div>
+              <span className="text-xs uppercase tracking-widest text-white/60">
+                Barracks Media Network
+              </span>
+              <h1 className="mt-2 text-4xl font-extrabold text-white">Member Portal</h1>
+              <p className="mt-2 text-white/70">
+                Calls, webinars, shared notes, and network updates — all in one place.
+              </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              {isAdmin ? (
-                <>
-                  <Link
-                    href="/portal/admin/events"
-                    className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10]"
-                  >
-                    Admin: Events
-                  </Link>
-                  <Link
-                    href="/portal/admin/announcements"
-                    className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10]"
-                  >
-                    Admin: Announcements
-                  </Link>
-                </>
-              ) : null}
+            <div className="flex flex-col items-end gap-3 mt-4 md:mt-0">
+              <div className="text-xs text-white/60">
+                Signed in as <span className="text-white/85">{session?.user?.email}</span>
+              </div>
 
-              <button
-                onClick={signOut}
-                className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10]"
-              >
-                Sign out
-              </button>
+              <div className="flex items-center gap-2">
+                {isAdmin ? (
+                  <>
+                    <Link
+                      href="/portal/admin/events"
+                      className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10] hover:border-white/30 hover:bg-white/[0.12]"
+                    >
+                      Admin: Events
+                    </Link>
+                    <Link
+                      href="/portal/admin/announcements"
+                      className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10] hover:border-white/30 hover:bg-white/[0.12]"
+                    >
+                      Admin: Announcements
+                    </Link>
+                  </>
+                ) : null}
+
+                <button
+                  onClick={signOut}
+                  className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10] hover:border-white/30 hover:bg-white/[0.12]"
+                >
+                  Sign out
+                </button>
+              </div>
             </div>
           </div>
         </header>
@@ -365,16 +369,16 @@ export default function PortalPage() {
           </div>
         )}
 
-        <div className="mt-10 grid lg:grid-cols-3 gap-6">
+        <div className="mt-8 grid lg:grid-cols-3 gap-6">
           {/* LEFT: EVENTS */}
-          <section className="lg:col-span-2 rounded-3xl border border-white/10 bg-white/[0.05] backdrop-blur p-8">
+          <section className="lg:col-span-2 rounded-3xl border border-white/10 bg-white/[0.07] backdrop-blur p-8">
             <h2 className="text-2xl font-bold text-white">Upcoming Calls & Webinars</h2>
             <p className="mt-2 text-white/70">
               This is where members join live meetings and collaborate.
             </p>
 
             <div className="mt-6 grid md:grid-cols-2 gap-4">
-              <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+              <div className="rounded-2xl border border-white/10 bg-black/50 p-5">
                 <div className="text-sm font-semibold text-white">Next session</div>
                 <div className="mt-2 text-white/90 font-bold text-lg">
                   {selectedEvent?.title || "Monthly Network Call"}
@@ -390,13 +394,13 @@ export default function PortalPage() {
                     href={eventLink}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-extrabold text-black"
+                    className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-extrabold text-black hover:opacity-90"
                   >
                     Join in StreamYard
                   </a>
                   <button
                     onClick={() => copyToClipboard(eventLink)}
-                    className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 font-bold text-white hover:bg-white/[0.10]"
+                    className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 font-bold text-white hover:bg-white/[0.10] hover:border-white/30 hover:bg-white/[0.12]"
                   >
                     Copy link
                   </button>
@@ -407,7 +411,7 @@ export default function PortalPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+              <div className="rounded-2xl border border-white/10 bg-black/50 p-5">
                 <div className="text-sm font-semibold text-white">Choose an event</div>
                 <p className="mt-2 text-sm text-white/65">
                   If you add multiple webinars, members can switch here.
@@ -416,7 +420,7 @@ export default function PortalPage() {
                 <select
                   value={selectedEvent?.id || ""}
                   onChange={(e) => setSelectedEventId(e.target.value)}
-                  className="mt-4 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                  className="mt-4 w-full rounded-xl border border-white/10 bg-black/60 placeholder:text-white/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
                 >
                   {(upcomingEvents?.length ? upcomingEvents : [{ id: "", title: "Monthly Network Call" }]).map(
                     (ev) => (
@@ -445,11 +449,11 @@ export default function PortalPage() {
                 Members can add notes and action items from calls.
               </p>
 
-              <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 p-5">
+              <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-5">
                 <textarea
                   value={noteText}
                   onChange={(e) => setNoteText(e.target.value)}
-                  className="w-full min-h-[110px] rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full min-h-[110px] rounded-xl border border-white/10 bg-black/60 placeholder:text-white/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
                   placeholder="Add a note, decision, action item, or idea…"
                 />
                 <div className="mt-3 flex items-center justify-between gap-3">
@@ -459,7 +463,7 @@ export default function PortalPage() {
                   <button
                     onClick={addNote}
                     disabled={savingNote}
-                    className="rounded-full bg-white px-5 py-2 font-extrabold text-black disabled:opacity-60"
+                    className="rounded-full bg-white px-5 py-2 font-extrabold text-black disabled:opacity-60 hover:opacity-90"
                   >
                     {savingNote ? "Saving…" : "Add note"}
                   </button>
@@ -491,7 +495,7 @@ export default function PortalPage() {
           </section>
 
           {/* RIGHT: ANNOUNCEMENTS */}
-          <aside className="rounded-3xl border border-white/10 bg-white/[0.05] backdrop-blur p-8">
+          <aside className="rounded-3xl border border-white/10 bg-white/[0.07] backdrop-blur p-8">
             <h2 className="text-2xl font-bold text-white">Announcements</h2>
             <p className="mt-2 text-white/70 text-sm">
               Network updates, member highlights, and reminders.
@@ -504,7 +508,7 @@ export default function PortalPage() {
                 announcements.map((a) => (
                   <div
                     key={a.id}
-                    className="rounded-2xl border border-white/10 bg-black/30 p-4"
+                    className="rounded-2xl border border-white/10 bg-black/50 p-4"
                   >
                     <div className="text-white font-semibold">{a.title}</div>
                     {a.body ? (
@@ -518,7 +522,7 @@ export default function PortalPage() {
                   </div>
                 ))
               ) : (
-                <div className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/70">
+                <div className="rounded-2xl border border-white/10 bg-black/50 p-4 text-sm text-white/70">
                   No announcements yet.
                   <div className="mt-2 text-xs text-white/55">
                     Next step: use the admin page to post updates here.
