@@ -41,6 +41,8 @@ export default function AdminEventsPage() {
   const [startsAtLocal, setStartsAtLocal] = useState("");
   const [streamyardUrl, setStreamyardUrl] = useState(DEFAULT_STREAMYARD);
   const [description, setDescription] = useState("");
+  const [replayUrl, setReplayUrl] = useState("");
+  const [resourcesUrl, setResourcesUrl] = useState("");
 
   const isAuthed = !!session?.user?.id;
   const isAdmin = session?.user?.email === "ddunn@barracksmedia.com";
@@ -157,7 +159,11 @@ export default function AdminEventsPage() {
 
       setMsg("Event updated.");
     } else {
-      const { error } = await supabase.from("events").insert(payload);
+      const { error } = await supabase.from("events").insert({
+        ...payload,
+        replay_url: replayUrl || null,
+        resources_url: resourcesUrl || null,
+      });
 
       if (error) {
         setLoading(false);
@@ -169,6 +175,8 @@ export default function AdminEventsPage() {
       }
 
       setMsg("Event added.");
+      setReplayUrl("");
+      setResourcesUrl("");
     }
 
     setLoading(false);
@@ -303,6 +311,26 @@ export default function AdminEventsPage() {
                 onChange={(e) => setStreamyardUrl(e.target.value)}
                 className="mt-2 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
                 placeholder={DEFAULT_STREAMYARD}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold">Replay URL (optional)</label>
+              <input
+                value={replayUrl}
+                onChange={(e) => setReplayUrl(e.target.value)}
+                placeholder="https://youtube.com/… or Vimeo link"
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold">Resources URL (optional)</label>
+              <input
+                value={resourcesUrl}
+                onChange={(e) => setResourcesUrl(e.target.value)}
+                placeholder="Google Drive / Dropbox / Notion link"
+                className="w-full"
               />
             </div>
 
