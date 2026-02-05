@@ -553,7 +553,7 @@ export default function PortalPage() {
                       </option>
                     ))}
                   </select>
-                  <div className="portal-help">Default StreamYard room is used until you add events.</div>
+                  <div className="portal-help"></div>
                 </div>
               </div>
             </section>
