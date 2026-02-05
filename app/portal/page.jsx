@@ -24,6 +24,7 @@ export default function PortalPage() {
   const [notes, setNotes] = useState([]);
   const [noteText, setNoteText] = useState("");
   const [savingNote, setSavingNote] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
 
   // ---------- AUTH ----------
   useEffect(() => {
@@ -305,48 +306,63 @@ export default function PortalPage() {
         <div className="absolute inset-0 bg-black/50" />
       </div>
 
-      <div className="mx-auto max-w-6xl px-5 py-14 text-white">
-        <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur p-8">
-            <div>
-              <span className="text-xs uppercase tracking-widest text-white/60">
-                Barracks Media Network
-              </span>
-              <h1 className="mt-2 text-4xl font-extrabold text-white">Member Portal</h1>
-              <p className="mt-2 text-white/70">
-                Calls, webinars, shared notes, and network updates — all in one place.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-end gap-3 mt-4 md:mt-0">
-              <div className="text-xs text-white/60">
-                Signed in as <span className="text-white/85">{session?.user?.email}</span>
+      <div className="mx-auto max-w-5xl px-5 py-14 text-white">
+        <header className="mb-8">
+          <div className="rounded-3xl border border-white/15 bg-[#1a1411]/80 p-10">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div>
+                <span className="text-xs uppercase tracking-widest text-white/60">
+                  Barracks Media Network
+                </span>
+                <h1 className="mt-2 text-4xl font-extrabold text-white">Member Portal</h1>
+                <p className="mt-3 text-[15px] text-white/70 leading-relaxed">
+                  Calls, webinars, shared notes, and network updates — all in one place.
+                </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                {isAdmin ? (
-                  <>
-                    <Link
-                      href="/portal/admin/events"
-                      className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10] hover:border-white/30 hover:bg-white/[0.12]"
-                    >
-                      Admin: Events
-                    </Link>
-                    <Link
-                      href="/portal/admin/announcements"
-                      className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10] hover:border-white/30 hover:bg-white/[0.12]"
-                    >
-                      Admin: Announcements
-                    </Link>
-                  </>
-                ) : null}
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
+                <div className="text-xs text-white/60">
+                  Signed in as <span className="text-white/85">{session?.user?.email}</span>
+                </div>
 
-                <button
-                  onClick={signOut}
-                  className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.10] hover:border-white/30 hover:bg-white/[0.12]"
-                >
-                  Sign out
-                </button>
+                <div className="flex items-center gap-2">
+                  {isAdmin ? (
+                    <div className="relative">
+                      <button
+                        onClick={() => setAdminOpen(!adminOpen)}
+                        className="rounded-full bg-white px-4 py-2 font-bold text-black hover:opacity-90"
+                      >
+                        Admin
+                      </button>
+
+                      {adminOpen && (
+                        <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-white/15 bg-black/80 backdrop-blur p-2 shadow-xl z-50">
+                          <a
+                            href="/admin/events"
+                            onClick={() => setAdminOpen(false)}
+                            className="block rounded-xl px-3 py-2 text-sm text-white/90 hover:bg-white/10"
+                          >
+                            Events
+                          </a>
+                          <a
+                            href="/admin/announcements"
+                            onClick={() => setAdminOpen(false)}
+                            className="block rounded-xl px-3 py-2 text-sm text-white/90 hover:bg-white/10"
+                          >
+                            Announcements
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
+
+                  <button
+                    onClick={signOut}
+                    className="rounded-full border border-white/20 bg-black/30 px-4 py-2 font-semibold text-white hover:bg-black/40"
+                  >
+                    Sign out
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -374,39 +390,39 @@ export default function PortalPage() {
           </div>
         )}
 
-        <div className="mt-8 grid lg:grid-cols-3 gap-6">
+        <div className="mt-8 grid lg:grid-cols-3 gap-8">
           {/* LEFT: EVENTS */}
-          <section className="lg:col-span-2 rounded-3xl border border-white/10 bg-white/[0.07] backdrop-blur p-8">
+          <section className="lg:col-span-2 rounded-3xl border border-white/15 bg-[#1a1411]/80 p-10">
             <h2 className="text-2xl font-bold text-white">Upcoming Calls & Webinars</h2>
-            <p className="mt-2 text-white/70">
+            <p className="mt-2 text-[15px] text-white/70 leading-relaxed">
               This is where members join live meetings and collaborate.
             </p>
 
-            <div className="mt-6 grid md:grid-cols-2 gap-4">
-              <div className="rounded-2xl border border-white/10 bg-black/50 p-5">
-                <div className="text-sm font-semibold text-white">Next session</div>
-                <div className="mt-2 text-white/90 font-bold text-lg">
+            <div className="mt-8 grid md:grid-cols-2 gap-6">
+              <div className="rounded-2xl border border-white/15 bg-[#120d0b]/80 p-6">
+                <div className="text-sm font-semibold text-white/80">Next Call</div>
+                <div className="mt-3 text-white/90 font-bold text-lg leading-relaxed">
                   {selectedEvent?.title || "Monthly Network Call"}
                 </div>
-                <div className="mt-2 text-sm text-white/70">
+                <div className="mt-3 text-[15px] text-white/70 leading-relaxed">
                   {selectedEvent?.starts_at
                     ? new Date(selectedEvent.starts_at).toLocaleString()
                     : "Date/time will appear here once events are added."}
                 </div>
 
-                <div className="mt-5 flex flex-col sm:flex-row gap-3">
+                <div className="mt-6 flex flex-col gap-3">
                   <a
                     href={eventLink}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-extrabold text-black"
+                    className="w-full inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-extrabold text-black hover:opacity-90"
                   >
                     Join Live (StreamYard)
                   </a>
 
                   <button
                     onClick={() => copyToClipboard(eventLink)}
-                    className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 font-bold text-white hover:bg-white/[0.10]"
+                    className="w-full inline-flex items-center justify-center rounded-full border border-white/20 bg-black/30 px-6 py-3 font-bold text-white hover:bg-black/40"
                   >
                     Copy live link
                   </button>
@@ -416,12 +432,12 @@ export default function PortalPage() {
                       href={replayLink}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 font-bold text-white hover:bg-white/[0.10]"
+                      className="w-full inline-flex items-center justify-center rounded-full border border-white/20 bg-black/30 px-6 py-3 font-bold text-white hover:bg-black/40"
                     >
                       Watch Replay
                     </a>
                   ) : isPastEvent ? (
-                    <div className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-white/70">
+                    <div className="w-full inline-flex items-center justify-center rounded-full border border-white/15 bg-[#120d0b]/80 px-6 py-3 text-sm font-semibold text-white/70">
                       Replay pending
                     </div>
                   ) : null}
@@ -431,32 +447,28 @@ export default function PortalPage() {
                       href={resourcesLink}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 font-bold text-white hover:bg-white/[0.10]"
+                      className="w-full inline-flex items-center justify-center rounded-full border border-white/20 bg-black/30 px-6 py-3 font-bold text-white hover:bg-black/40"
                     >
                       Resources
                     </a>
                   ) : null}
                 </div>
 
-                <div className="mt-4 text-xs text-white/55">
-                  Default link is set to your StreamYard room until you start creating events.
-                </div>
-
-                <div className="mt-3 text-xs text-white/55">
-                  Tip: Use StreamYard URL for the live room. After the call, paste a YouTube/Vimeo link into Replay URL and any docs into Resources URL.
+                <div className="mt-5 text-xs text-white/60 leading-relaxed">
+                  <strong>Tip:</strong> Click Join Live when the call starts. After, use Watch Replay.
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-black/50 p-5">
-                <div className="text-sm font-semibold text-white">Choose an event</div>
-                <p className="mt-2 text-sm text-white/65">
+              <div className="rounded-2xl border border-white/15 bg-[#120d0b]/80 p-6">
+                <div className="text-sm font-semibold text-white/80">Choose an event</div>
+                <p className="mt-2 text-[15px] text-white/70 leading-relaxed">
                   If you add multiple webinars, members can switch here.
                 </p>
 
                 <select
                   value={selectedEvent?.id || ""}
                   onChange={(e) => setSelectedEventId(e.target.value)}
-                  className="mt-4 w-full rounded-xl border border-white/10 bg-black/60 placeholder:text-white/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                  className="mt-4 w-full rounded-xl border border-white/15 bg-[#0a0704]/60 placeholder:text-white/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
                 >
                   {(upcomingEvents?.length ? upcomingEvents : [{ id: "", title: "Monthly Network Call" }]).map(
                     (ev) => (
@@ -467,33 +479,25 @@ export default function PortalPage() {
                   )}
                 </select>
 
-                <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/70">
-                  <div className="font-semibold text-white">Next upgrades (we’ll build):</div>
-                  <ul className="mt-2 space-y-1">
-                    <li>• Event agendas</li>
-                    <li>• Replays & resources</li>
-                    <li>• RSVP and reminders</li>
-                  </ul>
-                </div>
               </div>
             </div>
 
             {/* NOTES */}
-            <div className="mt-8">
+            <div className="mt-10">
               <h3 className="text-xl font-bold text-white">Shared Notes</h3>
-              <p className="mt-1 text-white/70 text-sm">
+              <p className="mt-2 text-[15px] text-white/70 leading-relaxed">
                 Members can add notes and action items from calls.
               </p>
 
-              <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-5">
+              <div className="mt-6 rounded-2xl border border-white/15 bg-[#120d0b]/80 p-6">
                 <textarea
                   value={noteText}
                   onChange={(e) => setNoteText(e.target.value)}
-                  className="w-full min-h-[110px] rounded-xl border border-white/10 bg-black/60 placeholder:text-white/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full min-h-[110px] rounded-xl border border-white/15 bg-[#0a0704]/60 placeholder:text-white/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
                   placeholder="Add a note, decision, action item, or idea…"
                 />
-                <div className="mt-3 flex items-center justify-between gap-3">
-                  <div className="text-xs text-white/55">
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <div className="text-xs text-white/60">
                     Notes save to Supabase (members only).
                   </div>
                   <button
@@ -506,23 +510,23 @@ export default function PortalPage() {
                 </div>
               </div>
 
-              <div className="mt-4 space-y-3">
+              <div className="mt-5 space-y-3">
                 {loadingData ? (
-                  <div className="text-white/70 text-sm">Loading…</div>
+                  <div className="text-white/70 text-[15px]">Loading…</div>
                 ) : notes.length ? (
                   notes.map((n) => (
                     <div
                       key={n.id}
-                      className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
+                      className="rounded-2xl border border-white/15 bg-[#0a0704]/50 p-5"
                     >
-                      <div className="text-white/90">{n.content}</div>
-                      <div className="mt-2 text-xs text-white/55">
+                      <div className="text-white/90 text-[15px] leading-relaxed">{n.content}</div>
+                      <div className="mt-2 text-xs text-white/60">
                         {n.created_at ? new Date(n.created_at).toLocaleString() : ""}
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-white/65 text-sm">
+                  <div className="text-white/70 text-[15px]">
                     No notes yet. Add the first note after your next call.
                   </div>
                 )}
@@ -531,36 +535,36 @@ export default function PortalPage() {
           </section>
 
           {/* RIGHT: ANNOUNCEMENTS */}
-          <aside className="rounded-3xl border border-white/10 bg-white/[0.07] backdrop-blur p-8">
+          <aside className="rounded-3xl border border-white/15 bg-[#1a1411]/80 p-10">
             <h2 className="text-2xl font-bold text-white">Announcements</h2>
-            <p className="mt-2 text-white/70 text-sm">
+            <p className="mt-2 text-[15px] text-white/70 leading-relaxed">
               Network updates, member highlights, and reminders.
             </p>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-8 space-y-4">
               {loadingData ? (
-                <div className="text-white/70 text-sm">Loading…</div>
+                <div className="text-white/70 text-[15px]">Loading…</div>
               ) : announcements.length ? (
                 announcements.map((a) => (
                   <div
                     key={a.id}
-                    className="rounded-2xl border border-white/10 bg-black/50 p-4"
+                    className="rounded-2xl border border-white/15 bg-[#120d0b]/80 p-5"
                   >
-                    <div className="text-white font-semibold">{a.title}</div>
+                    <div className="text-white font-semibold text-[15px]">{a.title}</div>
                     {a.body ? (
-                      <div className="mt-2 text-sm text-white/80 leading-relaxed">
+                      <div className="mt-3 text-[15px] text-white/80 leading-relaxed">
                         {a.body}
                       </div>
                     ) : null}
-                    <div className="mt-2 text-xs text-white/55">
+                    <div className="mt-2 text-xs text-white/60">
                       {a.created_at ? new Date(a.created_at).toLocaleString() : ""}
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="rounded-2xl border border-white/10 bg-black/50 p-4 text-sm text-white/70">
+                <div className="rounded-2xl border border-white/15 bg-[#120d0b]/80 p-5 text-[15px] text-white/70">
                   No announcements yet.
-                  <div className="mt-2 text-xs text-white/55">
+                  <div className="mt-3 text-xs text-white/60">
                     Next step: use the admin page to post updates here.
                   </div>
                 </div>
