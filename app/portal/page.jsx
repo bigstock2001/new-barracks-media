@@ -584,9 +584,6 @@ export default function PortalPage() {
           </aside>
           </div>
         </div>
-      </main>
-
-      {isAuthed ? (
         <style jsx global>{`
   .portal-scope a {
     color: inherit;
@@ -599,14 +596,8 @@ export default function PortalPage() {
     border: none !important;
     background-clip: padding-box;
   }
-
-  .portal-scope button {
-    all: unset;
-    display: inline-flex;
-    cursor: pointer;
-  }
 `}</style>
-      ) : null}
+      </main>
     </>
   );
 }
