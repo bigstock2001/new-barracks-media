@@ -262,43 +262,44 @@ export default function PortalPage() {
 
   if (!isAuthed) {
     return (
-      <main className={ui.pageBg}>
-        <div className={ui.wrap}>
-          <section className={ui.headerCard}>
-            <span className={ui.label}>Barracks Media Network</span>
-            <h1 className={ui.h1}>Member Portal</h1>
-            <p className={ui.p}>
-              Sign in to access member notes, network calls, webinars, and updates.
-            </p>
+      <main className="relative min-h-screen">
+        {/* preserve background image; add light semi-opaque container */}
+        <div className="absolute inset-0 bg-emerald-50/90" aria-hidden="true" />
 
-            <form onSubmit={sendMagicLink} className="mt-8 space-y-4">
+        <div className={ui.wrap}>
+          <section className="rounded-3xl p-8 bg-emerald-100/60 border border-emerald-300/40">
+            <div className="mb-4">
+              <div className="text-xs uppercase tracking-widest text-emerald-700">Barracks Media Network</div>
+              <h1 className="mt-2 text-3xl font-extrabold text-emerald-950">Member Portal</h1>
+              <p className="mt-2 text-[15px] text-emerald-900">Sign in to access member notes, network calls, webinars, and updates.</p>
+            </div>
+
+            <form onSubmit={sendMagicLink} className="mt-4 space-y-4">
               <div>
-                <label className="text-sm font-semibold text-white">Email</label>
+                <label className="text-sm font-semibold text-emerald-900">Email</label>
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={ui.input}
+                  className="mt-2 w-full rounded-lg border border-emerald-300 bg-white text-emerald-950 px-4 py-3 outline-none"
                   placeholder="you@example.com"
                   type="email"
                 />
-                <p className="mt-2 text-xs text-white/55">We’ll send a magic link. No passwords.</p>
+                <p className="mt-2 text-xs text-emerald-800">We’ll send a magic link. No passwords.</p>
               </div>
 
               {authErr ? (
-                <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-100">
+                <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-700">
                   {authErr}
                 </div>
               ) : null}
 
               {authMsg ? (
-                <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-100">
+                <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-900">
                   {authMsg}
                 </div>
               ) : null}
 
-              <button type="submit" className={`w-full ${ui.btnPrimary}`}>
-                Send Sign-In Link
-              </button>
+              <button type="submit" className="w-full rounded-full px-6 py-3 bg-emerald-600 text-white font-extrabold hover:bg-emerald-700">Send Sign-In Link</button>
             </form>
           </section>
         </div>
@@ -317,8 +318,8 @@ export default function PortalPage() {
     <main className="relative min-h-screen">
       {/* Background image is preserved here */}
       
-      {/* Light semi-opaque overlay container */}
-      <div className="absolute inset-0 bg-emerald-50/90 -z-10" />
+      {/* Light semi-opaque overlay container (over image, behind content) */}
+      <div className="absolute inset-0 bg-emerald-50/90" aria-hidden="true" />
       
       <div className={`${ui.wrap} space-y-6 relative`}>
         {/* Header card */}
