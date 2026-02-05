@@ -119,11 +119,17 @@ export default function ApplyPage() {
             Barracks Media Network
           </span>
 
-          <h1 className="mt-3 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white">
-            Apply to Join the Network
+          {/* Funny H1 so you can confirm this file is deployed */}
+          <h1 className="mt-3 text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+            If you can read this, you found the right Apply page — congrats, you’re already more
+            qualified than my last Wi-Fi router.
           </h1>
 
-          <p className="mt-6 text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
+          <h2 className="mt-4 text-xl md:text-2xl lg:text-3xl font-bold tracking-tight text-white/90">
+            Apply to Join the Network
+          </h2>
+
+          <p className="mt-6 max-w-4xl text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
             The Barracks Media Network partners with creators who produce consistent, high-quality
             podcasts that serve communities through storytelling, education, and lived experience.
             Choose the partnership path that fits your show: full network integration, or an
@@ -133,11 +139,11 @@ export default function ApplyPage() {
           {/* Partnership selector */}
           <div className="mt-8 rounded-2xl border border-white/10 bg-slate-800/35 p-5">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
+              <div className="space-y-1">
                 <div className="text-sm font-semibold text-white">
                   Choose your partnership path
                 </div>
-                <div className="text-sm text-white/65">
+                <div className="text-sm text-white/65 leading-relaxed">
                   This selection updates the requirements section in the application form.
                 </div>
               </div>
@@ -166,7 +172,7 @@ export default function ApplyPage() {
             subtitle="RSS hosted and distributed by Barracks Media. Full integration into network sponsorships and ad programs."
           >
             <InfoCard title="Eligibility Minimums">
-              <ul className="space-y-2 text-white/75">
+              <ul className="space-y-2 text-white/75 leading-relaxed">
                 <li>• Minimum <b>50 published episodes</b></li>
                 <li>
                   • Minimum <b>50 downloads per episode</b> within <b>30 days</b>
@@ -175,7 +181,7 @@ export default function ApplyPage() {
             </InfoCard>
 
             <InfoCard title="Benefits">
-              <ul className="space-y-2 text-white/75">
+              <ul className="space-y-2 text-white/75 leading-relaxed">
                 <li>• RSS hosted and distributed by Barracks Media</li>
                 <li>• Eligible for network-wide sponsorships</li>
                 <li>• Full integration into network ad programs</li>
@@ -201,14 +207,14 @@ export default function ApplyPage() {
             subtitle="Keep your own RSS feed and provide manual stats reporting when requested. Limited sponsorship eligibility; option to upgrade later."
           >
             <InfoCard title="What stays yours">
-              <ul className="space-y-2 text-white/75">
+              <ul className="space-y-2 text-white/75 leading-relaxed">
                 <li>• You keep your RSS feed + hosting platform</li>
                 <li>• You control publishing and distribution</li>
               </ul>
             </InfoCard>
 
             <InfoCard title="Requirements">
-              <ul className="space-y-2 text-white/75">
+              <ul className="space-y-2 text-white/75 leading-relaxed">
                 <li>• Manual stats reporting required (when requested)</li>
                 <li>• Limited sponsorship eligibility</li>
                 <li>• Option to upgrade later</li>
@@ -232,7 +238,7 @@ export default function ApplyPage() {
         {/* Sponsorship + payouts */}
         <section className="mt-8 grid lg:grid-cols-2 gap-6">
           <Card title="Sponsorships & Revenue Model">
-            <p className="mt-2 text-white/75 leading-relaxed">
+            <p className="mt-3 text-white/75 leading-relaxed max-w-prose">
               Sponsorships are distributed according to partnership eligibility and the revenue split
               defined by each path. Full Network Partners are eligible for network-wide sponsorship
               programs. Independent partners may participate in limited sponsorship opportunities.
@@ -240,9 +246,13 @@ export default function ApplyPage() {
           </Card>
 
           <Card title="Payout Rules">
-            <ul className="mt-2 text-white/75 space-y-2">
-              <li>• Minimum payout threshold: <b>$100</b></li>
-              <li>• Payouts issued on the <b>first of each month</b></li>
+            <ul className="mt-3 text-white/75 space-y-2 leading-relaxed">
+              <li>
+                • Minimum payout threshold: <b>$100</b>
+              </li>
+              <li>
+                • Payouts issued on the <b>first of each month</b>
+              </li>
               <li>• Earnings roll forward until threshold is met</li>
               <li>
                 • Payments via <b>Stripe Connect (ACH only)</b> — no PayPal, no checks
@@ -254,35 +264,36 @@ export default function ApplyPage() {
         {/* Application */}
         <section className="mt-8 rounded-3xl border border-white/10 bg-slate-900/40 p-8 md:p-12">
           <h2 className="text-2xl md:text-3xl font-bold text-white">Application</h2>
-          <p className="mt-3 text-white/70">
+          <p className="mt-3 max-w-4xl text-white/70 leading-relaxed">
             Submit the form below. Depending on the partnership path you choose, the form will request
             the appropriate details for review.
           </p>
 
           {error ? (
-            <div className="mt-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-100">
+            <div className="mt-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-100 leading-relaxed">
               {error}
             </div>
           ) : null}
 
           {done ? (
-            <div className="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-100">
+            <div className="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-100 leading-relaxed">
               Application submitted. If it’s a fit, you’ll hear back with next steps.
             </div>
           ) : null}
 
-          <form onSubmit={submit} className="mt-8 grid gap-6">
+          <form onSubmit={submit} className="mt-8 grid gap-7">
             {/* Basic Info */}
-            <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-5">
               <h3 className="text-lg font-semibold text-white">Basic Info</h3>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-5">
                 <Field label="Your name" required>
                   <input
                     value={form.full_name}
                     onChange={(e) => setForm({ ...form, full_name: e.target.value })}
                     className={cxInput}
                     placeholder="Full name"
+                    autoComplete="name"
                   />
                 </Field>
 
@@ -293,11 +304,12 @@ export default function ApplyPage() {
                     className={cxInput}
                     placeholder="you@example.com"
                     type="email"
+                    autoComplete="email"
                   />
                 </Field>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-5">
                 <Field label="Podcast name" required>
                   <input
                     value={form.show_name}
@@ -313,22 +325,24 @@ export default function ApplyPage() {
                     onChange={(e) => setForm({ ...form, show_website: e.target.value })}
                     className={cxInput}
                     placeholder="https://..."
+                    inputMode="url"
                   />
                 </Field>
               </div>
             </div>
 
             {/* Podcast Details */}
-            <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-5">
               <h3 className="text-lg font-semibold text-white">Podcast Details</h3>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-5">
                 <Field label="RSS feed URL" required>
                   <input
                     value={form.rss_url}
                     onChange={(e) => setForm({ ...form, rss_url: e.target.value })}
                     className={cxInput}
                     placeholder="https://.../feed"
+                    inputMode="url"
                   />
                 </Field>
 
@@ -342,7 +356,7 @@ export default function ApplyPage() {
                 </Field>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid md:grid-cols-3 gap-5">
                 <Field label="Publishing frequency" required>
                   <select
                     value={form.publish_frequency}
@@ -382,10 +396,10 @@ export default function ApplyPage() {
 
             {/* Conditional */}
             {form.path === "full" ? (
-              <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
+              <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-5">
                 <h3 className="text-lg font-semibold text-white">Full Network Requirements</h3>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-5">
                   <Field label="Published episodes (total)" required>
                     <input
                       value={form.published_episodes}
@@ -423,24 +437,27 @@ export default function ApplyPage() {
                     onChange={(e) => setForm({ ...form, stats_proof_url: e.target.value })}
                     className={cxInput}
                     placeholder="e.g., Google Drive / Dropbox folder link"
+                    inputMode="url"
                   />
                 </Field>
               </div>
             ) : (
-              <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
+              <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-5">
                 <h3 className="text-lg font-semibold text-white">Reporting & Proof</h3>
 
                 <Field label="I will provide manual stats reporting" required>
-                  <label className="inline-flex items-center gap-2">
+                  <label className="inline-flex items-start gap-3">
                     <input
                       type="checkbox"
                       checked={!!form.manual_stats_reporting}
                       onChange={(e) =>
                         setForm({ ...form, manual_stats_reporting: e.target.checked })
                       }
-                      className="h-4 w-4 rounded border-white/10 bg-black/40 text-white"
+                      className="mt-1 h-4 w-4 rounded border-white/10 bg-black/40 text-white"
                     />
-                    <span className="text-white/75">Yes, I can provide manual stats reporting</span>
+                    <span className="text-white/75 leading-relaxed">
+                      Yes, I can provide manual stats reporting when requested.
+                    </span>
                   </label>
                 </Field>
 
@@ -450,13 +467,14 @@ export default function ApplyPage() {
                     onChange={(e) => setForm({ ...form, stats_proof_url: e.target.value })}
                     className={cxInput}
                     placeholder="Optional: link to reports or analytics"
+                    inputMode="url"
                   />
                 </Field>
               </div>
             )}
 
             {/* Why Join */}
-            <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6">
+            <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-2">
               <Field label="Why do you want to join Barracks Media Network?" required>
                 <textarea
                   value={form.why_join}
@@ -464,13 +482,17 @@ export default function ApplyPage() {
                   className={cxTextarea}
                   placeholder="Who your show serves, what it stands for, and why this network is a fit. (40+ characters)"
                 />
+                <div className="mt-2 text-xs text-white/50 leading-relaxed">
+                  Tip: write it like you’re talking to a real person — because you are.
+                </div>
               </Field>
             </div>
 
             {/* Submit */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="text-sm text-white/60">
-                Full Partner minimums: 50 episodes & 50 downloads/episode (30 days). Payouts monthly (min $100).
+              <div className="text-sm text-white/60 leading-relaxed max-w-3xl">
+                Full Partner minimums: 50 episodes & 50 downloads/episode (30 days). Payouts monthly
+                (min $100).
               </div>
 
               <button
@@ -489,20 +511,20 @@ export default function ApplyPage() {
 }
 
 const cxInput =
-  "w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20";
+  "w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white leading-6 placeholder:text-white/35 outline-none focus:ring-2 focus:ring-white/20";
 const cxSelect =
-  "w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20";
+  "w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white leading-6 outline-none focus:ring-2 focus:ring-white/20";
 const cxTextarea =
-  "w-full min-h-[150px] rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20";
+  "w-full min-h-[190px] rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-white leading-7 placeholder:text-white/35 outline-none focus:ring-2 focus:ring-white/20 resize-y";
 
 function Field({ label, required, children }) {
   return (
-    <div>
+    <div className="space-y-2">
       <div className="flex items-center gap-2">
         <label className="text-sm font-semibold text-white">{label}</label>
         {required ? <span className="text-xs text-white/50">*</span> : null}
       </div>
-      <div className="mt-2">{children}</div>
+      <div>{children}</div>
     </div>
   );
 }
