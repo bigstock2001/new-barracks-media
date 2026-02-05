@@ -315,190 +315,132 @@ export default function PortalPage() {
 
   return (
     <main className={ui.pageBg}>
-      <div className={ui.wrap}>
-        <header className="mb-8">
-          <div className={ui.headerCard}>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div>
-                <span className={ui.label}>Barracks Media Network</span>
-                <h1 className={ui.h1}>Member Portal</h1>
-                <p className={ui.p}>Join the next session and keep notes in one place.</p>
-              </div>
+      <div className={`${ui.wrap} space-y-6 relative`}> 
+        {/* soft dark overlay behind content for readability */}
+        <div className="absolute inset-0 -z-10 bg-black/30 rounded-2xl" />
 
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
-                <div className="text-xs text-white/60">
-                  Signed in as <span className="text-white/85">{session?.user?.email}</span>
-                </div>
+        {/* Header card */}
+        <div className="rounded-3xl p-6 bg-emerald-100/15 border border-emerald-200/20">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <div className="text-xs uppercase tracking-widest text-emerald-100/80">Barracks Media Network</div>
+              <h1 className="mt-2 text-3xl font-extrabold text-white">Member Portal</h1>
+              <p className="mt-2 text-[15px] text-white/75">Join the next session and keep notes in one place.</p>
+            </div>
 
-                <div className="flex items-center gap-2">
-                  {isAdmin ? (
-                    <div className="relative">
-                      <button onClick={() => setAdminOpen(!adminOpen)} className={ui.btnSecondary}>
-                        Admin
-                      </button>
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-white/80">Signed in as <span className="font-semibold text-white">{session?.user?.email}</span></div>
 
-                      {adminOpen && (
-                        <div className={`absolute right-0 mt-2 w-56 z-50 ${ui.subCard}`}>
-                          <a href="/admin/events" onClick={() => setAdminOpen(false)} className={`${ui.btnSmall} w-full text-left`}>
-                            Events
-                          </a>
-                          <a href="/admin/announcements" onClick={() => setAdminOpen(false)} className={`${ui.btnSmall} w-full text-left mt-2`}>
-                            Announcements
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  ) : null}
-
-                  <button onClick={signOut} className={ui.btnSmall}>
-                    Sign out
+              {isAdmin ? (
+                <div className="relative">
+                  <button onClick={() => setAdminOpen(!adminOpen)} className="rounded-full px-3 py-2 text-sm font-semibold bg-emerald-200 text-emerald-900 hover:bg-emerald-300">
+                    Admin
                   </button>
+
+                  {adminOpen && (
+                    <div className="absolute right-0 mt-2 w-48 z-50 bg-emerald-100/15 border border-emerald-200/20 rounded-lg p-2">
+                      <a href="/admin/events" onClick={() => setAdminOpen(false)} className="block px-3 py-2 text-sm text-white hover:bg-white/5 rounded-md">Events</a>
+                      <a href="/admin/announcements" onClick={() => setAdminOpen(false)} className="block px-3 py-2 text-sm text-white hover:bg-white/5 rounded-md mt-1">Announcements</a>
+                    </div>
+                  )}
                 </div>
-              </div>
+              ) : null}
+
+              <button onClick={signOut} className="rounded-full px-3 py-2 text-sm font-semibold bg-emerald-200 text-emerald-900 hover:bg-emerald-300">Sign out</button>
             </div>
           </div>
-        </header>
+        </div>
 
-        {(dataErr || authErr || authMsg) && (
-          <div className="mt-6 space-y-3">
-            {dataErr ? (
-              <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100">
-                {dataErr}
-              </div>
-            ) : null}
-
-            {authErr ? (
-              <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100">
-                {authErr}
-              </div>
-            ) : null}
-
-            {authMsg ? (
-              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-100">
-                {authMsg}
-              </div>
-            ) : null}
-          </div>
-        )}
-
-        <div className="mt-8 grid lg:grid-cols-3 gap-8">
-          {/* LEFT: EVENTS */}
-          <section className={`${ui.card} lg:col-span-2`}>
-            <h2 className={ui.h2}>Next Call</h2>
-            <p className={ui.p}>Join the next session and keep notes in one place.</p>
-
-            <div className="mt-8 grid md:grid-cols-2 gap-6">
-              <div className={ui.subCard}>
-                <div className="text-sm font-semibold text-white/80">Next Call</div>
-                <div className="mt-3 text-white/90 font-bold text-lg leading-relaxed">
-                  {selectedEvent?.title || "Monthly Network Call"}
-                </div>
-                <div className="mt-3 text-[15px] text-white/70 leading-relaxed">
-                  {selectedEvent?.starts_at
-                    ? new Date(selectedEvent.starts_at).toLocaleString()
-                    : "Date/time will appear here once events are added."}
+        {/* Main grid: left (next call + notes) and right (announcements) */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Next Call card */}
+            <div className="rounded-2xl p-6 bg-emerald-100/15 border border-emerald-200/20">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">Next Call</h2>
+                  <div className="mt-2 text-[15px] text-white/75">{selectedEvent?.title || "Monthly Network Call"}</div>
+                  <div className="mt-1 text-sm text-white/70">{selectedEvent?.starts_at ? new Date(selectedEvent.starts_at).toLocaleString() : "Date/time will appear here once events are added."}</div>
                 </div>
 
-                <div className="mt-6 flex flex-col gap-3">
-                  <a href={eventLink} target="_blank" rel="noreferrer" className={`${ui.btnPrimary} w-full`}>
-                    Join Live (StreamYard)
-                  </a>
-
-                  <button onClick={() => copyToClipboard(eventLink)} className={`${ui.btnSecondary} w-full`}>
-                    Copy live link
-                  </button>
+                <div className="w-full md:w-1/3 flex flex-col gap-3">
+                  <a href={eventLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full px-4 py-2 font-extrabold bg-emerald-200 text-emerald-900 hover:bg-emerald-300">Join Live (StreamYard)</a>
+                  <button onClick={() => copyToClipboard(eventLink)} className="inline-flex items-center justify-center rounded-full px-4 py-2 border border-emerald-200/20 bg-white/5 text-white hover:bg-white/10">Copy live link</button>
 
                   {replayLink ? (
-                    <a href={replayLink} target="_blank" rel="noreferrer" className={`${ui.btnSecondary} w-full`}>
-                      Watch Replay
-                    </a>
+                    <a href={replayLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full px-4 py-2 border border-emerald-200/20 bg-white/5 text-white hover:bg-white/10">Watch Replay</a>
                   ) : isPastEvent ? (
-                    <div className="w-full inline-flex items-center justify-center rounded-full border border-white/15 bg-[#120d0b]/80 px-6 py-3 text-sm font-semibold text-white/70">
-                      Replay pending
-                    </div>
+                    <div className="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white/70">Replay pending</div>
                   ) : null}
 
                   {resourcesLink ? (
-                    <a href={resourcesLink} target="_blank" rel="noreferrer" className={`${ui.btnSecondary} w-full`}>
-                      Resources
-                    </a>
+                    <a href={resourcesLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full px-4 py-2 border border-emerald-200/20 bg-white/5 text-white hover:bg-white/10">Resources</a>
                   ) : null}
                 </div>
-
-                <div className="mt-5 text-xs text-white/60 leading-relaxed">Tip: Join Live when the call starts. After, use Watch Replay and Resources.</div>
               </div>
 
-              <div className={ui.subCard}>
-                <div className="text-sm font-semibold text-white/80">Choose an event</div>
-                <p className="mt-2 text-[15px] text-white/70 leading-relaxed">Pick from upcoming events here.</p>
-
-                <select value={selectedEvent?.id || ""} onChange={(e) => setSelectedEventId(e.target.value)} className={ui.input}>
+              <div className="mt-4">
+                <label className="text-sm text-white/70">Choose an event</label>
+                <select value={selectedEvent?.id || ""} onChange={(e) => setSelectedEventId(e.target.value)} className="mt-2 w-full rounded-lg border border-emerald-200/20 bg-emerald-100/10 px-4 py-2 text-white outline-none">
                   {(upcomingEvents?.length ? upcomingEvents : [{ id: "", title: "Monthly Network Call" }]).map((ev) => (
-                    <option key={ev.id || "default"} value={ev.id || ""}>
-                      {ev.title || "Monthly Network Call"}
-                    </option>
+                    <option key={ev.id || "default"} value={ev.id || ""} className="text-black">{ev.title || "Monthly Network Call"}</option>
                   ))}
                 </select>
-
+                <div className="mt-3 text-sm text-white/70">Tip: Join Live when the call starts. After, use Watch Replay and Resources.</div>
               </div>
             </div>
 
-            {/* NOTES */}
-            <div className="mt-10">
+            {/* Shared Notes card */}
+            <div className="rounded-2xl p-6 bg-emerald-100/15 border border-emerald-200/20">
               <h3 className="text-xl font-bold text-white">Shared Notes</h3>
-              <p className="mt-2 text-[15px] text-white/70 leading-relaxed">
-                Members can add notes and action items from calls.
-              </p>
+              <p className="mt-2 text-[15px] text-white/75">Members can add notes and action items from calls.</p>
 
-              <div className={`mt-6 ${ui.subCard}`}>
-                  <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} className={ui.textarea} placeholder="Add a note, decision, action item, or idea…" />
-                  <div className="mt-4 flex items-center justify-between gap-3">
-                    <div className="text-xs text-white/60">Notes save to Supabase (members only).</div>
-                    <button onClick={addNote} disabled={savingNote} className={ui.btnPrimary}>{savingNote ? "Saving…" : "Add note"}</button>
-                  </div>
+              <div className="mt-4">
+                <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} className="w-full min-h-[110px] rounded-lg border border-emerald-200/20 bg-emerald-100/10 px-4 py-3 text-white outline-none" placeholder="Add a note, decision, action item, or idea…" />
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="text-sm text-white/70">Notes save to Supabase (members only).</div>
+                  <button onClick={addNote} disabled={savingNote} className="rounded-full px-4 py-2 bg-emerald-200 text-emerald-900 font-extrabold hover:bg-emerald-300">{savingNote ? "Saving…" : "Add note"}</button>
                 </div>
+              </div>
 
-              <div className="mt-5 space-y-3">
+              <div className="mt-4 space-y-3">
                 {loadingData ? (
-                  <div className="text-white/70 text-[15px]">Loading…</div>
+                  <div className="text-white/70">Loading…</div>
                 ) : notes.length ? (
                   notes.map((n) => (
-                    <div key={n.id} className={ui.subCard}>
-                      <div className="text-white/90 text-[15px] leading-relaxed">{n.content}</div>
+                    <div key={n.id} className="rounded-lg p-4 bg-emerald-100/8 border border-emerald-200/10">
+                      <div className="text-white/90">{n.content}</div>
                       <div className="mt-2 text-xs text-white/60">{n.created_at ? new Date(n.created_at).toLocaleString() : ""}</div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-white/70 text-[15px]">No notes yet. Add the first note after your next call.</div>
+                  <div className="text-white/70">No notes yet. Add the first note after your next call.</div>
                 )}
               </div>
             </div>
-          </section>
+          </div>
 
-          {/* RIGHT: ANNOUNCEMENTS */}
-          <aside className={ui.card}>
-            <h2 className={ui.h2}>Announcements</h2>
-            <p className={ui.p}>Network updates, member highlights, and reminders.</p>
+          {/* Announcements card */}
+          <div className="rounded-2xl p-6 bg-emerald-100/15 border border-emerald-200/20">
+            <h2 className="text-2xl font-bold text-white">Announcements</h2>
+            <p className="mt-2 text-[15px] text-white/75">Network updates, member highlights, and reminders.</p>
 
-            <div className="mt-8 space-y-4">
+            <div className="mt-4 space-y-4">
               {loadingData ? (
-                <div className="text-white/70 text-[15px]">Loading…</div>
+                <div className="text-white/70">Loading…</div>
               ) : announcements.length ? (
                 announcements.map((a) => (
-                  <div key={a.id} className={ui.subCard}>
-                    <div className="text-white font-semibold text-[15px]">{a.title}</div>
-                    {a.body ? <div className="mt-3 text-[15px] text-white/80 leading-relaxed">{a.body}</div> : null}
+                  <div key={a.id} className="rounded-md p-4 bg-emerald-100/8 border border-emerald-200/10">
+                    <div className="text-white font-semibold">{a.title}</div>
+                    {a.body ? <div className="mt-2 text-white/80">{a.body}</div> : null}
                     <div className="mt-2 text-xs text-white/60">{a.created_at ? new Date(a.created_at).toLocaleString() : ""}</div>
                   </div>
                 ))
               ) : (
-                <div className={ui.subCard + " text-[15px] text-white/70"}>
-                  No announcements yet.
-                  <div className="mt-3 text-xs text-white/60">Next step: use the admin page to post updates here.</div>
-                </div>
+                <div className="text-white/70">No announcements yet. Use the admin page to post updates here.</div>
               )}
             </div>
-          </aside>
+          </div>
         </div>
       </div>
     </main>
