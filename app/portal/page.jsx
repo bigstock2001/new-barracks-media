@@ -48,14 +48,14 @@ const cx = {
     "text-emerald-800 underline decoration-emerald-400/40 hover:decoration-emerald-700",
 
   // Notes & announcement items
-  item:
-    "rounded-xl border border-emerald-200 bg-white p-4",
+  item: "rounded-xl border border-emerald-200 bg-white p-4",
   itemTitle: "font-bold text-emerald-950",
   itemBody: "mt-2 text-[15px] leading-relaxed text-slate-900",
   itemMeta: "mt-2 text-xs text-emerald-700",
 
   // Messages
-  msgOk: "rounded-xl border border-emerald-300 bg-emerald-100 p-3 text-sm text-emerald-950",
+  msgOk:
+    "rounded-xl border border-emerald-300 bg-emerald-100 p-3 text-sm text-emerald-950",
   msgErr: "rounded-xl border border-red-300 bg-red-50 p-3 text-sm text-red-800",
 
   // Top right auth bar
@@ -173,11 +173,7 @@ export default function PortalPage() {
               .select("*")
               .order("created_at", { ascending: false })
               .limit(10),
-            supabase
-              .from("events")
-              .select("*")
-              .order("starts_at", { ascending: true })
-              .limit(15),
+            supabase.from("events").select("*").order("starts_at", { ascending: true }).limit(15),
           ]);
 
         if (annErr) throw new Error(`Announcements: ${annErr.message}`);
@@ -333,271 +329,257 @@ export default function PortalPage() {
   const replayLink = selectedEvent?.replay_url || "";
   const resourcesLink = selectedEvent?.resources_url || "";
 
-  const startsAtMs = selectedEvent?.starts_at
-    ? new Date(selectedEvent.starts_at).getTime()
-    : null;
+  const startsAtMs = selectedEvent?.starts_at ? new Date(selectedEvent.starts_at).getTime() : null;
   const isPastEvent = startsAtMs ? startsAtMs < Date.now() : false;
 
   return (
-    <>
-      <main className={cx.page}>
-        <div className={cx.overlay} aria-hidden="true" />
+    <main className={cx.page}>
+      <div className={cx.overlay} aria-hidden="true" />
 
-        <div className="portal-scope">
-          <div className={cx.wrap}>
-        {/* HEADER */}
-        <section className={cx.header}>
-          <div className="text-xs uppercase tracking-widest text-emerald-800">
-            Barracks Media Network
-          </div>
-
-          <div className="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-emerald-950">
-                Member Portal
-              </h1>
-              <p className="mt-2 text-[15px] text-emerald-900">
-                Simple place for your next call + your notes.
-              </p>
+      {/* portal-scope ensures our link overrides apply only on this page */}
+      <div className="portal-scope">
+        <div className={cx.wrap}>
+          {/* HEADER */}
+          <section className={cx.header}>
+            <div className="text-xs uppercase tracking-widest text-emerald-800">
+              Barracks Media Network
             </div>
 
-            <div className={cx.topbar}>
-              <div className="text-sm text-emerald-950">
-                Signed in as{" "}
-                <span className="font-bold text-emerald-950">
-                  {session?.user?.email}
-                </span>
+            <div className="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-extrabold text-emerald-950">
+                  Member Portal
+                </h1>
+                <p className="mt-2 text-[15px] text-emerald-900">
+                  Simple place for your next call + your notes.
+                </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                {isAdmin ? (
-                  <div className="relative">
-                    <button
-                      onClick={() => setAdminOpen((v) => !v)}
-                      className={cx.btnSmall}
-                      type="button"
-                    >
-                      Admin
-                    </button>
-
-                    {adminOpen ? (
-                      <div className="absolute right-0 mt-2 w-56 rounded-xl border border-emerald-200 bg-white p-2 shadow-lg z-50">
-                        <a
-                          className={"block rounded-lg px-3 py-2 text-sm font-semibold text-emerald-900 hover:bg-emerald-50"}
-                          href="/admin/events"
-                          onClick={() => setAdminOpen(false)}
-                        >
-                          Manage Events
-                        </a>
-                        <a
-                          className={"mt-1 block rounded-lg px-3 py-2 text-sm font-semibold text-emerald-900 hover:bg-emerald-50"}
-                          href="/admin/announcements"
-                          onClick={() => setAdminOpen(false)}
-                        >
-                          Manage Announcements
-                        </a>
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
-
-                <button onClick={signOut} className={cx.btnSmallOutline} type="button">
-                  Sign out
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {(dataErr || authErr || authMsg) ? (
-            <div className="mt-4 space-y-2">
-              {dataErr ? <div className={cx.msgErr}>{dataErr}</div> : null}
-              {authErr ? <div className={cx.msgErr}>{authErr}</div> : null}
-              {authMsg ? <div className={cx.msgOk}>{authMsg}</div> : null}
-            </div>
-          ) : null}
-        </section>
-
-        {/* GRID */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* LEFT */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* NEXT CALL */}
-            <section className={cx.card}>
-              <h2 className={cx.cardTitle}>Next Call</h2>
-              <p className={cx.cardSub}>
-                Click <b>Join Live</b> when the call starts. After the call, use <b>Watch Replay</b> and <b>Resources</b>.
-              </p>
-
-              <div className="mt-5 rounded-xl border border-emerald-200 bg-white p-4">
-                <div className="font-extrabold text-emerald-950 text-lg">
-                  {selectedEvent?.title || "Monthly Network Call"}
-                </div>
-                <div className="mt-1 text-sm text-emerald-800">
-                  {selectedEvent?.starts_at
-                    ? new Date(selectedEvent.starts_at).toLocaleString()
-                    : "Date/time will appear here once events are added."}
+              <div className={cx.topbar}>
+                <div className="text-sm text-emerald-950">
+                  Signed in as{" "}
+                  <span className="font-bold text-emerald-950">{session?.user?.email}</span>
                 </div>
 
-                <div className="mt-4 grid sm:grid-cols-2 gap-3">
-                  <a
-                    href={eventLink}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={cx.btnPrimary}
-                  >
-                    Join Live
-                  </a>
-                  <button
-                    onClick={() => copyToClipboard(eventLink)}
-                    className={cx.btnSecondary}
-                    type="button"
-                  >
-                    Copy Live Link
-                  </button>
+                <div className="flex items-center gap-2">
+                  {isAdmin ? (
+                    <div className="relative">
+                      <button
+                        onClick={() => setAdminOpen((v) => !v)}
+                        className={cx.btnSmall}
+                        type="button"
+                      >
+                        Admin
+                      </button>
 
-                  {replayLink ? (
-                    <a
-                      href={replayLink}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={cx.btnSecondary}
-                    >
-                      Watch Replay
-                    </a>
-                  ) : isPastEvent ? (
-                    <div className="sm:col-span-1 text-sm font-semibold text-emerald-800 flex items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 p-3">
-                      Replay pending
+                      {adminOpen ? (
+                        <div className="absolute right-0 mt-2 w-56 rounded-xl border border-emerald-200 bg-white p-2 shadow-lg z-50">
+                          <a
+                            className="block rounded-lg px-3 py-2 text-sm font-semibold text-emerald-900 hover:bg-emerald-50"
+                            href="/admin/events"
+                            onClick={() => setAdminOpen(false)}
+                          >
+                            Manage Events
+                          </a>
+                          <a
+                            className="mt-1 block rounded-lg px-3 py-2 text-sm font-semibold text-emerald-900 hover:bg-emerald-50"
+                            href="/admin/announcements"
+                            onClick={() => setAdminOpen(false)}
+                          >
+                            Manage Announcements
+                          </a>
+                        </div>
+                      ) : null}
                     </div>
                   ) : null}
 
-                  {resourcesLink ? (
+                  <button onClick={signOut} className={cx.btnSmallOutline} type="button">
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {(dataErr || authErr || authMsg) ? (
+              <div className="mt-4 space-y-2">
+                {dataErr ? <div className={cx.msgErr}>{dataErr}</div> : null}
+                {authErr ? <div className={cx.msgErr}>{authErr}</div> : null}
+                {authMsg ? <div className={cx.msgOk}>{authMsg}</div> : null}
+              </div>
+            ) : null}
+          </section>
+
+          {/* GRID */}
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* LEFT */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* NEXT CALL */}
+              <section className={cx.card}>
+                <h2 className={cx.cardTitle}>Next Call</h2>
+                <p className={cx.cardSub}>
+                  Click <b>Join Live</b> when the call starts. After the call, use{" "}
+                  <b>Watch Replay</b> and <b>Resources</b>.
+                </p>
+
+                <div className="mt-5 rounded-xl border border-emerald-200 bg-white p-4">
+                  <div className="font-extrabold text-emerald-950 text-lg">
+                    {selectedEvent?.title || "Monthly Network Call"}
+                  </div>
+                  <div className="mt-1 text-sm text-emerald-800">
+                    {selectedEvent?.starts_at
+                      ? new Date(selectedEvent.starts_at).toLocaleString()
+                      : "Date/time will appear here once events are added."}
+                  </div>
+
+                  <div className="mt-4 grid sm:grid-cols-2 gap-3">
                     <a
-                      href={resourcesLink}
+                      href={eventLink}
                       target="_blank"
                       rel="noreferrer"
-                      className={cx.btnSecondary}
+                      className={cx.btnPrimary}
                     >
-                      Resources
+                      Join Live
                     </a>
-                  ) : null}
+                    <button
+                      onClick={() => copyToClipboard(eventLink)}
+                      className={cx.btnSecondary}
+                      type="button"
+                    >
+                      Copy Live Link
+                    </button>
+
+                    {replayLink ? (
+                      <a
+                        href={replayLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={cx.btnSecondary}
+                      >
+                        Watch Replay
+                      </a>
+                    ) : isPastEvent ? (
+                      <div className="sm:col-span-1 text-sm font-semibold text-emerald-800 flex items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+                        Replay pending
+                      </div>
+                    ) : null}
+
+                    {resourcesLink ? (
+                      <a
+                        href={resourcesLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={cx.btnSecondary}
+                      >
+                        Resources
+                      </a>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-5">
+                    <label className={cx.label}>Choose an event</label>
+                    <select
+                      value={selectedEvent?.id || ""}
+                      onChange={(e) => setSelectedEventId(e.target.value)}
+                      className={cx.select}
+                    >
+                      {(upcomingEvents?.length
+                        ? upcomingEvents
+                        : [{ id: "", title: "Monthly Network Call" }]
+                      ).map((ev) => (
+                        <option key={ev.id || "default"} value={ev.id || ""}>
+                          {ev.title || "Monthly Network Call"}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="mt-5">
-                  <label className={cx.label}>Choose an event</label>
-                  <select
-                    value={selectedEvent?.id || ""}
-                    onChange={(e) => setSelectedEventId(e.target.value)}
-                    className={cx.select}
-                  >
-                    {(upcomingEvents?.length
-                      ? upcomingEvents
-                      : [{ id: "", title: "Monthly Network Call" }]
-                    ).map((ev) => (
-                      <option key={ev.id || "default"} value={ev.id || ""}>
-                        {ev.title || "Monthly Network Call"}
-                      </option>
-                    ))}
-                  </select>
+                <div className="mt-3 text-sm text-emerald-900/80">
+                  Default StreamYard room is used until you add events.
                 </div>
-              </div>
+              </section>
 
-              <div className="mt-3 text-sm text-emerald-900/80">
-                Default StreamYard room is used until you add events.
-              </div>
-            </section>
+              {/* SHARED NOTES */}
+              <section className={cx.card}>
+                <h2 className={cx.cardTitle}>Shared Notes</h2>
+                <p className={cx.cardSub}>Add decisions and action items while you’re on the call.</p>
 
-            {/* SHARED NOTES */}
-            <section className={cx.card}>
-              <h2 className={cx.cardTitle}>Shared Notes</h2>
-              <p className={cx.cardSub}>
-                Add decisions and action items while you’re on the call.
-              </p>
+                <textarea
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  className={cx.textarea}
+                  placeholder="Add a note, decision, action item, or idea…"
+                />
 
-              <textarea
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value)}
-                className={cx.textarea}
-                placeholder="Add a note, decision, action item, or idea…"
-              />
-
-              <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="text-sm text-emerald-900/80">
-                  Notes save to Supabase (members only).
+                <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="text-sm text-emerald-900/80">
+                    Notes save to Supabase (members only).
+                  </div>
+                  <button onClick={addNote} disabled={savingNote} className={cx.btnPrimary} type="button">
+                    {savingNote ? "Saving…" : "Add Note"}
+                  </button>
                 </div>
-                <button
-                  onClick={addNote}
-                  disabled={savingNote}
-                  className={cx.btnPrimary}
-                  type="button"
-                >
-                  {savingNote ? "Saving…" : "Add Note"}
-                </button>
-              </div>
 
-              <div className="mt-5 space-y-3">
+                <div className="mt-5 space-y-3">
+                  {loadingData ? (
+                    <div className="text-emerald-900">Loading…</div>
+                  ) : notes.length ? (
+                    notes.map((n) => (
+                      <div key={n.id} className={cx.item}>
+                        <div className="text-slate-900">{n.content}</div>
+                        <div className={cx.itemMeta}>
+                          {n.created_at ? new Date(n.created_at).toLocaleString() : ""}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-emerald-900/85">
+                      No notes yet. Add the first note after your next call.
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
+
+            {/* RIGHT: ANNOUNCEMENTS */}
+            <aside className={cx.card}>
+              <h2 className={cx.cardTitle}>Announcements</h2>
+              <p className={cx.cardSub}>Updates and reminders from the network.</p>
+
+              <div className="mt-4 space-y-4">
                 {loadingData ? (
                   <div className="text-emerald-900">Loading…</div>
-                ) : notes.length ? (
-                  notes.map((n) => (
-                    <div key={n.id} className={cx.item}>
-                      <div className="text-slate-900">{n.content}</div>
+                ) : announcements.length ? (
+                  announcements.map((a) => (
+                    <div key={a.id} className={cx.item}>
+                      <div className={cx.itemTitle}>{a.title}</div>
+                      {a.body ? <div className={cx.itemBody}>{a.body}</div> : null}
                       <div className={cx.itemMeta}>
-                        {n.created_at ? new Date(n.created_at).toLocaleString() : ""}
+                        {a.created_at ? new Date(a.created_at).toLocaleString() : ""}
                       </div>
                     </div>
                   ))
                 ) : (
                   <div className="text-emerald-900/85">
-                    No notes yet. Add the first note after your next call.
+                    No announcements yet. (Admins can add them from the Admin menu.)
                   </div>
                 )}
               </div>
-            </section>
-          </div>
-
-          {/* RIGHT: ANNOUNCEMENTS */}
-          <aside className={cx.card}>
-            <h2 className={cx.cardTitle}>Announcements</h2>
-            <p className={cx.cardSub}>
-              Updates and reminders from the network.
-            </p>
-
-            <div className="mt-4 space-y-4">
-              {loadingData ? (
-                <div className="text-emerald-900">Loading…</div>
-              ) : announcements.length ? (
-                announcements.map((a) => (
-                  <div key={a.id} className={cx.item}>
-                    <div className={cx.itemTitle}>{a.title}</div>
-                    {a.body ? <div className={cx.itemBody}>{a.body}</div> : null}
-                    <div className={cx.itemMeta}>
-                      {a.created_at ? new Date(a.created_at).toLocaleString() : ""}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-emerald-900/85">
-                  No announcements yet. (Admins can add them from the Admin menu.)
-                </div>
-              )}
-            </div>
-          </aside>
+            </aside>
           </div>
         </div>
-        <style jsx global>{`
-  .portal-scope a {
-    color: inherit;
-    text-decoration: none;
-  }
+      </div>
 
-  .portal-scope section,
-  .portal-scope div,
-  .portal-scope main {
-    border: none !important;
-    background-clip: padding-box;
-  }
-`}</style>
-      </main>
-    </>
+      {/* ✅ FIXED: the <style jsx global> block is now in a safe/valid spot and overrides link blue */}
+      <style jsx global>{`
+        .portal-scope a {
+          color: inherit !important;
+          text-decoration: none;
+        }
+        .portal-scope a:hover {
+          text-decoration: underline;
+        }
+      `}</style>
+    </main>
   );
 }
