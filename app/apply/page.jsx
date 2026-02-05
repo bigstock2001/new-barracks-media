@@ -121,15 +121,15 @@ export default function ApplyPage() {
 
           {/* Funny H1 so you can confirm this file is deployed */}
           <h1 className="mt-3 text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
-            If you can read this, you found the right Apply page — congrats, you’re already more
-            qualified than my last Wi-Fi router.
+            If you can read this, you found the right Apply page — my last form had fonts so small
+            it required a telescope.
           </h1>
 
           <h2 className="mt-4 text-xl md:text-2xl lg:text-3xl font-bold tracking-tight text-white/90">
             Apply to Join the Network
           </h2>
 
-          <p className="mt-6 max-w-4xl text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
+          <p className="mt-6 max-w-5xl text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
             The Barracks Media Network partners with creators who produce consistent, high-quality
             podcasts that serve communities through storytelling, education, and lived experience.
             Choose the partnership path that fits your show: full network integration, or an
@@ -264,7 +264,7 @@ export default function ApplyPage() {
         {/* Application */}
         <section className="mt-8 rounded-3xl border border-white/10 bg-slate-900/40 p-8 md:p-12">
           <h2 className="text-2xl md:text-3xl font-bold text-white">Application</h2>
-          <p className="mt-3 max-w-4xl text-white/70 leading-relaxed">
+          <p className="mt-3 max-w-5xl text-white/70 leading-relaxed">
             Submit the form below. Depending on the partnership path you choose, the form will request
             the appropriate details for review.
           </p>
@@ -284,7 +284,7 @@ export default function ApplyPage() {
           <form onSubmit={submit} className="mt-8 grid gap-7">
             {/* Basic Info */}
             <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-5">
-              <h3 className="text-lg font-semibold text-white">Basic Info</h3>
+              <h3 className="text-lg md:text-xl font-semibold text-white">Basic Info</h3>
 
               <div className="grid md:grid-cols-2 gap-5">
                 <Field label="Your name" required>
@@ -333,7 +333,7 @@ export default function ApplyPage() {
 
             {/* Podcast Details */}
             <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-5">
-              <h3 className="text-lg font-semibold text-white">Podcast Details</h3>
+              <h3 className="text-lg md:text-xl font-semibold text-white">Podcast Details</h3>
 
               <div className="grid md:grid-cols-2 gap-5">
                 <Field label="RSS feed URL" required>
@@ -397,7 +397,9 @@ export default function ApplyPage() {
             {/* Conditional */}
             {form.path === "full" ? (
               <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-5">
-                <h3 className="text-lg font-semibold text-white">Full Network Requirements</h3>
+                <h3 className="text-lg md:text-xl font-semibold text-white">
+                  Full Network Requirements
+                </h3>
 
                 <div className="grid md:grid-cols-2 gap-5">
                   <Field label="Published episodes (total)" required>
@@ -443,7 +445,7 @@ export default function ApplyPage() {
               </div>
             ) : (
               <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-5">
-                <h3 className="text-lg font-semibold text-white">Reporting & Proof</h3>
+                <h3 className="text-lg md:text-xl font-semibold text-white">Reporting & Proof</h3>
 
                 <Field label="I will provide manual stats reporting" required>
                   <label className="inline-flex items-start gap-3">
@@ -453,7 +455,7 @@ export default function ApplyPage() {
                       onChange={(e) =>
                         setForm({ ...form, manual_stats_reporting: e.target.checked })
                       }
-                      className="mt-1 h-4 w-4 rounded border-white/10 bg-black/40 text-white"
+                      className="mt-1 h-5 w-5 rounded border-white/10 bg-black/40 text-white"
                     />
                     <span className="text-white/75 leading-relaxed">
                       Yes, I can provide manual stats reporting when requested.
@@ -482,15 +484,15 @@ export default function ApplyPage() {
                   className={cxTextarea}
                   placeholder="Who your show serves, what it stands for, and why this network is a fit. (40+ characters)"
                 />
-                <div className="mt-2 text-xs text-white/50 leading-relaxed">
-                  Tip: write it like you’re talking to a real person — because you are.
+                <div className="mt-2 text-sm text-white/55 leading-relaxed">
+                  Tip: You should be able to read what you type without squinting. (We fixed that.)
                 </div>
               </Field>
             </div>
 
             {/* Submit */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="text-sm text-white/60 leading-relaxed max-w-3xl">
+              <div className="text-sm md:text-base text-white/60 leading-relaxed max-w-4xl">
                 Full Partner minimums: 50 episodes & 50 downloads/episode (30 days). Payouts monthly
                 (min $100).
               </div>
@@ -510,18 +512,24 @@ export default function ApplyPage() {
   );
 }
 
+/**
+ * BIG READABILITY FIX:
+ * - text-base / md:text-lg everywhere you type
+ * - bigger line-height and padding
+ * - bigger textarea min-height
+ */
 const cxInput =
-  "w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white leading-6 placeholder:text-white/35 outline-none focus:ring-2 focus:ring-white/20";
+  "w-full rounded-xl border border-white/10 bg-black/40 px-5 py-4 text-base md:text-lg text-white leading-7 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20";
 const cxSelect =
-  "w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white leading-6 outline-none focus:ring-2 focus:ring-white/20";
+  "w-full rounded-xl border border-white/10 bg-black/40 px-5 py-4 text-base md:text-lg text-white leading-7 outline-none focus:ring-2 focus:ring-white/20";
 const cxTextarea =
-  "w-full min-h-[190px] rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-white leading-7 placeholder:text-white/35 outline-none focus:ring-2 focus:ring-white/20 resize-y";
+  "w-full min-h-[260px] rounded-xl border border-white/10 bg-black/40 px-5 py-5 text-base md:text-lg text-white leading-8 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20 resize-y";
 
 function Field({ label, required, children }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <label className="text-sm font-semibold text-white">{label}</label>
+        <label className="text-sm md:text-base font-semibold text-white">{label}</label>
         {required ? <span className="text-xs text-white/50">*</span> : null}
       </div>
       <div>{children}</div>
