@@ -571,7 +571,7 @@ export default function PortalPage() {
               />
 
               <div className="portal-notesbar">
-                <div className="portal-help">Notes save to Supabase (members only).</div>
+                <div className="portal-help"></div>
                 <button onClick={addNote} disabled={savingNote} className="portal-btn portal-btn-primary" type="button">
                   {savingNote ? "Saving…" : "Add Note"}
                 </button>
