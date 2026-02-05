@@ -103,7 +103,7 @@ export default function ApplyPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.10),transparent_55%)]" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-8 py-20">
         <section className="rounded-3xl border border-white/10 bg-slate-900/40 backdrop-blur p-12">
           <span className="text-xs uppercase tracking-widest text-white/60">Barracks Media Network</span>
 
