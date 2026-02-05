@@ -102,6 +102,7 @@ export default function ApplyPage() {
     form.path === "full" ? "Full Network Partner" : "Independent Network Partner";
 
   return (
+    {/* APPLY-FINGERPRINT-0205 */}
     <main className="relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 -z-10">
