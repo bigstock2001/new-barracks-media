@@ -314,39 +314,41 @@ export default function PortalPage() {
   const isPastEvent = startsAtMs ? startsAtMs < Date.now() : false;
 
   return (
-    <main className={ui.pageBg}>
-      <div className={`${ui.wrap} space-y-6 relative`}> 
-        {/* soft dark overlay behind content for readability */}
-        <div className="absolute inset-0 -z-10 bg-black/30 rounded-2xl" />
-
+    <main className="relative min-h-screen">
+      {/* Background image is preserved here */}
+      
+      {/* Light semi-opaque overlay container */}
+      <div className="absolute inset-0 bg-emerald-50/90 -z-10" />
+      
+      <div className={`${ui.wrap} space-y-6 relative`}>
         {/* Header card */}
-        <div className="rounded-3xl p-6 bg-emerald-100/15 border border-emerald-200/20">
+        <div className="rounded-3xl p-6 bg-emerald-100/60 border border-emerald-300/40">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <div className="text-xs uppercase tracking-widest text-emerald-100/80">Barracks Media Network</div>
-              <h1 className="mt-2 text-3xl font-extrabold text-white">Member Portal</h1>
-              <p className="mt-2 text-[15px] text-white/75">Join the next session and keep notes in one place.</p>
+              <div className="text-xs uppercase tracking-widest text-emerald-700">Barracks Media Network</div>
+              <h1 className="mt-2 text-3xl font-extrabold text-emerald-950">Member Portal</h1>
+              <p className="mt-2 text-[15px] text-emerald-900">Join the next session and keep notes in one place.</p>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="text-sm text-white/80">Signed in as <span className="font-semibold text-white">{session?.user?.email}</span></div>
+              <div className="text-sm text-emerald-900">Signed in as <span className="font-semibold text-emerald-950">{session?.user?.email}</span></div>
 
               {isAdmin ? (
                 <div className="relative">
-                  <button onClick={() => setAdminOpen(!adminOpen)} className="rounded-full px-3 py-2 text-sm font-semibold bg-emerald-200 text-emerald-900 hover:bg-emerald-300">
+                  <button onClick={() => setAdminOpen(!adminOpen)} className="rounded-full px-3 py-2 text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700">
                     Admin
                   </button>
 
                   {adminOpen && (
-                    <div className="absolute right-0 mt-2 w-48 z-50 bg-emerald-100/15 border border-emerald-200/20 rounded-lg p-2">
-                      <a href="/admin/events" onClick={() => setAdminOpen(false)} className="block px-3 py-2 text-sm text-white hover:bg-white/5 rounded-md">Events</a>
-                      <a href="/admin/announcements" onClick={() => setAdminOpen(false)} className="block px-3 py-2 text-sm text-white hover:bg-white/5 rounded-md mt-1">Announcements</a>
+                    <div className="absolute right-0 mt-2 w-48 z-50 bg-emerald-100/80 border border-emerald-300/40 rounded-lg p-2">
+                      <a href="/admin/events" onClick={() => setAdminOpen(false)} className="block px-3 py-2 text-sm text-emerald-900 hover:bg-emerald-200 rounded-md">Events</a>
+                      <a href="/admin/announcements" onClick={() => setAdminOpen(false)} className="block px-3 py-2 text-sm text-emerald-900 hover:bg-emerald-200 rounded-md mt-1">Announcements</a>
                     </div>
                   )}
                 </div>
               ) : null}
 
-              <button onClick={signOut} className="rounded-full px-3 py-2 text-sm font-semibold bg-emerald-200 text-emerald-900 hover:bg-emerald-300">Sign out</button>
+              <button onClick={signOut} className="rounded-full px-3 py-2 text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700">Sign out</button>
             </div>
           </div>
         </div>
@@ -355,89 +357,89 @@ export default function PortalPage() {
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             {/* Next Call card */}
-            <div className="rounded-2xl p-6 bg-emerald-100/15 border border-emerald-200/20">
+            <div className="rounded-2xl p-6 bg-emerald-100/60 border border-emerald-300/40">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-white">Next Call</h2>
-                  <div className="mt-2 text-[15px] text-white/75">{selectedEvent?.title || "Monthly Network Call"}</div>
-                  <div className="mt-1 text-sm text-white/70">{selectedEvent?.starts_at ? new Date(selectedEvent.starts_at).toLocaleString() : "Date/time will appear here once events are added."}</div>
+                  <h2 className="text-2xl font-bold text-emerald-950">Next Call</h2>
+                  <div className="mt-2 text-[15px] text-emerald-900">{selectedEvent?.title || "Monthly Network Call"}</div>
+                  <div className="mt-1 text-sm text-emerald-800">{selectedEvent?.starts_at ? new Date(selectedEvent.starts_at).toLocaleString() : "Date/time will appear here once events are added."}</div>
                 </div>
 
                 <div className="w-full md:w-1/3 flex flex-col gap-3">
-                  <a href={eventLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full px-4 py-2 font-extrabold bg-emerald-200 text-emerald-900 hover:bg-emerald-300">Join Live (StreamYard)</a>
-                  <button onClick={() => copyToClipboard(eventLink)} className="inline-flex items-center justify-center rounded-full px-4 py-2 border border-emerald-200/20 bg-white/5 text-white hover:bg-white/10">Copy live link</button>
+                  <a href={eventLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full px-4 py-2 font-extrabold bg-emerald-600 text-white hover:bg-emerald-700">Join Live (StreamYard)</a>
+                  <button onClick={() => copyToClipboard(eventLink)} className="inline-flex items-center justify-center rounded-full px-4 py-2 border border-emerald-400 bg-white text-emerald-900 hover:bg-emerald-50">Copy live link</button>
 
                   {replayLink ? (
-                    <a href={replayLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full px-4 py-2 border border-emerald-200/20 bg-white/5 text-white hover:bg-white/10">Watch Replay</a>
+                    <a href={replayLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full px-4 py-2 border border-emerald-400 bg-white text-emerald-900 hover:bg-emerald-50">Watch Replay</a>
                   ) : isPastEvent ? (
-                    <div className="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-white/70">Replay pending</div>
+                    <div className="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-emerald-700">Replay pending</div>
                   ) : null}
 
                   {resourcesLink ? (
-                    <a href={resourcesLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full px-4 py-2 border border-emerald-200/20 bg-white/5 text-white hover:bg-white/10">Resources</a>
+                    <a href={resourcesLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full px-4 py-2 border border-emerald-400 bg-white text-emerald-900 hover:bg-emerald-50">Resources</a>
                   ) : null}
                 </div>
               </div>
 
               <div className="mt-4">
-                <label className="text-sm text-white/70">Choose an event</label>
-                <select value={selectedEvent?.id || ""} onChange={(e) => setSelectedEventId(e.target.value)} className="mt-2 w-full rounded-lg border border-emerald-200/20 bg-emerald-100/10 px-4 py-2 text-white outline-none">
+                <label className="text-sm text-emerald-900">Choose an event</label>
+                <select value={selectedEvent?.id || ""} onChange={(e) => setSelectedEventId(e.target.value)} className="mt-2 w-full rounded-lg border border-emerald-300 bg-white text-emerald-950 outline-none">
                   {(upcomingEvents?.length ? upcomingEvents : [{ id: "", title: "Monthly Network Call" }]).map((ev) => (
-                    <option key={ev.id || "default"} value={ev.id || ""} className="text-black">{ev.title || "Monthly Network Call"}</option>
+                    <option key={ev.id || "default"} value={ev.id || ""}>{ev.title || "Monthly Network Call"}</option>
                   ))}
                 </select>
-                <div className="mt-3 text-sm text-white/70">Tip: Join Live when the call starts. After, use Watch Replay and Resources.</div>
+                <div className="mt-3 text-sm text-emerald-800">Tip: Join Live when the call starts. After, use Watch Replay and Resources.</div>
               </div>
             </div>
 
             {/* Shared Notes card */}
-            <div className="rounded-2xl p-6 bg-emerald-100/15 border border-emerald-200/20">
-              <h3 className="text-xl font-bold text-white">Shared Notes</h3>
-              <p className="mt-2 text-[15px] text-white/75">Members can add notes and action items from calls.</p>
+            <div className="rounded-2xl p-6 bg-emerald-100/60 border border-emerald-300/40">
+              <h3 className="text-xl font-bold text-emerald-950">Shared Notes</h3>
+              <p className="mt-2 text-[15px] text-emerald-900">Members can add notes and action items from calls.</p>
 
               <div className="mt-4">
-                <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} className="w-full min-h-[110px] rounded-lg border border-emerald-200/20 bg-emerald-100/10 px-4 py-3 text-white outline-none" placeholder="Add a note, decision, action item, or idea…" />
+                <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} className="w-full min-h-[110px] rounded-lg border border-emerald-300 bg-white text-emerald-950 outline-none" placeholder="Add a note, decision, action item, or idea…" />
                 <div className="mt-3 flex items-center justify-between">
-                  <div className="text-sm text-white/70">Notes save to Supabase (members only).</div>
-                  <button onClick={addNote} disabled={savingNote} className="rounded-full px-4 py-2 bg-emerald-200 text-emerald-900 font-extrabold hover:bg-emerald-300">{savingNote ? "Saving…" : "Add note"}</button>
+                  <div className="text-sm text-emerald-900">Notes save to Supabase (members only).</div>
+                  <button onClick={addNote} disabled={savingNote} className="rounded-full px-4 py-2 bg-emerald-600 text-white font-extrabold hover:bg-emerald-700">{savingNote ? "Saving…" : "Add note"}</button>
                 </div>
               </div>
 
               <div className="mt-4 space-y-3">
                 {loadingData ? (
-                  <div className="text-white/70">Loading…</div>
+                  <div className="text-emerald-900">Loading…</div>
                 ) : notes.length ? (
                   notes.map((n) => (
-                    <div key={n.id} className="rounded-lg p-4 bg-emerald-100/8 border border-emerald-200/10">
-                      <div className="text-white/90">{n.content}</div>
-                      <div className="mt-2 text-xs text-white/60">{n.created_at ? new Date(n.created_at).toLocaleString() : ""}</div>
+                    <div key={n.id} className="rounded-lg p-4 bg-white border border-emerald-200">
+                      <div className="text-emerald-950">{n.content}</div>
+                      <div className="mt-2 text-xs text-emerald-700">{n.created_at ? new Date(n.created_at).toLocaleString() : ""}</div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-white/70">No notes yet. Add the first note after your next call.</div>
+                  <div className="text-emerald-900">No notes yet. Add the first note after your next call.</div>
                 )}
               </div>
             </div>
           </div>
 
           {/* Announcements card */}
-          <div className="rounded-2xl p-6 bg-emerald-100/15 border border-emerald-200/20">
-            <h2 className="text-2xl font-bold text-white">Announcements</h2>
-            <p className="mt-2 text-[15px] text-white/75">Network updates, member highlights, and reminders.</p>
+          <div className="rounded-2xl p-6 bg-emerald-100/60 border border-emerald-300/40">
+            <h2 className="text-2xl font-bold text-emerald-950">Announcements</h2>
+            <p className="mt-2 text-[15px] text-emerald-900">Network updates, member highlights, and reminders.</p>
 
             <div className="mt-4 space-y-4">
               {loadingData ? (
-                <div className="text-white/70">Loading…</div>
+                <div className="text-emerald-900">Loading…</div>
               ) : announcements.length ? (
                 announcements.map((a) => (
-                  <div key={a.id} className="rounded-md p-4 bg-emerald-100/8 border border-emerald-200/10">
-                    <div className="text-white font-semibold">{a.title}</div>
-                    {a.body ? <div className="mt-2 text-white/80">{a.body}</div> : null}
-                    <div className="mt-2 text-xs text-white/60">{a.created_at ? new Date(a.created_at).toLocaleString() : ""}</div>
+                  <div key={a.id} className="rounded-md p-4 bg-white border border-emerald-200">
+                    <div className="text-emerald-950 font-semibold">{a.title}</div>
+                    {a.body ? <div className="mt-2 text-emerald-900">{a.body}</div> : null}
+                    <div className="mt-2 text-xs text-emerald-700">{a.created_at ? new Date(a.created_at).toLocaleString() : ""}</div>
                   </div>
                 ))
               ) : (
-                <div className="text-white/70">No announcements yet. Use the admin page to post updates here.</div>
+                <div className="text-emerald-900">No announcements yet. Use the admin page to post updates here.</div>
               )}
             </div>
           </div>
