@@ -56,7 +56,9 @@ export default function ApplyPage() {
     setDone(false);
 
     if (!canSubmit) {
-      setError("Please complete all required fields and ensure the selected path-specific requirements are met.");
+      setError(
+        "Please complete all required fields and ensure the selected path-specific requirements are met."
+      );
       return;
     }
 
@@ -96,113 +98,250 @@ export default function ApplyPage() {
     }
   }
 
+  const pathLabel =
+    form.path === "full" ? "Full Network Partner" : "Independent Network Partner";
+
   return (
     <main className="relative overflow-hidden">
+      {/* Background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.10),transparent_55%)]" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-8 py-20">
-        <section className="rounded-3xl border border-white/10 bg-slate-900/40 backdrop-blur p-12">
-          <span className="text-xs uppercase tracking-widest text-white/60">Barracks Media Network</span>
+      {/* WIDER WRAP */}
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 lg:py-20">
+        {/* HERO */}
+        <section className="rounded-3xl border border-white/10 bg-slate-900/40 backdrop-blur p-8 md:p-12">
+          <div className="flex flex-col gap-6">
+            <div>
+              <span className="text-xs uppercase tracking-widest text-white/60">
+                Barracks Media Network
+              </span>
 
-          <h1 className="mt-3 text-5xl md:text-6xl font-extrabold tracking-tight text-white">Apply to Join the Network</h1>
+              <h1 className="mt-3 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white">
+                Apply to Join the Network
+              </h1>
 
-          <p className="mt-6 text-lg md:text-xl text-white/80 max-w-4xl leading-relaxed">
-            The Barracks Media Network partners with creators who produce consistent, high-quality podcasts that serve communities through storytelling, education, and lived experience. Choose the partnership path that fits your show: full network integration, or an independent partnership while keeping your own RSS feed.
-          </p>
+              {/* Remove the extra max-width constraint so it breathes */}
+              <p className="mt-6 text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
+                The Barracks Media Network partners with creators who produce consistent,
+                high-quality podcasts that serve communities through storytelling, education,
+                and lived experience. Choose the partnership path that fits your show: full
+                network integration, or an independent partnership while keeping your own RSS
+                feed.
+              </p>
+            </div>
+
+            {/* Quick selector (keeps your existing state, just makes it feel clean) */}
+            <div className="rounded-2xl border border-white/10 bg-slate-800/35 p-5">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <div className="text-sm font-semibold text-white">Choose your partnership path</div>
+                  <div className="text-sm text-white/65">
+                    This selection updates the requirements section in the application form.
+                  </div>
+                </div>
+
+                <select
+                  value={form.path}
+                  onChange={(e) => setForm({ ...form, path: e.target.value })}
+                  className="w-full md:w-[420px] rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
+                >
+                  <option value="full">Full Network Partner (RSS hosted by Barracks Media)</option>
+                  <option value="independent">Independent Network Partner (keep your RSS)</option>
+                </select>
+              </div>
+
+              <div className="mt-3 text-xs text-white/55">
+                Current selection: <span className="font-semibold text-white/80">{pathLabel}</span>
+              </div>
+            </div>
+          </div>
         </section>
-        <section className="mt-8 grid md:grid-cols-2 gap-6">
-          <div className="rounded-3xl border border-white/10 bg-slate-900/40 p-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Full Network Partner</h2>
-            <p className="mt-3 text-white/75">RSS hosted and distributed by Barracks Media. Full integration into network sponsorships and ad programs.</p>
-            <ul className="mt-4 space-y-2 text-white/75">
-              <li>• Minimum 50 published episodes</li>
-              <li>• Minimum 50 downloads per episode within 30 days</li>
-              <li>• RSS hosted and distributed by Barracks Media</li>
-              <li>• Eligible for network-wide sponsorships</li>
-              <li>• Revenue split: 70% to creators / 30% to Barracks Media</li>
-            </ul>
-            <div className="mt-4 text-sm text-white/70">Example: $1,000 sponsorship → $300 Barracks Media, $700 split proportionally by episode downloads.</div>
-          </div>
 
-          <div className="rounded-3xl border border-white/10 bg-slate-900/40 p-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Independent Network Partner</h2>
-            <p className="mt-3 text-white/75">Keep your own RSS feed and provide manual stats reporting when requested. Limited sponsorship eligibility; option to upgrade later.</p>
-            <ul className="mt-4 space-y-2 text-white/75">
-              <li>• Creator keeps their own RSS feed</li>
-              <li>• Manual stats reporting required</li>
-              <li>• Limited sponsorship eligibility</li>
-              <li>• Revenue split: 30% to creator / 70% to Barracks Media</li>
-              <li>• Option to upgrade to Full Network Partner later</li>
-            </ul>
-          </div>
+        {/* PARTNERSHIP PATHS (OPEN + ORGANIZED) */}
+        <section className="mt-8 grid lg:grid-cols-2 gap-6">
+          <PathCard
+            title="Full Network Partner"
+            subtitle="RSS hosted and distributed by Barracks Media. Full integration into network sponsorships and ad programs."
+          >
+            <InfoCard title="Eligibility Minimums">
+              <ul className="space-y-2 text-white/75">
+                <li>• Minimum <b>50 published episodes</b></li>
+                <li>• Minimum <b>50 downloads per episode</b> within <b>30 days</b></li>
+              </ul>
+            </InfoCard>
+
+            <InfoCard title="Benefits">
+              <ul className="space-y-2 text-white/75">
+                <li>• RSS hosted and distributed by Barracks Media</li>
+                <li>• Eligible for network-wide sponsorships</li>
+                <li>• Full integration into network ad programs</li>
+              </ul>
+            </InfoCard>
+
+            <InfoCard title="Revenue Split">
+              <div className="text-white/75 leading-relaxed">
+                <b>70%</b> to creators / <b>30%</b> to Barracks Media
+              </div>
+            </InfoCard>
+
+            <InfoCard title="Example Distribution">
+              <div className="text-white/75 leading-relaxed">
+                Example: $1,000 sponsorship → $300 Barracks Media, $700 split proportionally by episode
+                downloads.
+              </div>
+            </InfoCard>
+          </PathCard>
+
+          <PathCard
+            title="Independent Network Partner"
+            subtitle="Keep your own RSS feed and provide manual stats reporting when requested. Limited sponsorship eligibility; option to upgrade later."
+          >
+            <InfoCard title="What stays yours">
+              <ul className="space-y-2 text-white/75">
+                <li>• You keep your own RSS feed + hosting platform</li>
+                <li>• You control publishing and distribution</li>
+              </ul>
+            </InfoCard>
+
+            <InfoCard title="Requirements">
+              <ul className="space-y-2 text-white/75">
+                <li>• Manual stats reporting required (when requested)</li>
+                <li>• Limited sponsorship eligibility</li>
+                <li>• Option to upgrade later</li>
+              </ul>
+            </InfoCard>
+
+            <InfoCard title="Revenue Split">
+              <div className="text-white/75 leading-relaxed">
+                <b>30%</b> to creator / <b>70%</b> to Barracks Media
+              </div>
+            </InfoCard>
+          </PathCard>
         </section>
 
-        <section className="mt-8 grid md:grid-cols-2 gap-6">
-          <div className="rounded-3xl border border-white/10 bg-slate-900/40 p-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Sponsorships & Revenue Model</h2>
-            <p className="mt-3 text-white/75">Sponsorships are distributed according to partnership eligibility and the revenue split defined by each path.</p>
-          </div>
+        {/* SPONSORSHIP + PAYOUTS CARDS */}
+        <section className="mt-8 grid lg:grid-cols-2 gap-6">
+          <Card title="Sponsorships & Revenue Model">
+            <p className="mt-2 text-white/75 leading-relaxed">
+              Sponsorships are distributed according to partnership eligibility and the revenue split defined by
+              each path. Full Network Partners are eligible for network-wide sponsorship programs.
+              Independent partners may participate in limited sponsorship opportunities.
+            </p>
+          </Card>
 
-          <div className="rounded-3xl border border-white/10 bg-slate-900/40 p-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Payout Rules</h2>
-            <ul className="mt-3 text-white/75 space-y-1">
-              <li>• Minimum payout threshold: $100</li>
-              <li>• Payouts issued on the first of each month</li>
+          <Card title="Payout Rules">
+            <ul className="mt-2 text-white/75 space-y-2">
+              <li>• Minimum payout threshold: <b>$100</b></li>
+              <li>• Payouts issued on the <b>first of each month</b></li>
               <li>• Earnings roll forward until threshold is met</li>
-              <li>• Payments via Stripe Connect (ACH only) — No PayPal, no checks</li>
+              <li>
+                • Payments via <b>Stripe Connect (ACH only)</b> — no PayPal, no checks
+              </li>
             </ul>
-          </div>
+          </Card>
         </section>
 
-        <section className="mt-8 rounded-3xl border border-white/10 bg-slate-900/40 p-12">
+        {/* APPLICATION */}
+        <section className="mt-8 rounded-3xl border border-white/10 bg-slate-900/40 p-8 md:p-12">
           <h2 className="text-2xl md:text-3xl font-bold text-white">Application</h2>
-          <p className="mt-3 text-white/70">Submit the form below. Depending on the partnership path you choose, the form will request the appropriate details for review.</p>
+          <p className="mt-3 text-white/70">
+            Submit the form below. Depending on the partnership path you choose, the form will request the
+            appropriate details for review.
+          </p>
 
-          {error ? (<div className="mt-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-100">{error}</div>) : null}
-          {done ? (<div className="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-100">Application submitted. If it’s a fit, you’ll hear back with next steps.</div>) : null}
+          {error ? (
+            <div className="mt-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-100">
+              {error}
+            </div>
+          ) : null}
+
+          {done ? (
+            <div className="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-100">
+              Application submitted. If it’s a fit, you’ll hear back with next steps.
+            </div>
+          ) : null}
 
           <form onSubmit={submit} className="mt-8 grid gap-6">
+            {/* BASIC INFO */}
             <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
               <h3 className="text-lg font-semibold text-white">Basic Info</h3>
+
               <div className="grid md:grid-cols-2 gap-4">
                 <Field label="Your name" required>
-                  <input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="Full name" />
+                  <input
+                    value={form.full_name}
+                    onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                    className={cxInput}
+                    placeholder="Full name"
+                  />
                 </Field>
 
                 <Field label="Email" required>
-                  <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="you@example.com" type="email" />
+                  <input
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className={cxInput}
+                    placeholder="you@example.com"
+                    type="email"
+                  />
                 </Field>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <Field label="Podcast name" required>
-                  <input value={form.show_name} onChange={(e) => setForm({ ...form, show_name: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="Show title" />
+                  <input
+                    value={form.show_name}
+                    onChange={(e) => setForm({ ...form, show_name: e.target.value })}
+                    className={cxInput}
+                    placeholder="Show title"
+                  />
                 </Field>
 
                 <Field label="Website (optional)">
-                  <input value={form.show_website} onChange={(e) => setForm({ ...form, show_website: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="https://..." />
+                  <input
+                    value={form.show_website}
+                    onChange={(e) => setForm({ ...form, show_website: e.target.value })}
+                    className={cxInput}
+                    placeholder="https://..."
+                  />
                 </Field>
               </div>
             </div>
 
+            {/* PODCAST DETAILS */}
             <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
               <h3 className="text-lg font-semibold text-white">Podcast Details</h3>
+
               <div className="grid md:grid-cols-2 gap-4">
                 <Field label="RSS feed URL" required>
-                  <input value={form.rss_url} onChange={(e) => setForm({ ...form, rss_url: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="https://.../feed" />
+                  <input
+                    value={form.rss_url}
+                    onChange={(e) => setForm({ ...form, rss_url: e.target.value })}
+                    className={cxInput}
+                    placeholder="https://.../feed"
+                  />
                 </Field>
 
                 <Field label="Host platform (optional)">
-                  <input value={form.host_platform} onChange={(e) => setForm({ ...form, host_platform: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="Captivate, Buzzsprout, Spotify for Podcasters..." />
+                  <input
+                    value={form.host_platform}
+                    onChange={(e) => setForm({ ...form, host_platform: e.target.value })}
+                    className={cxInput}
+                    placeholder="Captivate, Buzzsprout, Spotify for Podcasters..."
+                  />
                 </Field>
               </div>
 
               <div className="grid md:grid-cols-3 gap-4">
                 <Field label="Publishing frequency" required>
-                  <select value={form.publish_frequency} onChange={(e) => setForm({ ...form, publish_frequency: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20">
+                  <select
+                    value={form.publish_frequency}
+                    onChange={(e) => setForm({ ...form, publish_frequency: e.target.value })}
+                    className={cxSelect}
+                  >
                     <option>Weekly</option>
                     <option>Bi-weekly</option>
                     <option>Monthly</option>
@@ -212,7 +351,11 @@ export default function ApplyPage() {
                 </Field>
 
                 <Field label="Your show is mainly..." required>
-                  <select value={form.focus} onChange={(e) => setForm({ ...form, focus: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20">
+                  <select
+                    value={form.focus}
+                    onChange={(e) => setForm({ ...form, focus: e.target.value })}
+                    className={cxSelect}
+                  >
                     <option value="helping">Helping others</option>
                     <option value="storytelling">Storytelling</option>
                     <option value="both">Both</option>
@@ -220,7 +363,11 @@ export default function ApplyPage() {
                 </Field>
 
                 <Field label="Partnership path" required>
-                  <select value={form.path} onChange={(e) => setForm({ ...form, path: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20">
+                  <select
+                    value={form.path}
+                    onChange={(e) => setForm({ ...form, path: e.target.value })}
+                    className={cxSelect}
+                  >
                     <option value="full">Full Network Partner (RSS hosted by Barracks Media)</option>
                     <option value="independent">Independent Network Partner (keep your RSS)</option>
                   </select>
@@ -228,57 +375,127 @@ export default function ApplyPage() {
               </div>
 
               <Field label="Primary topics (optional)">
-                <input value={form.primary_topics} onChange={(e) => setForm({ ...form, primary_topics: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="Leadership, transition, recovery, history, faith, etc." />
+                <input
+                  value={form.primary_topics}
+                  onChange={(e) => setForm({ ...form, primary_topics: e.target.value })}
+                  className={cxInput}
+                  placeholder="Leadership, transition, recovery, history, faith, etc."
+                />
               </Field>
             </div>
 
+            {/* CONDITIONAL */}
             {form.path === "full" ? (
               <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
                 <h3 className="text-lg font-semibold text-white">Full Network Requirements</h3>
-                <p className="text-white/70 text-sm">To qualify as a Full Network Partner you must meet the minima below. These metrics are used when reviewing migration to network-hosted RSS and sponsorship eligibility.</p>
+                <p className="text-white/70 text-sm">
+                  To qualify as a Full Network Partner you must meet the minima below. These metrics are used
+                  when reviewing migration to network-hosted RSS and sponsorship eligibility.
+                </p>
+
                 <div className="grid md:grid-cols-2 gap-4">
                   <Field label="Published episodes (total)" required>
-                    <input value={form.published_episodes} onChange={(e) => setForm({ ...form, published_episodes: e.target.value.replace(/[^0-9]/g, "") })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="Number of published episodes" inputMode="numeric" />
+                    <input
+                      value={form.published_episodes}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          published_episodes: e.target.value.replace(/[^0-9]/g, ""),
+                        })
+                      }
+                      className={cxInput}
+                      placeholder="Number of published episodes"
+                      inputMode="numeric"
+                    />
                   </Field>
 
                   <Field label="Avg downloads per episode (30 days)" required>
-                    <input value={form.avg_downloads_30days} onChange={(e) => setForm({ ...form, avg_downloads_30days: e.target.value.replace(/[^0-9]/g, "") })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="Average downloads in 30 days" inputMode="numeric" />
+                    <input
+                      value={form.avg_downloads_30days}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          avg_downloads_30days: e.target.value.replace(/[^0-9]/g, ""),
+                        })
+                      }
+                      className={cxInput}
+                      placeholder="Average downloads in 30 days"
+                      inputMode="numeric"
+                    />
                   </Field>
                 </div>
 
                 <Field label="Stats proof link (optional)">
-                  <input value={form.stats_proof_url} onChange={(e) => setForm({ ...form, stats_proof_url: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="e.g., Google Drive / Dropbox folder link" />
+                  <input
+                    value={form.stats_proof_url}
+                    onChange={(e) => setForm({ ...form, stats_proof_url: e.target.value })}
+                    className={cxInput}
+                    placeholder="e.g., Google Drive / Dropbox folder link"
+                  />
                 </Field>
               </div>
             ) : (
               <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
                 <h3 className="text-lg font-semibold text-white">Reporting & Proof</h3>
-                <p className="text-white/70 text-sm">Independent partners keep their RSS feed and must provide manual stats reporting when requested. Limited sponsorship eligibility applies; you may upgrade later.</p>
+                <p className="text-white/70 text-sm">
+                  Independent partners keep their RSS feed and must provide manual stats reporting when
+                  requested. Limited sponsorship eligibility applies; you may upgrade later.
+                </p>
 
                 <Field label="I will provide manual stats reporting" required>
                   <div className="flex items-center gap-3">
                     <label className="inline-flex items-center gap-2">
-                      <input type="checkbox" checked={!!form.manual_stats_reporting} onChange={(e) => setForm({ ...form, manual_stats_reporting: e.target.checked })} className="h-4 w-4 rounded border-white/10 bg-black/40 text-white" />
-                      <span className="text-white/75">Yes, I can provide manual stats reporting</span>
+                      <input
+                        type="checkbox"
+                        checked={!!form.manual_stats_reporting}
+                        onChange={(e) =>
+                          setForm({ ...form, manual_stats_reporting: e.target.checked })
+                        }
+                        className="h-4 w-4 rounded border-white/10 bg-black/40 text-white"
+                      />
+                      <span className="text-white/75">
+                        Yes, I can provide manual stats reporting
+                      </span>
                     </label>
                   </div>
                 </Field>
 
                 <Field label="Stats proof link (optional)">
-                  <input value={form.stats_proof_url} onChange={(e) => setForm({ ...form, stats_proof_url: e.target.value })} className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="Optional: link to reports or analytics" />
+                  <input
+                    value={form.stats_proof_url}
+                    onChange={(e) => setForm({ ...form, stats_proof_url: e.target.value })}
+                    className={cxInput}
+                    placeholder="Optional: link to reports or analytics"
+                  />
                 </Field>
               </div>
             )}
 
+            {/* WHY JOIN */}
             <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6">
               <Field label="Why do you want to join Barracks Media Network?" required>
-                <textarea value={form.why_join} onChange={(e) => setForm({ ...form, why_join: e.target.value })} className="w-full min-h-[140px] rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20" placeholder="Who your show serves, what it stands for, and why this network is a fit. (40+ characters)" />
+                <textarea
+                  value={form.why_join}
+                  onChange={(e) => setForm({ ...form, why_join: e.target.value })}
+                  className={cxTextarea}
+                  placeholder="Who your show serves, what it stands for, and why this network is a fit. (40+ characters)"
+                />
               </Field>
             </div>
 
+            {/* SUBMIT */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="text-sm text-white/60">Minimums: Full Partner — 50 episodes & 50 downloads/ep (30d).</div>
-              <button type="submit" disabled={loading} className="mt-2 inline-flex items-center justify-center rounded-full bg-white px-8 py-3 font-extrabold text-black disabled:opacity-60">{loading ? "Submitting..." : "Submit Application"}</button>
+              <div className="text-sm text-white/60">
+                Minimums: Full Partner — 50 episodes & 50 downloads/ep (30d). Payouts monthly (min $100).
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 font-extrabold text-black disabled:opacity-60"
+              >
+                {loading ? "Submitting..." : "Submit Application"}
+              </button>
             </div>
           </form>
         </section>
@@ -286,6 +503,13 @@ export default function ApplyPage() {
     </main>
   );
 }
+
+const cxInput =
+  "w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20";
+const cxSelect =
+  "w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20";
+const cxTextarea =
+  "w-full min-h-[150px] rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20";
 
 function Field({ label, required, children }) {
   return (
@@ -298,4 +522,32 @@ function Field({ label, required, children }) {
     </div>
   );
 }
- 
+
+function Card({ title, children }) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-slate-900/40 p-8">
+      <h2 className="text-2xl md:text-3xl font-bold text-white">{title}</h2>
+      {children}
+    </div>
+  );
+}
+
+function PathCard({ title, subtitle, children }) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-slate-900/40 p-8">
+      <h2 className="text-2xl md:text-3xl font-bold text-white">{title}</h2>
+      <p className="mt-3 text-white/75 leading-relaxed">{subtitle}</p>
+
+      <div className="mt-6 grid sm:grid-cols-2 gap-4">{children}</div>
+    </div>
+  );
+}
+
+function InfoCard({ title, children }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-slate-800/35 p-5">
+      <div className="text-sm font-semibold text-white">{title}</div>
+      <div className="mt-3">{children}</div>
+    </div>
+  );
+}
