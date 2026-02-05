@@ -315,7 +315,7 @@ export default function PortalPage() {
             </div>
 
             <h1 className="mt-3 text-3xl md:text-4xl font-extrabold tracking-tight text-white">
-              Member Portal
+              Member Portal of a crazy person listening to chat gpt
             </h1>
             <p className={cx.cardSub}>
               Sign in to access calls, webinar links, shared notes, and announcements.
