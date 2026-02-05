@@ -339,10 +339,12 @@ export default function PortalPage() {
   const isPastEvent = startsAtMs ? startsAtMs < Date.now() : false;
 
   return (
-    <main className={cx.page}>
-      <div className={cx.overlay} aria-hidden="true" />
+    <>
+      <main className={cx.page}>
+        <div className={cx.overlay} aria-hidden="true" />
 
-      <div className={cx.wrap}>
+        <div className="portal-scope">
+          <div className={cx.wrap}>
         {/* HEADER */}
         <section className={cx.header}>
           <div className="text-xs uppercase tracking-widest text-emerald-800">
@@ -580,8 +582,31 @@ export default function PortalPage() {
               )}
             </div>
           </aside>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+
+      {isAuthed ? (
+        <style jsx global>{`
+  .portal-scope a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .portal-scope section,
+  .portal-scope div,
+  .portal-scope main {
+    border: none !important;
+    background-clip: padding-box;
+  }
+
+  .portal-scope button {
+    all: unset;
+    display: inline-flex;
+    cursor: pointer;
+  }
+`}</style>
+      ) : null}
+    </>
   );
 }
