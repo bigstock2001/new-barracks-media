@@ -121,8 +121,8 @@ export default function ApplyPage() {
 
           {/* Funny H1 so you can confirm this file is deployed */}
           <h1 className="mt-3 text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
-            If you can read this, you found the right Apply page — my last form had fonts so small
-            it required a telescope.
+            If you can read this, you’re on the right Apply page — and yes, we fired the “tiny font”
+            guy.
           </h1>
 
           <h2 className="mt-4 text-xl md:text-2xl lg:text-3xl font-bold tracking-tight text-white/90">
@@ -513,17 +513,17 @@ export default function ApplyPage() {
 }
 
 /**
- * BIG READABILITY FIX:
- * - text-base / md:text-lg everywhere you type
- * - bigger line-height and padding
- * - bigger textarea min-height
+ * THICKER INPUTS:
+ * - hard-set input/select height so it's physically taller
+ * - bigger font so typing is readable
+ * - textarea has big min-height
  */
 const cxInput =
-  "w-full rounded-xl border border-white/10 bg-black/40 px-5 py-4 text-base md:text-lg text-white leading-7 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20";
+  "w-full h-14 md:h-16 rounded-xl border border-white/10 bg-black/40 px-5 text-base md:text-lg text-white leading-none placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20";
 const cxSelect =
-  "w-full rounded-xl border border-white/10 bg-black/40 px-5 py-4 text-base md:text-lg text-white leading-7 outline-none focus:ring-2 focus:ring-white/20";
+  "w-full h-14 md:h-16 rounded-xl border border-white/10 bg-black/40 px-5 text-base md:text-lg text-white leading-none outline-none focus:ring-2 focus:ring-white/20";
 const cxTextarea =
-  "w-full min-h-[260px] rounded-xl border border-white/10 bg-black/40 px-5 py-5 text-base md:text-lg text-white leading-8 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20 resize-y";
+  "w-full min-h-[340px] rounded-xl border border-white/10 bg-black/40 px-5 py-5 text-base md:text-lg text-white leading-8 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20 resize-y";
 
 function Field({ label, required, children }) {
   return (
