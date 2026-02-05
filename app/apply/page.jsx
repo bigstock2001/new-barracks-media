@@ -102,66 +102,64 @@ export default function ApplyPage() {
     form.path === "full" ? "Full Network Partner" : "Independent Network Partner";
 
   return (
-    {/* APPLY-FINGERPRINT-0205 */}
     <main className="relative overflow-hidden">
+      {/* APPLY-FINGERPRINT-0205 */}
+
       {/* Background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.10),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),transparent_55%)]" />
       </div>
 
-      {/* WIDER WRAP */}
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16 lg:py-20">
-        {/* HERO */}
+      {/* Wider page wrap */}
+      <div className="mx-auto max-w-[92rem] px-6 sm:px-8 lg:px-12 py-16 lg:py-20">
+        {/* Hero */}
         <section className="rounded-3xl border border-white/10 bg-slate-900/40 backdrop-blur p-8 md:p-12">
-          <div className="flex flex-col gap-6">
-            <div>
-              <span className="text-xs uppercase tracking-widest text-white/60">
-                Barracks Media Network
-              </span>
+          <span className="text-xs uppercase tracking-widest text-white/60">
+            Barracks Media Network
+          </span>
 
-              <h1 className="mt-3 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white">
-                Apply to Join the Network
-              </h1>
+          <h1 className="mt-3 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white">
+            Apply to Join the Network
+          </h1>
 
-              {/* Remove the extra max-width constraint so it breathes */}
-              <p className="mt-6 text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
-                The Barracks Media Network partners with creators who produce consistent,
-                high-quality podcasts that serve communities through storytelling, education,
-                and lived experience. Choose the partnership path that fits your show: full
-                network integration, or an independent partnership while keeping your own RSS
-                feed.
-              </p>
+          <p className="mt-6 text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
+            The Barracks Media Network partners with creators who produce consistent, high-quality
+            podcasts that serve communities through storytelling, education, and lived experience.
+            Choose the partnership path that fits your show: full network integration, or an
+            independent partnership while keeping your own RSS feed.
+          </p>
+
+          {/* Partnership selector */}
+          <div className="mt-8 rounded-2xl border border-white/10 bg-slate-800/35 p-5">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <div className="text-sm font-semibold text-white">
+                  Choose your partnership path
+                </div>
+                <div className="text-sm text-white/65">
+                  This selection updates the requirements section in the application form.
+                </div>
+              </div>
+
+              <select
+                value={form.path}
+                onChange={(e) => setForm({ ...form, path: e.target.value })}
+                className={cxSelect + " md:w-[520px]"}
+              >
+                <option value="full">Full Network Partner (RSS hosted by Barracks Media)</option>
+                <option value="independent">Independent Network Partner (keep your RSS)</option>
+              </select>
             </div>
 
-            {/* Quick selector (keeps your existing state, just makes it feel clean) */}
-            <div className="rounded-2xl border border-white/10 bg-slate-800/35 p-5">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <div className="text-sm font-semibold text-white">Choose your partnership path</div>
-                  <div className="text-sm text-white/65">
-                    This selection updates the requirements section in the application form.
-                  </div>
-                </div>
-
-                <select
-                  value={form.path}
-                  onChange={(e) => setForm({ ...form, path: e.target.value })}
-                  className="w-full md:w-[420px] rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-white/20"
-                >
-                  <option value="full">Full Network Partner (RSS hosted by Barracks Media)</option>
-                  <option value="independent">Independent Network Partner (keep your RSS)</option>
-                </select>
-              </div>
-
-              <div className="mt-3 text-xs text-white/55">
-                Current selection: <span className="font-semibold text-white/80">{pathLabel}</span>
-              </div>
+            <div className="mt-3 text-xs text-white/55">
+              Current selection:{" "}
+              <span className="font-semibold text-white/80">{pathLabel}</span>
             </div>
           </div>
         </section>
 
-        {/* PARTNERSHIP PATHS (OPEN + ORGANIZED) */}
+        {/* Partnership cards */}
         <section className="mt-8 grid lg:grid-cols-2 gap-6">
           <PathCard
             title="Full Network Partner"
@@ -170,7 +168,9 @@ export default function ApplyPage() {
             <InfoCard title="Eligibility Minimums">
               <ul className="space-y-2 text-white/75">
                 <li>• Minimum <b>50 published episodes</b></li>
-                <li>• Minimum <b>50 downloads per episode</b> within <b>30 days</b></li>
+                <li>
+                  • Minimum <b>50 downloads per episode</b> within <b>30 days</b>
+                </li>
               </ul>
             </InfoCard>
 
@@ -190,8 +190,8 @@ export default function ApplyPage() {
 
             <InfoCard title="Example Distribution">
               <div className="text-white/75 leading-relaxed">
-                Example: $1,000 sponsorship → $300 Barracks Media, $700 split proportionally by episode
-                downloads.
+                Example: $1,000 sponsorship → $300 Barracks Media, $700 split proportionally by
+                episode downloads.
               </div>
             </InfoCard>
           </PathCard>
@@ -202,7 +202,7 @@ export default function ApplyPage() {
           >
             <InfoCard title="What stays yours">
               <ul className="space-y-2 text-white/75">
-                <li>• You keep your own RSS feed + hosting platform</li>
+                <li>• You keep your RSS feed + hosting platform</li>
                 <li>• You control publishing and distribution</li>
               </ul>
             </InfoCard>
@@ -220,16 +220,22 @@ export default function ApplyPage() {
                 <b>30%</b> to creator / <b>70%</b> to Barracks Media
               </div>
             </InfoCard>
+
+            <InfoCard title="Upgrade Path">
+              <div className="text-white/75 leading-relaxed">
+                When your show reaches the Full Partner minimums, you can apply to upgrade.
+              </div>
+            </InfoCard>
           </PathCard>
         </section>
 
-        {/* SPONSORSHIP + PAYOUTS CARDS */}
+        {/* Sponsorship + payouts */}
         <section className="mt-8 grid lg:grid-cols-2 gap-6">
           <Card title="Sponsorships & Revenue Model">
             <p className="mt-2 text-white/75 leading-relaxed">
-              Sponsorships are distributed according to partnership eligibility and the revenue split defined by
-              each path. Full Network Partners are eligible for network-wide sponsorship programs.
-              Independent partners may participate in limited sponsorship opportunities.
+              Sponsorships are distributed according to partnership eligibility and the revenue split
+              defined by each path. Full Network Partners are eligible for network-wide sponsorship
+              programs. Independent partners may participate in limited sponsorship opportunities.
             </p>
           </Card>
 
@@ -245,12 +251,12 @@ export default function ApplyPage() {
           </Card>
         </section>
 
-        {/* APPLICATION */}
+        {/* Application */}
         <section className="mt-8 rounded-3xl border border-white/10 bg-slate-900/40 p-8 md:p-12">
           <h2 className="text-2xl md:text-3xl font-bold text-white">Application</h2>
           <p className="mt-3 text-white/70">
-            Submit the form below. Depending on the partnership path you choose, the form will request the
-            appropriate details for review.
+            Submit the form below. Depending on the partnership path you choose, the form will request
+            the appropriate details for review.
           </p>
 
           {error ? (
@@ -266,7 +272,7 @@ export default function ApplyPage() {
           ) : null}
 
           <form onSubmit={submit} className="mt-8 grid gap-6">
-            {/* BASIC INFO */}
+            {/* Basic Info */}
             <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
               <h3 className="text-lg font-semibold text-white">Basic Info</h3>
 
@@ -312,7 +318,7 @@ export default function ApplyPage() {
               </div>
             </div>
 
-            {/* PODCAST DETAILS */}
+            {/* Podcast Details */}
             <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
               <h3 className="text-lg font-semibold text-white">Podcast Details</h3>
 
@@ -363,36 +369,21 @@ export default function ApplyPage() {
                   </select>
                 </Field>
 
-                <Field label="Partnership path" required>
-                  <select
-                    value={form.path}
-                    onChange={(e) => setForm({ ...form, path: e.target.value })}
-                    className={cxSelect}
-                  >
-                    <option value="full">Full Network Partner (RSS hosted by Barracks Media)</option>
-                    <option value="independent">Independent Network Partner (keep your RSS)</option>
-                  </select>
+                <Field label="Primary topics (optional)">
+                  <input
+                    value={form.primary_topics}
+                    onChange={(e) => setForm({ ...form, primary_topics: e.target.value })}
+                    className={cxInput}
+                    placeholder="Leadership, transition, recovery, history, faith, etc."
+                  />
                 </Field>
               </div>
-
-              <Field label="Primary topics (optional)">
-                <input
-                  value={form.primary_topics}
-                  onChange={(e) => setForm({ ...form, primary_topics: e.target.value })}
-                  className={cxInput}
-                  placeholder="Leadership, transition, recovery, history, faith, etc."
-                />
-              </Field>
             </div>
 
-            {/* CONDITIONAL */}
+            {/* Conditional */}
             {form.path === "full" ? (
               <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
                 <h3 className="text-lg font-semibold text-white">Full Network Requirements</h3>
-                <p className="text-white/70 text-sm">
-                  To qualify as a Full Network Partner you must meet the minima below. These metrics are used
-                  when reviewing migration to network-hosted RSS and sponsorship eligibility.
-                </p>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <Field label="Published episodes (total)" required>
@@ -438,27 +429,19 @@ export default function ApplyPage() {
             ) : (
               <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 space-y-4">
                 <h3 className="text-lg font-semibold text-white">Reporting & Proof</h3>
-                <p className="text-white/70 text-sm">
-                  Independent partners keep their RSS feed and must provide manual stats reporting when
-                  requested. Limited sponsorship eligibility applies; you may upgrade later.
-                </p>
 
                 <Field label="I will provide manual stats reporting" required>
-                  <div className="flex items-center gap-3">
-                    <label className="inline-flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={!!form.manual_stats_reporting}
-                        onChange={(e) =>
-                          setForm({ ...form, manual_stats_reporting: e.target.checked })
-                        }
-                        className="h-4 w-4 rounded border-white/10 bg-black/40 text-white"
-                      />
-                      <span className="text-white/75">
-                        Yes, I can provide manual stats reporting
-                      </span>
-                    </label>
-                  </div>
+                  <label className="inline-flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={!!form.manual_stats_reporting}
+                      onChange={(e) =>
+                        setForm({ ...form, manual_stats_reporting: e.target.checked })
+                      }
+                      className="h-4 w-4 rounded border-white/10 bg-black/40 text-white"
+                    />
+                    <span className="text-white/75">Yes, I can provide manual stats reporting</span>
+                  </label>
                 </Field>
 
                 <Field label="Stats proof link (optional)">
@@ -472,7 +455,7 @@ export default function ApplyPage() {
               </div>
             )}
 
-            {/* WHY JOIN */}
+            {/* Why Join */}
             <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6">
               <Field label="Why do you want to join Barracks Media Network?" required>
                 <textarea
@@ -484,10 +467,10 @@ export default function ApplyPage() {
               </Field>
             </div>
 
-            {/* SUBMIT */}
+            {/* Submit */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="text-sm text-white/60">
-                Minimums: Full Partner — 50 episodes & 50 downloads/ep (30d). Payouts monthly (min $100).
+                Full Partner minimums: 50 episodes & 50 downloads/episode (30 days). Payouts monthly (min $100).
               </div>
 
               <button
@@ -538,7 +521,6 @@ function PathCard({ title, subtitle, children }) {
     <div className="rounded-3xl border border-white/10 bg-slate-900/40 p-8">
       <h2 className="text-2xl md:text-3xl font-bold text-white">{title}</h2>
       <p className="mt-3 text-white/75 leading-relaxed">{subtitle}</p>
-
       <div className="mt-6 grid sm:grid-cols-2 gap-4">{children}</div>
     </div>
   );
