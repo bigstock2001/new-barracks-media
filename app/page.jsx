@@ -10,8 +10,7 @@ export default function HomePage() {
           Welcome
         </h2>
         <p className="p" style={{ marginTop: 10 }}>
-          Barracks Media is rebuilding clean on a coded stack. The network is live,
-          and we’ll be layering in services and creator tools next.
+          
         </p>
       </section>
     </>
