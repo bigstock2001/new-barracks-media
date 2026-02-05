@@ -105,6 +105,22 @@ export default function ApplyPage() {
     <main className="relative overflow-hidden">
       {/* APPLY-FINGERPRINT-0205 */}
 
+      {/* FORCE thick, readable form controls on this page (beats global CSS) */}
+      <style jsx global>{`
+        main input,
+        main select {
+          height: 64px !important;
+          font-size: 18px !important;
+          line-height: 1.2 !important;
+        }
+
+        main textarea {
+          min-height: 340px !important;
+          font-size: 18px !important;
+          line-height: 1.6 !important;
+        }
+      `}</style>
+
       {/* Background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
@@ -484,9 +500,6 @@ export default function ApplyPage() {
                   className={cxTextarea}
                   placeholder="Who your show serves, what it stands for, and why this network is a fit. (40+ characters)"
                 />
-                <div className="mt-2 text-sm text-white/55 leading-relaxed">
-                  Tip: You should be able to read what you type without squinting. (We fixed that.)
-                </div>
               </Field>
             </div>
 
@@ -513,17 +526,15 @@ export default function ApplyPage() {
 }
 
 /**
- * THICKER INPUTS:
- * - hard-set input/select height so it's physically taller
- * - bigger font so typing is readable
- * - textarea has big min-height
+ * Keep Tailwind classes too (nice for everything else),
+ * but the <style jsx global> above is what GUARANTEES thickness.
  */
 const cxInput =
-  "w-full h-14 md:h-16 rounded-xl border border-white/10 bg-black/40 px-5 text-base md:text-lg text-white leading-none placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20";
+  "w-full rounded-xl border border-white/10 bg-black/40 px-5 text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20";
 const cxSelect =
-  "w-full h-14 md:h-16 rounded-xl border border-white/10 bg-black/40 px-5 text-base md:text-lg text-white leading-none outline-none focus:ring-2 focus:ring-white/20";
+  "w-full rounded-xl border border-white/10 bg-black/40 px-5 text-white outline-none focus:ring-2 focus:ring-white/20";
 const cxTextarea =
-  "w-full min-h-[340px] rounded-xl border border-white/10 bg-black/40 px-5 py-5 text-base md:text-lg text-white leading-8 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20 resize-y";
+  "w-full rounded-xl border border-white/10 bg-black/40 px-5 py-5 text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20 resize-y";
 
 function Field({ label, required, children }) {
   return (
