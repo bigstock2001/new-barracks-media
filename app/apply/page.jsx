@@ -2,6 +2,27 @@
 
 import { useMemo, useState } from "react";
 
+export const metadata = {
+  title: "Join the Network",
+  description:
+    "Apply to join the Barracks Media Network. Choose your partnership path and submit your show details for review.",
+  alternates: { canonical: "/apply" },
+  openGraph: {
+    title: "Join the Network",
+    description:
+      "Apply to join the Barracks Media Network. Choose your partnership path and submit your show details for review.",
+    url: "https://barracksmedia.com/apply",
+    type: "website",
+    siteName: "Barracks Media",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Join the Network",
+    description:
+      "Apply to join the Barracks Media Network. Choose your partnership path and submit your show details for review.",
+  },
+};
+
 export default function ApplyPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -525,10 +546,6 @@ export default function ApplyPage() {
   );
 }
 
-/**
- * Keep Tailwind classes too (nice for everything else),
- * but the <style jsx global> above is what GUARANTEES thickness.
- */
 const cxInput =
   "w-full rounded-xl border border-white/10 bg-black/40 px-5 text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20";
 const cxSelect =
