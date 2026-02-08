@@ -3,6 +3,9 @@ import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
+// ✅ Kate bot (pick the one you actually use; we’ll try the most likely)
+import FloatingVoiceBot from "@/components/FloatingVoiceBot";
+
 export const metadata = {
   metadataBase: new URL("https://barracksmedia.com"),
   title: {
@@ -17,7 +20,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        {/* ✅ Restores site background no matter what page you’re on */}
+        {/* Background */}
         <div
           aria-hidden="true"
           style={{
@@ -31,7 +34,7 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        {/* ✅ Soft overlay to keep text readable */}
+        {/* Overlay */}
         <div
           aria-hidden="true"
           style={{
@@ -44,7 +47,12 @@ export default function RootLayout({ children }) {
         />
 
         <Navigation />
+
+        {/* ✅ Kate bot back site-wide */}
+        <FloatingVoiceBot />
+
         {children}
+
         <Footer />
       </body>
     </html>
