@@ -7,7 +7,6 @@ import { PortableText } from "@portabletext/react";
 
 export const revalidate = 60;
 
-// If your site is using static export, this is REQUIRED so /blog/[slug] pages exist.
 const ALL_SLUGS_QUERY = `
   *[_type == "episodePost" && defined(slug.current)]{
     "slug": slug.current
@@ -33,6 +32,20 @@ const POST_BY_SLUG_QUERY = `
   }
 `;
 
+function getSlugFromParams(params) {
+  if (!params) return null;
+
+  // Most common
+  if (typeof params.slug === "string") return params.slug;
+
+  // If your folder is named [Slug] or [postSlug] etc.
+  for (const v of Object.values(params)) {
+    if (typeof v === "string") return v;
+    if (Array.isArray(v) && typeof v[0] === "string") return v[0];
+  }
+  return null;
+}
+
 function formatDate(dateStr) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -44,21 +57,21 @@ function formatDate(dateStr) {
   });
 }
 
-// ✅ This prevents 404s by prebuilding pages for every slug
+// If your deployment is static-ish, this helps, but even if it returns [],
+// the route still works in most Next setups because the page exists.
 export async function generateStaticParams() {
   try {
     const slugs = await sanityClient.fetch(ALL_SLUGS_QUERY);
     return (slugs || [])
       .filter((s) => s?.slug)
       .map((s) => ({ slug: s.slug }));
-  } catch (e) {
+  } catch {
     return [];
   }
 }
 
-// ✅ Unique SEO per post (also helps your duplicate title/meta issues)
 export async function generateMetadata({ params }) {
-  const slug = params?.slug;
+  const slug = getSlugFromParams(params);
   if (!slug) return {};
 
   try {
@@ -81,7 +94,7 @@ export async function generateMetadata({ params }) {
         images: post.imageUrl ? [{ url: post.imageUrl }] : [],
       },
     };
-  } catch (e) {
+  } catch {
     return {};
   }
 }
@@ -141,7 +154,7 @@ const portableTextComponents = {
 };
 
 export default async function BlogPostPage({ params }) {
-  const slug = params?.slug;
+  const slug = getSlugFromParams(params);
   if (!slug) notFound();
 
   const post = await sanityClient.fetch(POST_BY_SLUG_QUERY, { slug });
@@ -214,28 +227,6 @@ export default async function BlogPostPage({ params }) {
             <p className="text-white/70">No content yet.</p>
           )}
         </article>
-
-        <div className="mt-10 rounded-3xl border border-white/10 bg-black/30 p-6 text-white/80 backdrop-blur">
-          <h2 className="text-lg font-semibold text-white">Want help growing your show?</h2>
-          <p className="mt-2">
-            Barracks Media helps creators and brands launch, edit, and scale podcasts with
-            professional production and a real growth plan.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Link
-              href="/services"
-              className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15"
-            >
-              Explore Services
-            </Link>
-            <Link
-              href="/apply"
-              className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15"
-            >
-              Join the Network
-            </Link>
-          </div>
-        </div>
       </div>
     </main>
   );
