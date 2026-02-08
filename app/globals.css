@@ -589,3 +589,37 @@ body {
   font-weight: 900;
   color: rgba(255, 255, 255, 0.95);
 }
+
+.nav .nav-bar {
+  align-items: center;
+}
+
+.nav .navLinks {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.nav .navLinks::-webkit-scrollbar {
+  display: none;
+}
+
+.nav .tab,
+.nav .dropBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.nav .dropWrap {
+  flex: 0 0 auto;
+}
