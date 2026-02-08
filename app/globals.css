@@ -635,3 +635,16 @@ body {
   padding-right: 14px !important;
   box-sizing: border-box;
 }
+
+body::before{
+  content:"CSS-LOADED";
+  position:fixed;
+  bottom:8px;
+  right:10px;
+  z-index:99999;
+  font:700 12px/1.2 system-ui;
+  padding:6px 8px;
+  border-radius:10px;
+  background:rgba(255,0,0,.75);
+  color:#fff;
+}
