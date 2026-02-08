@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { sanityClient } from "@/lib/sanity";
 
-export const revalidate = 60; // refresh blog list every 60 seconds
+export const revalidate = 60;
 
 export const metadata = {
   title: "Blog | Barracks Media",
@@ -41,26 +41,22 @@ export default async function BlogPage() {
   let posts = [];
   try {
     posts = await sanityClient.fetch(POSTS_QUERY);
-  } catch (e) {
-    // If Sanity is misconfigured, we still render a usable page.
+  } catch {
     posts = [];
   }
 
   return (
     <main className="min-h-screen">
       <div className="mx-auto max-w-6xl px-5 py-12">
-        {/* Header */}
         <div className="mb-8 rounded-3xl border border-white/10 bg-black/40 p-6 backdrop-blur">
           <h1 className="text-3xl font-bold tracking-tight text-white">
             Barracks Media Blog
           </h1>
           <p className="mt-2 max-w-3xl text-white/80">
-            Episode blog posts and show notes—built for search, built for
-            listeners, built to grow the network.
+            Episode blog posts and show notes—built for search, built for listeners, built to grow the network.
           </p>
         </div>
 
-        {/* Empty state */}
         {(!posts || posts.length === 0) && (
           <div className="rounded-3xl border border-white/10 bg-black/30 p-6 text-white/80">
             No posts yet. Create your first <span className="text-white">Episode Blog Post</span>{" "}
@@ -68,10 +64,12 @@ export default async function BlogPage() {
           </div>
         )}
 
-        {/* Grid */}
         {posts && posts.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => {
+              const slug = typeof post.slug === "string" ? post.slug.trim() : "";
+              const href = slug ? `/blog/${slug}` : "/blog";
+
               const metaBits = [
                 post.showName ? post.showName : null,
                 post.episodeNumber ? `Ep. ${post.episodeNumber}` : null,
@@ -81,10 +79,9 @@ export default async function BlogPage() {
               return (
                 <Link
                   key={post._id}
-                  href={`/blog/${post.slug}`}
+                  href={href}
                   className="group overflow-hidden rounded-3xl border border-white/10 bg-black/30 backdrop-blur transition hover:border-white/20 hover:bg-black/40"
                 >
-                  {/* Image */}
                   <div className="relative aspect-[16/9] w-full bg-white/5">
                     {post.imageUrl ? (
                       <Image
@@ -102,7 +99,6 @@ export default async function BlogPage() {
                     )}
                   </div>
 
-                  {/* Content */}
                   <div className="p-5">
                     <div className="text-xs text-white/60">
                       {formatDate(post.publishedAt)}
@@ -123,6 +119,11 @@ export default async function BlogPage() {
                         {post.excerpt}
                       </p>
                     )}
+
+                    {/* DEBUG (remove later): confirms exact slug and href */}
+                    <div className="mt-3 text-xs text-white/40">
+                      slug: {slug || "(missing)"} • link: {href}
+                    </div>
 
                     <div className="mt-4 text-sm font-medium text-white/80 group-hover:text-white">
                       Read post →
