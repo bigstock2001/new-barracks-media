@@ -1,14 +1,14 @@
 // app/blog/page.jsx
-import Link from "next/link";
 import Image from "next/image";
 import { sanityClient } from "@/lib/sanity";
+import { PortableText } from "@portabletext/react";
 
 export const revalidate = 60;
 
 export const metadata = {
   title: "Blog | Barracks Media",
   description:
-    "Episode blog posts, show notes, and insights from the Barracks Media Network.",
+    "Episode blog posts and show notes from Barracks Media — all posts displayed in full on one page.",
 };
 
 const POSTS_QUERY = `
@@ -17,11 +17,9 @@ const POSTS_QUERY = `
     _id,
     title,
     "slug": slug.current,
-    excerpt,
     publishedAt,
-    showName,
-    episodeNumber,
-    guestName,
+    excerpt,
+    body,
     "imageUrl": featuredImage.asset->url
   }
 `;
@@ -47,15 +45,15 @@ export default async function BlogPage() {
 
   return (
     <main className="min-h-screen">
-      <div className="mx-auto max-w-6xl px-5 py-12">
-        <div className="mb-8 rounded-3xl border border-white/10 bg-black/40 p-6 backdrop-blur">
+      <div className="mx-auto max-w-5xl px-5 py-12">
+        <header className="mb-8 rounded-3xl border border-white/10 bg-black/40 p-6 backdrop-blur">
           <h1 className="text-3xl font-bold tracking-tight text-white">
             Barracks Media Blog
           </h1>
           <p className="mt-2 max-w-3xl text-white/80">
-            Episode blog posts and show notes—built for search, built for listeners, built to grow the network.
+            Full episode blog posts and show notes — no “read more,” no 404s. Everything is right here.
           </p>
-        </div>
+        </header>
 
         {(!posts || posts.length === 0) && (
           <div className="rounded-3xl border border-white/10 bg-black/30 p-6 text-white/80">
@@ -65,73 +63,46 @@ export default async function BlogPage() {
         )}
 
         {posts && posts.length > 0 && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => {
-              const slug = typeof post.slug === "string" ? post.slug.trim() : "";
-              const href = slug ? `/blog/${slug}` : "/blog";
-
-              const metaBits = [
-                post.showName ? post.showName : null,
-                post.episodeNumber ? `Ep. ${post.episodeNumber}` : null,
-                post.guestName ? `Guest: ${post.guestName}` : null,
-              ].filter(Boolean);
-
-              return (
-                <Link
-                  key={post._id}
-                  href={href}
-                  className="group overflow-hidden rounded-3xl border border-white/10 bg-black/30 backdrop-blur transition hover:border-white/20 hover:bg-black/40"
-                >
+          <div className="space-y-10">
+            {posts.map((post) => (
+              <article
+                key={post._id}
+                className="overflow-hidden rounded-3xl border border-white/10 bg-black/30 backdrop-blur"
+              >
+                {post.imageUrl && (
                   <div className="relative aspect-[16/9] w-full bg-white/5">
-                    {post.imageUrl ? (
-                      <Image
-                        src={post.imageUrl}
-                        alt={post.title || "Blog image"}
-                        fill
-                        className="object-cover transition duration-300 group-hover:scale-[1.02]"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        priority={false}
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-white/40">
-                        No image
-                      </div>
-                    )}
+                    <Image
+                      src={post.imageUrl}
+                      alt={post.title || "Blog image"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 900px"
+                      priority={false}
+                    />
+                  </div>
+                )}
+
+                <div className="p-6 md:p-8">
+                  <div className="text-sm text-white/60">
+                    {formatDate(post.publishedAt)}
                   </div>
 
-                  <div className="p-5">
-                    <div className="text-xs text-white/60">
-                      {formatDate(post.publishedAt)}
-                    </div>
+                  <h2 className="mt-2 text-2xl font-bold text-white">
+                    {post.title}
+                  </h2>
 
-                    <h2 className="mt-2 line-clamp-2 text-lg font-semibold text-white">
-                      {post.title}
-                    </h2>
+                  {post.excerpt && (
+                    <p className="mt-4 text-white/80">
+                      {post.excerpt}
+                    </p>
+                  )}
 
-                    {metaBits.length > 0 && (
-                      <div className="mt-2 line-clamp-1 text-sm text-white/70">
-                        {metaBits.join(" • ")}
-                      </div>
-                    )}
-
-                    {post.excerpt && (
-                      <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-white/75">
-                        {post.excerpt}
-                      </p>
-                    )}
-
-                    {/* DEBUG (remove later): confirms exact slug and href */}
-                    <div className="mt-3 text-xs text-white/40">
-                      slug: {slug || "(missing)"} • link: {href}
-                    </div>
-
-                    <div className="mt-4 text-sm font-medium text-white/80 group-hover:text-white">
-                      Read post →
-                    </div>
+                  <div className="prose prose-invert mt-6 max-w-none">
+                    <PortableText value={post.body || []} />
                   </div>
-                </Link>
-              );
-            })}
+                </div>
+              </article>
+            ))}
           </div>
         )}
       </div>
