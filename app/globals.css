@@ -623,3 +623,12 @@ body {
 .nav .dropWrap {
   flex: 0 0 auto;
 }
+
+/* ===== NAV CLIP FIX (keep links inside the glass bar) ===== */
+.nav .nav-bar {
+  overflow: hidden;
+}
+
+.nav .navLinks {
+  padding-right: 10px;
+}
