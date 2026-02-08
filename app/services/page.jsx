@@ -1,13 +1,23 @@
 // app/services/page.jsx
 import Link from "next/link";
+import Script from "next/script";
 import { getServices } from "@/lib/sanity";
 
 export const dynamic = "force-dynamic"; // ✅ prevents Next from caching this page
 export const revalidate = 0; // ✅ always fetch fresh
 
 export const metadata = {
-  title: "Services | Barracks Media",
-  description: "Services offered by Barracks Media.",
+  title: "Podcast Services & Web Design | Barracks Media",
+  description:
+    "Barracks Media offers podcast production, podcast editing, podcast launch support, and web design services. Built clean. Built to scale.",
+  alternates: { canonical: "/services" },
+  openGraph: {
+    title: "Podcast Services & Web Design | Barracks Media",
+    description:
+      "Podcast production, editing, launch support, and web design services—built clean, built to scale.",
+    url: "https://barracksmedia.com/services",
+    type: "website",
+  },
 };
 
 function FeatureList({ features }) {
@@ -68,6 +78,51 @@ function ServiceBanner({ raw }) {
   );
 }
 
+function buildFaqJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What services does Barracks Media offer?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Barracks Media provides podcast production, podcast editing, podcast launch support, and web design services to help creators and businesses publish consistently and grow.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you work with remote recordings and livestreams?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Yes. We support common remote workflows and can help you plan a smooth session so your recording stays clean and efficient.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How does checkout work?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Checkout is handled through Stripe. After purchase, you’ll be taken to the next screen where we collect the details needed to deliver the service.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What if a service shows “missing slug”?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "That means the service entry in Sanity is missing a published slug. Publish the slug to enable the Details and Checkout buttons for that service.",
+        },
+      },
+    ],
+  };
+}
+
 export default async function ServicesPage() {
   let services = [];
   let sanityError = "";
@@ -80,14 +135,42 @@ export default async function ServicesPage() {
     services = [];
   }
 
+  const faqJsonLd = buildFaqJsonLd();
+
   return (
     <>
+      {/* ✅ SEO: FAQ schema (safe, no behavior change) */}
+      <Script
+        id="services-faq-schema"
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
       <section className="container-card section hero-strip">
         <h1 className="h1">Services</h1>
         <p className="p">
           Pick what you need. Checkout is quick — then we collect details on the
           next screen.
         </p>
+
+        {/* ✅ SEO context block (safe, indexable text; does not change cards) */}
+        <div
+          style={{
+            marginTop: 14,
+            paddingTop: 14,
+            borderTop: "1px solid rgba(255,255,255,0.10)",
+            maxWidth: 980,
+          }}
+        >
+          <p className="p" style={{ opacity: 0.9 }}>
+            Barracks Media offers <strong>podcast editing</strong>,{" "}
+            <strong>podcast production</strong>, <strong>podcast launch</strong>, and{" "}
+            <strong>web design</strong> services designed to help creators publish consistently
+            and look professional. If you want a clean workflow—record, edit, publish, promote—we’ll
+            help you build it and keep it running.
+          </p>
+        </div>
       </section>
 
       <section className="section">
@@ -207,6 +290,43 @@ export default async function ServicesPage() {
             })}
           </div>
         )}
+
+        {/* ✅ Visible FAQ (safe: adds content only, does not affect existing grid) */}
+        <div className="container-card" style={{ padding: 18, marginTop: 18 }}>
+          <h2 className="h1" style={{ fontSize: 18, margin: 0 }}>
+            FAQ
+          </h2>
+
+          <div style={{ marginTop: 12 }}>
+            <p className="p" style={{ marginTop: 10 }}>
+              <strong>What services does Barracks Media offer?</strong>
+              <br />
+              Podcast production, podcast editing, podcast launch support, and web design—built to help
+              you publish consistently and grow.
+            </p>
+
+            <p className="p" style={{ marginTop: 10 }}>
+              <strong>Do you work with remote recordings and livestreams?</strong>
+              <br />
+              Yes. We support common remote workflows and can help you plan a smooth session so your
+              recording stays clean and efficient.
+            </p>
+
+            <p className="p" style={{ marginTop: 10 }}>
+              <strong>How does checkout work?</strong>
+              <br />
+              Checkout is handled through Stripe. After purchase, you’ll be taken to the next screen
+              where we collect the details needed to deliver the service.
+            </p>
+
+            <p className="p" style={{ marginTop: 10 }}>
+              <strong>What if a service shows “missing slug”?</strong>
+              <br />
+              That means the service entry in Sanity is missing a published slug. Publish the slug to
+              enable the Details and Checkout buttons for that service.
+            </p>
+          </div>
+        </div>
       </section>
     </>
   );
