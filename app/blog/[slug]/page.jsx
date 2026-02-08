@@ -7,6 +7,13 @@ import { PortableText } from "@portabletext/react";
 
 export const revalidate = 60;
 
+// If your site is using static export, this is REQUIRED so /blog/[slug] pages exist.
+const ALL_SLUGS_QUERY = `
+  *[_type == "episodePost" && defined(slug.current)]{
+    "slug": slug.current
+  }
+`;
+
 const POST_BY_SLUG_QUERY = `
   *[_type == "episodePost" && slug.current == $slug][0]{
     _id,
@@ -37,7 +44,19 @@ function formatDate(dateStr) {
   });
 }
 
-// ✅ Dynamic metadata per post (fixes duplicate title/meta problems)
+// ✅ This prevents 404s by prebuilding pages for every slug
+export async function generateStaticParams() {
+  try {
+    const slugs = await sanityClient.fetch(ALL_SLUGS_QUERY);
+    return (slugs || [])
+      .filter((s) => s?.slug)
+      .map((s) => ({ slug: s.slug }));
+  } catch (e) {
+    return [];
+  }
+}
+
+// ✅ Unique SEO per post (also helps your duplicate title/meta issues)
 export async function generateMetadata({ params }) {
   const slug = params?.slug;
   if (!slug) return {};
@@ -46,11 +65,12 @@ export async function generateMetadata({ params }) {
     const post = await sanityClient.fetch(POST_BY_SLUG_QUERY, { slug });
     if (!post) return {};
 
-    const title = post.seoTitle?.trim() || post.title || "Blog Post";
-    const description =
-      post.seoDescription?.trim() ||
-      post.excerpt?.trim() ||
-      "Episode blog post and show notes from Barracks Media.";
+    const title = (post.seoTitle || post.title || "Blog Post").trim();
+    const description = (
+      post.seoDescription ||
+      post.excerpt ||
+      "Episode blog post and show notes from Barracks Media."
+    ).trim();
 
     return {
       title: `${title} | Barracks Media`,
@@ -137,7 +157,6 @@ export default async function BlogPostPage({ params }) {
   return (
     <main className="min-h-screen">
       <div className="mx-auto max-w-4xl px-5 py-12">
-        {/* Back link */}
         <div className="mb-6">
           <Link
             href="/blog"
@@ -147,7 +166,6 @@ export default async function BlogPostPage({ params }) {
           </Link>
         </div>
 
-        {/* Header */}
         <header className="rounded-3xl border border-white/10 bg-black/30 p-6 backdrop-blur">
           <div className="text-sm text-white/60">{formatDate(post.publishedAt)}</div>
 
@@ -163,7 +181,6 @@ export default async function BlogPostPage({ params }) {
             <p className="mt-4 text-white/80 leading-relaxed">{post.excerpt}</p>
           )}
 
-          {/* Optional embed link */}
           {post.episodeEmbedUrl && (
             <div className="mt-5">
               <a
@@ -178,7 +195,6 @@ export default async function BlogPostPage({ params }) {
           )}
         </header>
 
-        {/* Featured image */}
         {post.imageUrl && (
           <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-3xl border border-white/10 bg-white/5">
             <Image
@@ -187,12 +203,10 @@ export default async function BlogPostPage({ params }) {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 800px"
-              priority={false}
             />
           </div>
         )}
 
-        {/* Body */}
         <article className="mt-8 rounded-3xl border border-white/10 bg-black/20 p-6 backdrop-blur">
           {post.body ? (
             <PortableText value={post.body} components={portableTextComponents} />
@@ -201,7 +215,6 @@ export default async function BlogPostPage({ params }) {
           )}
         </article>
 
-        {/* Footer CTA */}
         <div className="mt-10 rounded-3xl border border-white/10 bg-black/30 p-6 text-white/80 backdrop-blur">
           <h2 className="text-lg font-semibold text-white">Want help growing your show?</h2>
           <p className="mt-2">
@@ -219,7 +232,7 @@ export default async function BlogPostPage({ params }) {
               href="/apply"
               className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15"
             >
-              Apply to the Network
+              Join the Network
             </Link>
           </div>
         </div>
