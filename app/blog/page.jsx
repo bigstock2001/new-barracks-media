@@ -7,9 +7,24 @@ import { PortableText } from "@portabletext/react";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "Blog | Barracks Media",
+  title: "Blog",
   description:
     "Episode blog posts and show notes from Barracks Media — full posts displayed on one page.",
+  alternates: { canonical: "/blog" },
+  openGraph: {
+    title: "Blog",
+    description:
+      "Episode blog posts and show notes from Barracks Media — full posts displayed on one page.",
+    url: "https://barracksmedia.com/blog",
+    type: "website",
+    siteName: "Barracks Media",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog",
+    description:
+      "Episode blog posts and show notes from Barracks Media — full posts displayed on one page.",
+  },
 };
 
 const POSTS_QUERY = `
@@ -111,7 +126,6 @@ function buildJsonLd(posts) {
     };
   });
 
-  // Return as an array; we’ll emit multiple <script> blocks
   return { blogSchema, episodeSchemas };
 }
 
@@ -154,13 +168,8 @@ export default async function BlogPage() {
         {posts?.length > 0 && (
           <section className="mb-10 rounded-3xl border border-white/10 bg-black/30 p-6 backdrop-blur">
             <div className="flex items-center justify-between gap-4">
-              <h2 className="text-lg font-semibold text-white">
-                Jump to a post
-              </h2>
-              <a
-                href="#top"
-                className="text-sm text-white/70 hover:text-white"
-              >
+              <h2 className="text-lg font-semibold text-white">Jump to a post</h2>
+              <a href="#top" className="text-sm text-white/70 hover:text-white">
                 Back to top ↑
               </a>
             </div>
@@ -208,9 +217,7 @@ export default async function BlogPage() {
                   {formatDate(post.publishedAt)}
                 </div>
 
-                <h2 className="mt-2 text-2xl font-bold text-white">
-                  {post.title}
-                </h2>
+                <h2 className="mt-2 text-2xl font-bold text-white">{post.title}</h2>
 
                 {/* Quick anchor link for copying */}
                 <div className="mt-2">
@@ -222,9 +229,7 @@ export default async function BlogPage() {
                   </a>
                 </div>
 
-                {post.excerpt && (
-                  <p className="mt-4 text-white/80">{post.excerpt}</p>
-                )}
+                {post.excerpt && <p className="mt-4 text-white/80">{post.excerpt}</p>}
 
                 <div className="prose prose-invert mt-6 max-w-none">
                   <PortableText value={post.body || []} />
