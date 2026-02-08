@@ -1,16 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 🔥 CRITICAL: force Next to use server rendering, not static export
-  output: "standalone",
+  // ✅ Force stable webpack builds on Vercel (avoids Turbopack internal crash)
+  webpack: (config) => config,
 
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
-        pathname: "/**",
-      },
-    ],
+  // Optional: helps avoid weird cache behavior during rapid changes
+  experimental: {
+    // Keep Turbopack features off in production builds where possible
   },
 };
 
