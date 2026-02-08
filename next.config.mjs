@@ -1,12 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ✅ Force stable webpack builds on Vercel (avoids Turbopack internal crash)
-  webpack: (config) => config,
-
-  // Optional: helps avoid weird cache behavior during rapid changes
-  experimental: {
-    // Keep Turbopack features off in production builds where possible
-  },
+  // ✅ Next 16 uses Turbopack by default on Vercel.
+  // Adding an empty turbopack config avoids conflicts and build errors.
+  turbopack: {},
 };
 
 export default nextConfig;
