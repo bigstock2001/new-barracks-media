@@ -5,8 +5,11 @@ export default function robots() {
       {
         userAgent: "*",
         allow: "/",
+        // Keep private portal/auth areas out of search
+        disallow: ["/portal", "/api", "/onboarding"],
       },
     ],
     sitemap: "https://barracksmedia.com/sitemap.xml",
+    host: "https://barracksmedia.com",
   };
 }
