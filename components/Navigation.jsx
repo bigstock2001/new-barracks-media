@@ -66,7 +66,12 @@ export default function Navigation() {
               Network
             </Link>
 
-            {/* NEW: Live Webinar */}
+            {/* ✅ NEW: Blog */}
+            <Link className="tab" href="/blog">
+              Blog
+            </Link>
+
+            {/* Live Webinar */}
             <Link className="tab" href="/webinars">
               Live Webinar
             </Link>
@@ -75,7 +80,7 @@ export default function Navigation() {
               Services
             </Link>
 
-            {/* NEW: Join Network */}
+            {/* Join Network */}
             <Link className="tab" href="/apply">
               Join Network
             </Link>
