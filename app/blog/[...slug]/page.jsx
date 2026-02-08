@@ -30,22 +30,44 @@ function formatDate(dateStr) {
   });
 }
 
-export default async function BlogPostCatchAll({ params }) {
-  // ✅ Catch-all ALWAYS gives array
-  const parts = Array.isArray(params?.slug) ? params.slug : [];
-  const slug = parts[0] ? String(parts[0]).trim() : "";
+// ✅ Pull slug from ANY param key (slug / postSlug / Slug / etc)
+function getSlugFromParams(params) {
+  if (!params || typeof params !== "object") return "";
 
+  // Prefer the common key first
+  const direct = params.slug;
+  if (typeof direct === "string") return direct.trim();
+  if (Array.isArray(direct) && typeof direct[0] === "string") return direct[0].trim();
+
+  // Otherwise, look through all param values
+  for (const v of Object.values(params)) {
+    if (typeof v === "string" && v.trim()) return v.trim();
+    if (Array.isArray(v) && typeof v[0] === "string" && v[0].trim()) return v[0].trim();
+  }
+
+  return "";
+}
+
+export default async function BlogPostCatchAll({ params }) {
+  const slug = getSlugFromParams(params);
+
+  // ✅ Always show what params really are if slug fails
   if (!slug) {
     return (
       <main className="min-h-screen">
         <div className="mx-auto max-w-3xl px-5 py-12 text-white">
           <h1 className="text-3xl font-bold">Slug not detected</h1>
           <p className="mt-3 text-white/80">
-            Your route is working, but no slug segment was found.
+            Your route file is running, but Next did not provide a usable param.
           </p>
-          <p className="mt-2 text-white/70">
-            params.slug = <span className="font-mono text-white">{JSON.stringify(params?.slug)}</span>
-          </p>
+
+          <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4">
+            <div className="text-sm text-white/70 mb-2">Raw params object:</div>
+            <pre className="text-xs text-white/80 overflow-auto">
+{JSON.stringify(params, null, 2)}
+            </pre>
+          </div>
+
           <Link className="mt-6 inline-block underline" href="/blog">
             Back to Blog
           </Link>
@@ -65,7 +87,6 @@ export default async function BlogPostCatchAll({ params }) {
         </Link>
 
         <h1 className="mt-6 text-3xl font-bold text-white">{post.title}</h1>
-
         <div className="mt-2 text-sm text-white/60">{formatDate(post.publishedAt)}</div>
 
         {post.imageUrl && (
@@ -74,9 +95,7 @@ export default async function BlogPostCatchAll({ params }) {
           </div>
         )}
 
-        {post.excerpt && (
-          <p className="mt-6 text-lg text-white/80">{post.excerpt}</p>
-        )}
+        {post.excerpt && <p className="mt-6 text-lg text-white/80">{post.excerpt}</p>}
 
         <article className="prose prose-invert mt-10 max-w-none">
           <PortableText value={post.body} />
