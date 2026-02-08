@@ -590,61 +590,37 @@ body {
   color: rgba(255, 255, 255, 0.95);
 }
 
-.nav .nav-bar {
-  align-items: center;
+/* ===== NAV: keep tabs inside the glass card (no spill) ===== */
+.nav .nav-inner {
+  width: 100%;
+}
+
+.nav .nav-bar.container-card {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;          /* clip to rounded glass */
 }
 
 .nav .navLinks {
   display: flex;
   align-items: center;
-  gap: 14px;
   flex-wrap: nowrap;
   white-space: nowrap;
-  overflow-x: auto;
+  overflow-x: auto;          /* scroll inside the glass */
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.nav .navLinks::-webkit-scrollbar {
-  display: none;
+  padding: 0 14px;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .nav .tab,
 .nav .dropBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 12px;
-  line-height: 1;
+  flex: 0 0 auto;            /* prevent shrinking weirdness */
   white-space: nowrap;
+  line-height: 1;
 }
 
-.nav .dropWrap {
-  flex: 0 0 auto;
-}
-
-/* ===== NAV CLIP FIX (guaranteed: clip inside the rounded glass container) ===== */
-.nav .nav-inner,
-.nav .container-card,
-.nav .nav-bar {
-  overflow: hidden !important;
-}
-
-.nav .navLinks {
-  padding-right: 14px !important;
-  box-sizing: border-box;
-}
-
-body::before{
-  content:"CSS-LOADED";
-  position:fixed;
-  bottom:8px;
-  right:10px;
-  z-index:99999;
-  font:700 12px/1.2 system-ui;
-  padding:6px 8px;
-  border-radius:10px;
-  background:rgba(255,0,0,.75);
-  color:#fff;
+.nav .navLinks::-webkit-scrollbar {
+  height: 0;
 }
