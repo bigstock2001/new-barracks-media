@@ -624,3 +624,38 @@ body {
 .nav .navLinks::-webkit-scrollbar {
   height: 0;
 }
+
+/* ===== NAV: Professional 2-row wrap (no overflow) ===== */
+.nav .nav-bar.container-card {
+  overflow: hidden;
+}
+
+.nav .navLinks {
+  display: flex;
+  flex-wrap: wrap !important;      /* allow wrap */
+  gap: 10px 14px !important;       /* row-gap, col-gap */
+  white-space: normal !important;  /* allow wrapping */
+  overflow: visible !important;    /* no horizontal spill */
+  padding: 6px 10px !important;
+  align-items: center;
+}
+
+/* Keep each tab looking consistent */
+.nav .tab,
+.nav .dropBtn {
+  white-space: nowrap;
+  line-height: 1.1;
+  padding: 10px 12px;
+}
+
+/* Force nice "second row" behavior on smaller widths */
+@media (max-width: 980px) {
+  .nav .navLinks {
+    justify-content: flex-start;
+  }
+}
+
+/* If a single label is still breaking, make it behave */
+.nav .tab {
+  flex: 0 0 auto;
+}
