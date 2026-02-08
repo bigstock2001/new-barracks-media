@@ -1,9 +1,23 @@
+// app/network/page.jsx
 import Link from "next/link";
 import { shows } from "@/lib/shows";
 
 export const metadata = {
-  title: "Network | Barracks Media",
+  title: "Network",
   description: "Explore the Barracks Media network of shows and podcasts.",
+  alternates: { canonical: "/network" },
+  openGraph: {
+    title: "Network",
+    description: "Explore the Barracks Media network of shows and podcasts.",
+    url: "https://barracksmedia.com/network",
+    type: "website",
+    siteName: "Barracks Media",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Network",
+    description: "Explore the Barracks Media network of shows and podcasts.",
+  },
 };
 
 export default function NetworkPage() {
@@ -32,7 +46,12 @@ export default function NetworkPage() {
               style={{ width: "100%" }}
             >
               <div className="podCoverWrap" style={{ aspectRatio: "16 / 10" }}>
-                <img src={s.image} alt={s.title} className="podCover" loading="lazy" />
+                <img
+                  src={s.image}
+                  alt={s.title}
+                  className="podCover"
+                  loading="lazy"
+                />
               </div>
 
               <div className="podMeta">
