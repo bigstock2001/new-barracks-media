@@ -4,17 +4,22 @@ import { type SchemaTypeDefinition } from "sanity";
 import service from "./service";
 import networkMetrics from "./networkMetrics";
 
-// ✅ NEW
+// Existing podcast schemas
 import podcastShow from "./podcastShow";
 import podcastEpisode from "./podcastEpisode";
+
+// ✅ NEW: Episode Blog Posts (SEO / Show Notes)
+import episodePost from "./episodePost";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     service,
     networkMetrics,
 
-    // ✅ NEW
     podcastShow,
     podcastEpisode,
+
+    // ✅ SEO Blog / Episode Show Notes
+    episodePost,
   ],
 };
