@@ -3,10 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseBrowser";
 
 export default function Navigation() {
+  const router = useRouter();
+
   const [commandOpen, setCommandOpen] = useState(false);
   const [advertiseOpen, setAdvertiseOpen] = useState(false);
+
+  // ✅ auth state
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const commandRef = useRef(null);
   const advertiseRef = useRef(null);
@@ -37,6 +45,48 @@ export default function Navigation() {
     };
   }, []);
 
+  // ✅ Load + track Supabase session
+  useEffect(() => {
+    let sub;
+
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        setSession(data?.session || null);
+      } finally {
+        setAuthLoading(false);
+      }
+    })();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession || null);
+      setAuthLoading(false);
+    });
+
+    sub = listener?.subscription;
+
+    return () => {
+      try {
+        sub?.unsubscribe?.();
+      } catch {}
+    };
+  }, []);
+
+  async function handleLogout() {
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      // no-op (we still redirect)
+    } finally {
+      setCommandOpen(false);
+      setAdvertiseOpen(false);
+      router.push("/");
+      router.refresh();
+    }
+  }
+
+  const isAuthed = !!session;
+
   return (
     <header className="nav" role="banner">
       <div className="nav-inner">
@@ -66,12 +116,6 @@ export default function Navigation() {
               Network
             </Link>
 
-            {/* ✅ NEW: Blog */}
-            <Link className="tab" href="/blog">
-              Blog
-            </Link>
-
-            {/* Live Webinar */}
             <Link className="tab" href="/webinars">
               Live Webinar
             </Link>
@@ -80,10 +124,42 @@ export default function Navigation() {
               Services
             </Link>
 
-            {/* Join Network */}
+            <Link className="tab" href="/blog">
+              Blog
+            </Link>
+
             <Link className="tab" href="/apply">
               Join Network
             </Link>
+
+            {/* ✅ Portal always visible */}
+            <Link className="tab" href="/portal">
+              Portal
+            </Link>
+
+            {/* ✅ Auth controls */}
+            {!authLoading && !isAuthed ? (
+              <Link className="tab" href="/portal">
+                Log In
+              </Link>
+            ) : null}
+
+            {!authLoading && isAuthed ? (
+              <>
+                <Link className="tab" href="/portal">
+                  Account
+                </Link>
+
+                <button
+                  type="button"
+                  className="tab"
+                  onClick={handleLogout}
+                  aria-label="Log out"
+                >
+                  Log Out
+                </button>
+              </>
+            ) : null}
 
             {/* Advertise dropdown */}
             <div
