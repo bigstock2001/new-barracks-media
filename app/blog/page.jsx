@@ -1,5 +1,6 @@
 // app/blog/page.jsx
 import Image from "next/image";
+import Script from "next/script";
 import { sanityClient } from "@/lib/sanity";
 import { PortableText } from "@portabletext/react";
 
@@ -20,6 +21,11 @@ const POSTS_QUERY = `
     excerpt,
     body,
     publishedAt,
+    showName,
+    episodeNumber,
+    guestName,
+    episodeEmbedUrl,
+    episodeDuration,
     "imageUrl": featuredImage.asset->url
   }
 `;
@@ -35,11 +41,104 @@ function formatDate(dateStr) {
   });
 }
 
+// Build JSON-LD for SEO
+function buildJsonLd(posts) {
+  const baseUrl = "https://barracksmedia.com";
+
+  // Blog collection page schema
+  const blogSchema = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Barracks Media Blog",
+    url: `${baseUrl}/blog`,
+    description:
+      "Episode blog posts and show notes from Barracks Media. Full posts displayed on one page.",
+    publisher: {
+      "@type": "Organization",
+      name: "Barracks Media",
+      url: baseUrl,
+    },
+    blogPost: (posts || []).map((p) => ({
+      "@type": "BlogPosting",
+      headline: p.title,
+      description: p.excerpt || "",
+      datePublished: p.publishedAt || undefined,
+      dateModified: p.publishedAt || undefined,
+      url: `${baseUrl}/blog#${p.slug}`,
+      image: p.imageUrl ? [p.imageUrl] : undefined,
+      author: {
+        "@type": "Organization",
+        name: "Barracks Media",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "Barracks Media",
+        url: baseUrl,
+      },
+      mainEntityOfPage: `${baseUrl}/blog#${p.slug}`,
+    })),
+  };
+
+  // Episode schema (PodcastEpisode) per post when info exists
+  const episodeSchemas = (posts || []).map((p) => {
+    const episodeNameParts = [
+      p.showName ? p.showName : null,
+      p.episodeNumber ? `Episode ${p.episodeNumber}` : null,
+      p.guestName ? `with ${p.guestName}` : null,
+    ].filter(Boolean);
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "PodcastEpisode",
+      name: episodeNameParts.length ? episodeNameParts.join(" — ") : p.title,
+      description: p.excerpt || "",
+      url: `${baseUrl}/blog#${p.slug}`,
+      datePublished: p.publishedAt || undefined,
+      associatedMedia: p.episodeEmbedUrl
+        ? {
+            "@type": "MediaObject",
+            contentUrl: p.episodeEmbedUrl,
+          }
+        : undefined,
+      duration: p.episodeDuration || undefined, // best if ISO 8601 like "PT45M"
+      partOfSeries: p.showName
+        ? {
+            "@type": "PodcastSeries",
+            name: p.showName,
+          }
+        : undefined,
+      image: p.imageUrl ? p.imageUrl : undefined,
+    };
+  });
+
+  // Return as an array; we’ll emit multiple <script> blocks
+  return { blogSchema, episodeSchemas };
+}
+
 export default async function BlogPage() {
   const posts = await sanityClient.fetch(POSTS_QUERY);
 
+  const { blogSchema, episodeSchemas } = buildJsonLd(posts);
+
   return (
     <main className="min-h-screen">
+      {/* ✅ JSON-LD Schema */}
+      <Script
+        id="blog-schema"
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
+      {episodeSchemas.map((schema, idx) => (
+        <Script
+          key={idx}
+          id={`episode-schema-${idx}`}
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
+
       <div className="mx-auto max-w-5xl px-5 py-12">
         {/* Header */}
         <header className="mb-8 rounded-3xl border border-white/10 bg-black/40 p-6 backdrop-blur">
@@ -89,7 +188,7 @@ export default async function BlogPage() {
           {posts.map((post) => (
             <article
               key={post._id}
-              id={post.slug} // ✅ anchor target for sitemap + TOC links
+              id={post.slug}
               className="scroll-mt-28 overflow-hidden rounded-3xl border border-white/10 bg-black/30 backdrop-blur"
             >
               {post.imageUrl && (
