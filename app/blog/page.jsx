@@ -160,7 +160,6 @@ export default async function BlogPage() {
             Barracks Media Blog
           </h1>
           <p className="mt-2 max-w-3xl text-white/80">
-            Full episode blog posts and show notes. No “read more.” No broken links.
           </p>
         </header>
 
