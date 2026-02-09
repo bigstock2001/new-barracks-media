@@ -200,6 +200,9 @@ export default async function BlogPage() {
               id={post.slug}
               className="scroll-mt-28 overflow-hidden rounded-3xl border border-white/10 bg-black/30 backdrop-blur"
             >
+              <div className="p-3 text-xs text-white/70">
+                DEBUG imageUrl: {post.imageUrl ? post.imageUrl : "NULL"}
+              </div>
               {post.imageUrl && (
                 <div className="relative aspect-[16/9] w-full bg-white/5">
                   <Image
