@@ -1,6 +1,5 @@
 // app/blog/[...slug]/page.jsx
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { sanityClient } from "@/lib/sanity";
 import { PortableText } from "@portabletext/react";
@@ -30,19 +29,26 @@ function formatDate(dateStr) {
   });
 }
 
-// ✅ Pull slug from ANY param key (slug / postSlug / Slug / etc)
+// Pull slug from ANY param key (slug / postSlug / etc)
+// For catch-all routes, prefer the LAST segment (e.g. /blog/a/b -> "b")
 function getSlugFromParams(params) {
   if (!params || typeof params !== "object") return "";
 
-  // Prefer the common key first
   const direct = params.slug;
-  if (typeof direct === "string") return direct.trim();
-  if (Array.isArray(direct) && typeof direct[0] === "string") return direct[0].trim();
 
-  // Otherwise, look through all param values
+  if (typeof direct === "string") return direct.trim();
+
+  if (Array.isArray(direct)) {
+    const last = direct[direct.length - 1];
+    if (typeof last === "string" && last.trim()) return last.trim();
+  }
+
   for (const v of Object.values(params)) {
     if (typeof v === "string" && v.trim()) return v.trim();
-    if (Array.isArray(v) && typeof v[0] === "string" && v[0].trim()) return v[0].trim();
+    if (Array.isArray(v)) {
+      const last = v[v.length - 1];
+      if (typeof last === "string" && last.trim()) return last.trim();
+    }
   }
 
   return "";
@@ -51,7 +57,6 @@ function getSlugFromParams(params) {
 export default async function BlogPostCatchAll({ params }) {
   const slug = getSlugFromParams(params);
 
-  // ✅ Always show what params really are if slug fails
   if (!slug) {
     return (
       <main className="min-h-screen">
@@ -62,8 +67,8 @@ export default async function BlogPostCatchAll({ params }) {
           </p>
 
           <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4">
-            <div className="text-sm text-white/70 mb-2">Raw params object:</div>
-            <pre className="text-xs text-white/80 overflow-auto">
+            <div className="mb-2 text-sm text-white/70">Raw params object:</div>
+            <pre className="overflow-auto text-xs text-white/80">
 {JSON.stringify(params, null, 2)}
             </pre>
           </div>
@@ -89,13 +94,19 @@ export default async function BlogPostCatchAll({ params }) {
         <h1 className="mt-6 text-3xl font-bold text-white">{post.title}</h1>
         <div className="mt-2 text-sm text-white/60">{formatDate(post.publishedAt)}</div>
 
-        {post.imageUrl && (
-          <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-            <Image src={post.imageUrl} alt={post.title} fill className="object-cover" />
+        {post.imageUrl ? (
+          <div className="relative mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+            {/* Use plain <img> to avoid Next Image remote domain config issues */}
+            <img
+              src={post.imageUrl}
+              alt={post.title || "Featured image"}
+              className="h-auto w-full object-cover"
+              loading="lazy"
+            />
           </div>
-        )}
+        ) : null}
 
-        {post.excerpt && <p className="mt-6 text-lg text-white/80">{post.excerpt}</p>}
+        {post.excerpt ? <p className="mt-6 text-lg text-white/80">{post.excerpt}</p> : null}
 
         <article className="prose prose-invert mt-10 max-w-none">
           <PortableText value={post.body} />
