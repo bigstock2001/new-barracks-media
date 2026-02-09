@@ -1,6 +1,5 @@
 // app/blog/[...slug]/page.jsx
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { sanityClient } from "@/lib/sanity";
 import { PortableText } from "@portabletext/react";
@@ -15,6 +14,12 @@ const POST_BY_SLUG_QUERY = `
     publishedAt,
     excerpt,
     body,
+    featuredImage{
+      asset->{
+        _id,
+        url
+      }
+    },
     "imageUrl": featuredImage.asset->url
   }
 `;
@@ -61,17 +66,9 @@ export default async function BlogPostCatchAll({ params }) {
       <main className="min-h-screen">
         <div className="mx-auto max-w-3xl px-5 py-12 text-white">
           <h1 className="text-3xl font-bold">Slug not detected</h1>
-          <p className="mt-3 text-white/80">
-            Your route file is running, but Next did not provide a usable param.
-          </p>
-
-          <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4">
-            <div className="text-sm text-white/70 mb-2">Raw params object:</div>
-            <pre className="text-xs text-white/80 overflow-auto">
+          <pre className="mt-6 overflow-auto rounded-2xl border border-white/10 bg-black/30 p-4 text-xs text-white/80">
 {JSON.stringify(params, null, 2)}
-            </pre>
-          </div>
-
+          </pre>
           <Link className="mt-6 inline-block underline" href="/blog">
             Back to Blog
           </Link>
@@ -83,7 +80,13 @@ export default async function BlogPostCatchAll({ params }) {
   const post = await sanityClient.fetch(POST_BY_SLUG_QUERY, { slug });
   if (!post) notFound();
 
-  const imageUrl = typeof post.imageUrl === "string" ? post.imageUrl.trim() : "";
+  const imageUrl = typeof post?.imageUrl === "string" ? post.imageUrl.trim() : "";
+  const assetUrl =
+    typeof post?.featuredImage?.asset?.url === "string"
+      ? post.featuredImage.asset.url.trim()
+      : "";
+
+  const finalUrl = imageUrl || assetUrl;
 
   return (
     <main className="min-h-screen">
@@ -95,41 +98,49 @@ export default async function BlogPostCatchAll({ params }) {
         <h1 className="mt-6 text-3xl font-bold text-white">{post.title}</h1>
         <div className="mt-2 text-sm text-white/60">{formatDate(post.publishedAt)}</div>
 
-        {imageUrl ? (
-          <div className="relative mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-            {/* Fast fix: unoptimized bypasses Next remote image restrictions */}
-            <Image
-              src={imageUrl}
+        {/* IMAGE */}
+        {finalUrl ? (
+          <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+            {/* Plain <img> bypasses ALL Next.js image restrictions */}
+            <img
+              src={finalUrl}
               alt={post.title || "Featured image"}
-              width={1600}
-              height={900}
-              className="h-auto w-full object-cover"
-              unoptimized
-              priority
+              className="block w-full h-auto object-cover"
+              referrerPolicy="no-referrer"
+              loading="lazy"
             />
           </div>
         ) : (
-          <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
-            No featured image URL returned for this post.
-            <div className="mt-2 text-xs text-white/60">
-              Tip: confirm the post is published and the Featured Image field is set.
-            </div>
+          <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/80">
+            No featured image URL returned from Sanity for this post.
           </div>
         )}
 
-        {post.excerpt && <p className="mt-6 text-lg text-white/80">{post.excerpt}</p>}
+        {post.excerpt ? <p className="mt-6 text-lg text-white/80">{post.excerpt}</p> : null}
 
         <article className="prose prose-invert mt-10 max-w-none">
           <PortableText value={post.body} />
         </article>
 
-        {/* Debug helper: if imageUrl exists, show it so you can test it directly */}
-        {imageUrl ? (
-          <div className="mt-10 rounded-2xl border border-white/10 bg-black/30 p-4">
-            <div className="text-sm text-white/70">Featured image URL:</div>
-            <div className="mt-1 break-all text-xs text-white/80">{imageUrl}</div>
+        {/* DEBUG PANEL (remove after fixed) */}
+        <div className="mt-10 rounded-2xl border border-white/10 bg-black/30 p-4">
+          <div className="text-sm text-white/70">Debug</div>
+          <div className="mt-2 text-xs text-white/80 break-all">
+            <div><span className="text-white/60">slug:</span> {slug}</div>
+            <div><span className="text-white/60">imageUrl:</span> {imageUrl || "(empty)"}</div>
+            <div><span className="text-white/60">featuredImage.asset.url:</span> {assetUrl || "(empty)"}</div>
           </div>
-        ) : null}
+          <pre className="mt-3 overflow-auto text-[11px] text-white/70">
+{JSON.stringify(
+  {
+    hasFeaturedImage: !!post?.featuredImage,
+    featuredImage: post?.featuredImage || null,
+  },
+  null,
+  2
+)}
+          </pre>
+        </div>
       </div>
     </main>
   );
