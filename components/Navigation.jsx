@@ -3,10 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseBrowser";
 
 export default function Navigation() {
+  const router = useRouter();
+
   const [commandOpen, setCommandOpen] = useState(false);
   const [advertiseOpen, setAdvertiseOpen] = useState(false);
+
+  // ✅ auth state
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const commandRef = useRef(null);
   const advertiseRef = useRef(null);
@@ -37,140 +45,253 @@ export default function Navigation() {
     };
   }, []);
 
+  // ✅ Load + track Supabase session
+  useEffect(() => {
+    let sub;
+
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        setSession(data?.session || null);
+      } finally {
+        setAuthLoading(false);
+      }
+    })();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+        setSession(newSession || null);
+        setAuthLoading(false);
+      }
+    );
+
+    sub = listener?.subscription;
+
+    return () => {
+      try {
+        sub?.unsubscribe?.();
+      } catch {}
+    };
+  }, []);
+
+  async function handleLogout() {
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      // no-op (we still redirect)
+    } finally {
+      setCommandOpen(false);
+      setAdvertiseOpen(false);
+      router.push("/");
+      router.refresh();
+    }
+  }
+
+  const isAuthed = !!session;
+
+  // ✅ Inline styles that stop the dropdown getting trapped behind the glass
+  const wrapStyle = { overflow: "visible" };
+  const headerStyle = {
+    position: "relative",
+    zIndex: 9999,
+    overflow: "visible",
+  };
+  const dropWrapStyle = { position: "relative", overflow: "visible" };
+  const dropdownStyle = {
+    position: "absolute",
+    top: "calc(100% + 10px)",
+    right: 0,
+    zIndex: 999999, // this beats the glass stacking context
+    overflow: "visible",
+  };
+
   return (
-    // KEY: overflow-visible + high z-index so dropdown can sit over the glass
-    <header className="relative z-[1000] overflow-visible">
-      {/* If you have a glass card wrapper, KEEP it but don't let it clip */}
-      <div className="mx-auto w-full max-w-6xl px-4 pt-6 overflow-visible">
-        <div className="relative overflow-visible rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md shadow-lg">
-          <div className="flex items-center justify-between px-5 py-4 overflow-visible">
-            {/* Left: logo + brand */}
-            <Link href="/" className="flex items-center gap-3">
-              <div className="h-10 w-10 overflow-hidden rounded-xl border border-white/15 bg-black/30">
-                <Image
-                  src="/logo.png"
-                  alt="Barracks Media"
-                  width={80}
-                  height={80}
-                  className="h-full w-full object-cover"
-                  priority
-                />
-              </div>
-              <div className="leading-tight">
-                <div className="text-sm font-semibold tracking-wide text-white">
-                  BARRACKS MEDIA
-                </div>
-                <div className="text-xs text-white/80">
-                  Built clean. Built to scale.
-                </div>
-              </div>
+    <header className="nav" role="banner" style={headerStyle}>
+      <div className="nav-inner" style={wrapStyle}>
+        <div className="container-card nav-bar" style={wrapStyle}>
+          {/* Brand / Logo */}
+          <Link href="/" className="brand" aria-label="Barracks Media Home">
+            <span className="logoImageWrap" aria-hidden="true">
+              <Image
+                src="/logo.jpg"
+                alt=""
+                width={36}
+                height={36}
+                priority
+                style={{ borderRadius: 10, objectFit: "cover" }}
+              />
+            </span>
+
+            <span className="brandText">
+              <span className="brandTitle">BARRACKS MEDIA</span>
+              <span className="brandSub">Built clean. Built to scale.</span>
+            </span>
+          </Link>
+
+          {/* Links */}
+          <nav className="navLinks" aria-label="Primary navigation" style={wrapStyle}>
+            <Link className="tab" href="/network">
+              Network
             </Link>
 
-            {/* Right: links + dropdowns */}
-            <nav className="flex items-center gap-3 overflow-visible">
-              <Link
-                href="/services"
-                className="rounded-xl px-3 py-2 text-sm text-white/90 hover:bg-white/10"
-              >
-                Services
+            <Link className="tab" href="/webinars">
+              Live Webinar
+            </Link>
+
+            <Link className="tab" href="/services">
+              Services
+            </Link>
+
+            {/* ✅ Bring Portfolio back */}
+            <Link className="tab" href="/portfolio">
+              Portfolio
+            </Link>
+
+            <Link className="tab" href="/blog">
+              Blog
+            </Link>
+
+            <Link className="tab" href="/apply">
+              Join Network
+            </Link>
+
+            {/* ✅ Portal always visible */}
+            <Link className="tab" href="/portal">
+              Portal
+            </Link>
+
+            {/* ✅ Auth controls */}
+            {!authLoading && !isAuthed ? (
+              <Link className="tab" href="/portal">
+                Log In
               </Link>
+            ) : null}
 
-              {/* Bring Portfolio back into the nav */}
-              <Link
-                href="/portfolio"
-                className="rounded-xl px-3 py-2 text-sm text-white/90 hover:bg-white/10"
+            {!authLoading && isAuthed ? (
+              <>
+                <Link className="tab" href="/portal">
+                  Account
+                </Link>
+
+                <button
+                  type="button"
+                  className="tab"
+                  onClick={handleLogout}
+                  aria-label="Log out"
+                >
+                  Log Out
+                </button>
+              </>
+            ) : null}
+
+            {/* Advertise dropdown */}
+            <div
+              className="dropWrap"
+              ref={advertiseRef}
+              style={dropWrapStyle}
+              onMouseEnter={() => setAdvertiseOpen(true)}
+              onMouseLeave={() => setAdvertiseOpen(false)}
+            >
+              <button
+                type="button"
+                className="dropBtn"
+                aria-expanded={advertiseOpen}
+                aria-haspopup="menu"
+                onClick={() => {
+                  setAdvertiseOpen((v) => !v);
+                  setCommandOpen(false);
+                }}
               >
-                Portfolio
-              </Link>
+                Advertise {advertiseOpen ? "▴" : "▾"}
+              </button>
 
-              {/* Command dropdown */}
-              <div ref={commandRef} className="relative overflow-visible">
-                <button
-                  onClick={() => {
-                    setCommandOpen((v) => !v);
-                    setAdvertiseOpen(false);
-                  }}
-                  className="rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15"
-                  aria-expanded={commandOpen}
-                  aria-haspopup="menu"
-                >
-                  Command <span className="ml-1">▾</span>
-                </button>
-
-                {commandOpen && (
-                  // KEY: z-[9999] + absolute so it renders on top of the glass
-                  <div
-                    className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-white/15 bg-black/80 backdrop-blur-xl shadow-2xl z-[9999]"
-                    role="menu"
+              {advertiseOpen && (
+                <div className="dropdown" role="menu" style={dropdownStyle}>
+                  <Link
+                    className="dropItem"
+                    href="/advertise"
+                    onClick={() => setAdvertiseOpen(false)}
                   >
-                    <Link
-                      href="/apply"
-                      className="block px-4 py-3 text-sm text-white/90 hover:bg-white/10"
-                      role="menuitem"
-                      onClick={() => setCommandOpen(false)}
-                    >
-                      Apply to the Network
-                    </Link>
-                    <Link
-                      href="/contact"
-                      className="block px-4 py-3 text-sm text-white/90 hover:bg-white/10"
-                      role="menuitem"
-                      onClick={() => setCommandOpen(false)}
-                    >
-                      Contact
-                    </Link>
-                    <Link
-                      href="/services/web-design"
-                      className="block px-4 py-3 text-sm text-white/90 hover:bg-white/10"
-                      role="menuitem"
-                      onClick={() => setCommandOpen(false)}
-                    >
-                      Web Design
-                    </Link>
-                  </div>
-                )}
-              </div>
+                    Advertise With Us
+                  </Link>
 
-              {/* Optional: second dropdown example (kept from your structure) */}
-              <div ref={advertiseRef} className="relative overflow-visible">
-                <button
-                  onClick={() => {
-                    setAdvertiseOpen((v) => !v);
-                    setCommandOpen(false);
-                  }}
-                  className="rounded-xl px-3 py-2 text-sm text-white/90 hover:bg-white/10"
-                  aria-expanded={advertiseOpen}
-                  aria-haspopup="menu"
-                >
-                  Advertise <span className="ml-1">▾</span>
-                </button>
-
-                {advertiseOpen && (
-                  <div
-                    className="absolute right-0 mt-2 w-72 overflow-hidden rounded-2xl border border-white/15 bg-black/80 backdrop-blur-xl shadow-2xl z-[9999]"
-                    role="menu"
+                  <Link
+                    className="dropItem"
+                    href="/sponsorship"
+                    onClick={() => setAdvertiseOpen(false)}
                   >
-                    <Link
-                      href="/advertise"
-                      className="block px-4 py-3 text-sm text-white/90 hover:bg-white/10"
-                      role="menuitem"
-                      onClick={() => setAdvertiseOpen(false)}
-                    >
-                      Sponsorships & Ads
-                    </Link>
-                    <Link
-                      href="/services"
-                      className="block px-4 py-3 text-sm text-white/90 hover:bg-white/10"
-                      role="menuitem"
-                      onClick={() => setAdvertiseOpen(false)}
-                    >
-                      Services Overview
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </nav>
-          </div>
+                    Sponsorship
+                  </Link>
+
+                  <Link
+                    className="dropItem"
+                    href="/testimonials"
+                    onClick={() => setAdvertiseOpen(false)}
+                  >
+                    Testimonials
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Command dropdown */}
+            <div
+              className="dropWrap"
+              ref={commandRef}
+              style={dropWrapStyle}
+              onMouseEnter={() => setCommandOpen(true)}
+              onMouseLeave={() => setCommandOpen(false)}
+            >
+              <button
+                type="button"
+                className="dropBtn"
+                aria-expanded={commandOpen}
+                aria-haspopup="menu"
+                onClick={() => {
+                  setCommandOpen((v) => !v);
+                  setAdvertiseOpen(false);
+                }}
+              >
+                Command {commandOpen ? "▴" : "▾"}
+              </button>
+
+              {commandOpen && (
+                <div className="dropdown" role="menu" style={dropdownStyle}>
+                  <Link
+                    className="dropItem"
+                    href="/services"
+                    onClick={() => setCommandOpen(false)}
+                  >
+                    Start a Project
+                  </Link>
+
+                  <div className="divider" />
+
+                  <Link
+                    className="dropItem"
+                    href="/privacy"
+                    onClick={() => setCommandOpen(false)}
+                  >
+                    Privacy Policy
+                  </Link>
+                  <Link
+                    className="dropItem"
+                    href="/terms"
+                    onClick={() => setCommandOpen(false)}
+                  >
+                    Terms
+                  </Link>
+                  <Link
+                    className="dropItem"
+                    href="/copyright"
+                    onClick={() => setCommandOpen(false)}
+                  >
+                    Copyright
+                  </Link>
+                </div>
+              )}
+            </div>
+          </nav>
         </div>
       </div>
     </header>
