@@ -1,11 +1,15 @@
 "use client";
 
+import WebsitePortfolioCarousel from "@/components/WebsitePortfolioCarousel";
 import PodcastCarousel from "@/components/PodcastCarousel";
 
 export default function HomePage() {
   return (
     <>
-      {/* Existing carousel stays untouched */}
+      {/* NEW: Web Design Portfolio Carousel (auto-advancing) */}
+      <WebsitePortfolioCarousel variant="home" autoMs={4500} />
+
+      {/* Existing podcast carousel */}
       <PodcastCarousel />
 
       {/* Main intro content (SEO-safe, visible, styled with your existing classes) */}
