@@ -2,6 +2,7 @@
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Script from "next/script";
 
 // ✅ Kate bot
 import FloatingVoiceBot from "@/components/FloatingVoiceBot";
@@ -46,6 +47,20 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      {/* ✅ Google Analytics (site-wide) */}
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-FX4Q6WRJ9H"
+        strategy="afterInteractive"
+      />
+      <Script id="ga-gtag" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-FX4Q6WRJ9H');
+        `}
+      </Script>
+
       <body>
         {/* Background */}
         <div
