@@ -30,25 +30,25 @@ export default function WebsitePortfolioCarousel({ autoMs = 4500 }) {
   const slides = useMemo(
     () => [
       {
-        src: "/websiteimages/barracksmediainc.jpg.png",
+        src: "/websiteimages/barracksmediainc.jpg",
         title: "Barracks Media Inc",
         subtitle: "Built clean • built to scale",
         href: "/services/web-design",
       },
       {
-        src: "/websiteimages/brieillasteiner.jpg.png",
+        src: "/websiteimages/briellasteiner.jpg",
         title: "Client Website",
         subtitle: "Clean layout • clear CTA",
         href: "/portfolio",
       },
       {
-        src: "/websiteimages/juliewebsite.jpg.png",
+        src: "/websiteimages/juliewebsite.jpg",
         title: "Client Website",
         subtitle: "Mobile-first • polished design",
         href: "/portfolio",
       },
       {
-        src: "/websiteimages/vetforce1.jpg.png",
+        src: "/websiteimages/vetforce1.jpg",
         title: "Vet-Force 1",
         subtitle: "Brand hub • built to scale",
         href: "/portfolio",
