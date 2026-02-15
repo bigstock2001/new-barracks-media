@@ -1,24 +1,31 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-export const runtime = "nodejs"; // ensures Node runtime (safe for supabase-js)
-
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
-}
+export const runtime = "nodejs";
 
 export async function POST(req) {
   try {
-    // Use server-only secrets (NOT NEXT_PUBLIC) for writes
-    const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    // Accept common env var names (covers mismatches)
+    const url =
+      process.env.SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      process.env.SUPABASE_PROJECT_URL;
+
     const serviceKey =
-      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.SUPABASE_SERVICE_KEY ||
+      process.env.SUPABASE_SERVICE_ROLE;
 
     if (!url || !serviceKey) {
       return NextResponse.json(
         {
-          error:
-            "Server misconfigured: missing SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY.",
+          error: "Server misconfigured: missing Supabase env vars.",
+          missing: {
+            SUPABASE_URL: !url,
+            SUPABASE_SERVICE_ROLE_KEY: !serviceKey,
+          },
+          hint:
+            "Add env vars in Vercel to the correct project + correct environment (Production vs Preview), then redeploy.",
         },
         { status: 500 }
       );
@@ -30,7 +37,6 @@ export async function POST(req) {
 
     const body = await req.json();
 
-    // Basic required fields
     const required = [
       "full_name",
       "email",
@@ -50,11 +56,6 @@ export async function POST(req) {
       }
     }
 
-    if (!isValidEmail(body.email)) {
-      return NextResponse.json({ error: "Please enter a valid email." }, { status: 400 });
-    }
-
-    // Normalize + include ALL fields your client collects
     const payload = {
       full_name: String(body.full_name).trim(),
       email: String(body.email).trim().toLowerCase(),
@@ -63,12 +64,10 @@ export async function POST(req) {
       rss_url: body.rss_url ? String(body.rss_url).trim() : null,
       host_platform: body.host_platform ? String(body.host_platform).trim() : null,
       publish_frequency: String(body.publish_frequency).trim(),
-      focus: String(body.focus).trim(), // helping | storytelling | both
+      focus: String(body.focus).trim(),
       primary_topics: body.primary_topics ? String(body.primary_topics).trim() : null,
       why_join: String(body.why_join).trim(),
-      path: String(body.path).trim(), // full | independent
-
-      // Path-related fields (optional but captured if present)
+      path: String(body.path).trim(),
       stats_proof_url: body.stats_proof_url ? String(body.stats_proof_url).trim() : null,
       published_episodes: body.published_episodes
         ? Number(String(body.published_episodes).replace(/[^0-9]/g, "")) || null
@@ -77,25 +76,17 @@ export async function POST(req) {
         ? Number(String(body.avg_downloads_30days).replace(/[^0-9]/g, "")) || null
         : null,
       manual_stats_reporting: !!body.manual_stats_reporting,
-
       status: "new",
       created_at: new Date().toISOString(),
     };
 
-    const { data, error } = await supabase
-      .from("applications")
-      .insert(payload)
-      .select("id")
-      .single();
+    const { error } = await supabase.from("applications").insert(payload);
 
     if (error) {
-      return NextResponse.json(
-        { error: error.message || "Database insert failed." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json({ ok: true, id: data?.id || null });
+    return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json(
       { error: e?.message || "Unknown error" },
