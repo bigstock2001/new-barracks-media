@@ -510,6 +510,9 @@ export default function ApplyClient() {
                 (min $100).
               </div>
 
+              {!canSubmit ? (
+                <div className="text-sm text-white/60">Complete the required fields above to enable Submit.</div>
+              ) : null}
               <button
                 type="submit"
                 disabled={loading || !canSubmit}
