@@ -5,7 +5,6 @@ export const runtime = "nodejs";
 
 export async function POST(req) {
   try {
-    // Accept common env var names (covers mismatches)
     const url =
       process.env.SUPABASE_URL ||
       process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -17,15 +16,12 @@ export async function POST(req) {
       process.env.SUPABASE_SERVICE_ROLE;
 
     if (!url || !serviceKey) {
+      const missingUrl = !url;
+      const missingKey = !serviceKey;
+
       return NextResponse.json(
         {
-          error: "Server misconfigured: missing Supabase env vars.",
-          missing: {
-            SUPABASE_URL: !url,
-            SUPABASE_SERVICE_ROLE_KEY: !serviceKey,
-          },
-          hint:
-            "Add env vars in Vercel to the correct project + correct environment (Production vs Preview), then redeploy.",
+          error: `Server misconfigured: missing Supabase env vars. SUPABASE_URL missing=${missingUrl}. SUPABASE_SERVICE_ROLE_KEY missing=${missingKey}.`,
         },
         { status: 500 }
       );
