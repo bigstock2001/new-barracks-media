@@ -512,7 +512,7 @@ export default function ApplyClient() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !requirements.canSubmit}
                 className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 font-extrabold text-black disabled:opacity-60"
               >
                 {loading ? "Submitting..." : "Submit Application"}
