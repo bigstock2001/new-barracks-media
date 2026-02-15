@@ -21,7 +21,7 @@ function buildUrlWithQuery(baseUrl, queryObj) {
   try {
     const url = new URL(baseUrl);
     Object.entries(queryObj || {}).forEach(([k, v]) => {
-      if (!v) return;
+      if (v === undefined || v === null) return;
       const str = String(v).trim();
       if (!str) return;
       url.searchParams.set(k, str);
@@ -32,19 +32,13 @@ function buildUrlWithQuery(baseUrl, queryObj) {
   }
 }
 
-/**
- * IMPORTANT:
- * useSearchParams() MUST be inside a Suspense boundary in App Router,
- * or build/prerender can fail with:
- * "useSearchParams() should be wrapped in a suspense boundary"
- */
 function BookingPageInner() {
   const params = useSearchParams();
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupArmed, setPopupArmed] = useState(false);
 
-  // UTMs (PodMatch → your page → Calendly)
+  // UTMs passthrough (PodMatch -> this page -> Calendly)
   const utm = useMemo(() => {
     const get = (k) => params.get(k) || "";
     return {
@@ -61,25 +55,36 @@ function BookingPageInner() {
     return buildUrlWithQuery(CALENDLY_BASE_URL, utm);
   }, [utm]);
 
-  useEffect(() => {
-    const suppressed =
-      typeof window !== "undefined" &&
-      window.localStorage.getItem(LS_KEY_SUPPRESS_POPUP) === "1";
-    if (suppressed) return;
+  // Allow you to force popup for testing: ?popup=1
+  const forcePopup = useMemo(() => params.get("popup") === "1", [params]);
 
-    // Arm popup after a short delay so it doesn't fire instantly
-    const t = window.setTimeout(() => setPopupArmed(true), 1500);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // If you ever need to reset suppression manually:
+    // localStorage.removeItem("bm_substack_popup_suppress_v1")
+
+    const suppressed = window.localStorage.getItem(LS_KEY_SUPPRESS_POPUP) === "1";
+    if (suppressed && !forcePopup) return;
+
+    // Arm popup after short delay so it doesn't insta-pop
+    const t = window.setTimeout(() => setPopupArmed(true), 1200);
     return () => window.clearTimeout(t);
-  }, []);
+  }, [forcePopup]);
 
   useEffect(() => {
     if (!popupArmed) return;
+    if (typeof window === "undefined") return;
 
-    const suppressed =
-      window.localStorage.getItem(LS_KEY_SUPPRESS_POPUP) === "1";
-    if (suppressed) return;
+    const suppressed = window.localStorage.getItem(LS_KEY_SUPPRESS_POPUP) === "1";
+    if (suppressed && !forcePopup) return;
 
-    // Scroll trigger (~60%)
+    // ✅ Fallback timer: show after 18s if they haven't dismissed it
+    const timer = window.setTimeout(() => {
+      setShowPopup(true);
+    }, 18000);
+
+    // ✅ Scroll trigger (~45% now, less strict)
     const onScroll = () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const docHeight = document.documentElement.scrollHeight;
@@ -87,13 +92,13 @@ function BookingPageInner() {
       const maxScroll = Math.max(1, docHeight - winHeight);
       const pct = scrollTop / maxScroll;
 
-      if (pct >= 0.6) {
+      if (pct >= 0.45) {
         setShowPopup(true);
         window.removeEventListener("scroll", onScroll);
       }
     };
 
-    // Exit intent (desktop)
+    // ✅ Exit intent (desktop)
     const onMouseOut = (e) => {
       if (e.clientY <= 0) {
         setShowPopup(true);
@@ -105,21 +110,22 @@ function BookingPageInner() {
     window.addEventListener("mouseout", onMouseOut);
 
     return () => {
+      window.clearTimeout(timer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("mouseout", onMouseOut);
     };
-  }, [popupArmed]);
+  }, [popupArmed, forcePopup]);
 
   const dismissPopup = (suppress = false) => {
     setShowPopup(false);
-    if (suppress) {
+    if (suppress && typeof window !== "undefined") {
       window.localStorage.setItem(LS_KEY_SUPPRESS_POPUP, "1");
     }
   };
 
   return (
     <main className="min-h-screen">
-      {/* Calendly script (load once on the page) */}
+      {/* Calendly script */}
       <Script
         src="https://assets.calendly.com/assets/external/widget.js"
         strategy="afterInteractive"
@@ -128,10 +134,24 @@ function BookingPageInner() {
       <div className="mx-auto max-w-5xl px-5 py-12 space-y-10">
         {/* Hero */}
         <section className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-8">
-          <h1 className="text-3xl md:text-4xl font-semibold">
-            Book a guest spot on {SHOW.name}
-          </h1>
-          <p className="mt-4 text-lg opacity-90 max-w-3xl">{SHOW.tagline}</p>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-semibold">
+                Book a guest spot on {SHOW.name}
+              </h1>
+              <p className="mt-4 text-lg opacity-90 max-w-3xl">
+                {SHOW.tagline}
+              </p>
+            </div>
+
+            {/* ✅ Manual trigger so it ALWAYS "works" */}
+            <button
+              onClick={() => setShowPopup(true)}
+              className="shrink-0 rounded-xl bg-white text-black px-4 py-3 text-sm font-semibold hover:opacity-90 transition"
+            >
+              Join Newsletter
+            </button>
+          </div>
         </section>
 
         {/* Calendly Section */}
@@ -148,7 +168,7 @@ function BookingPageInner() {
 
           <p className="text-xs opacity-70 mt-4">
             If the scheduler doesn’t load, your browser may be blocking
-            third-party scripts. You can also open it directly:{" "}
+            third-party scripts. Open directly:{" "}
             <a
               className="underline opacity-90"
               href={calendlyUrl}
@@ -159,6 +179,27 @@ function BookingPageInner() {
             </a>
             .
           </p>
+        </section>
+
+        {/* ✅ OPTIONAL: A visible inline subscribe section at the bottom
+            (keeps conversions high AND guarantees Substack is reachable) */}
+        <section className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-8">
+          <h2 className="text-2xl font-semibold">Get updates</h2>
+          <p className="opacity-85 mt-2">
+            Guest tips, booking openings, and growth tactics — short and useful.
+          </p>
+
+          <div className="mt-5 rounded-2xl overflow-hidden border border-white/10 bg-white">
+            <iframe
+              src={SUBSTACK_EMBED_URL}
+              width="100%"
+              height="320"
+              style={{ border: "1px solid #EEE", background: "white" }}
+              frameBorder="0"
+              scrolling="no"
+              title="Substack Signup Inline"
+            />
+          </div>
         </section>
       </div>
 
@@ -193,7 +234,7 @@ function BookingPageInner() {
                 style={{ border: "1px solid #EEE", background: "white" }}
                 frameBorder="0"
                 scrolling="no"
-                title="Substack Signup"
+                title="Substack Signup Popup"
               />
             </div>
 
@@ -220,7 +261,6 @@ function BookingPageInner() {
 }
 
 export default function BookingAuthorsAfterActionPage() {
-  // ✅ Suspense wrapper required for useSearchParams during prerender/build
   return (
     <Suspense
       fallback={
@@ -230,7 +270,9 @@ export default function BookingAuthorsAfterActionPage() {
               <h1 className="text-3xl md:text-4xl font-semibold">
                 Book a guest spot on {SHOW.name}
               </h1>
-              <p className="mt-4 text-lg opacity-90 max-w-3xl">{SHOW.tagline}</p>
+              <p className="mt-4 text-lg opacity-90 max-w-3xl">
+                {SHOW.tagline}
+              </p>
             </section>
 
             <section className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-8">
