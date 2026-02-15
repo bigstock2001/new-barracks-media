@@ -1,0 +1,155 @@
+// app/apply/terms/page.jsx
+import Link from "next/link";
+
+export const metadata = {
+  title: "Terms & Requirements",
+  description:
+    "Barracks Media Network partnership terms, requirements, and payout rules for network applicants.",
+  alternates: { canonical: "/apply/terms" },
+};
+
+export default function ApplyTermsPage() {
+  return (
+    <main className="relative overflow-hidden">
+      {/* TERMS-PAGE-0214 */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.10),transparent_55%)]" />
+      </div>
+
+      <div className="mx-auto max-w-5xl px-6 sm:px-8 py-14 sm:py-16">
+        <header className="rounded-3xl border border-white/10 bg-slate-900/45 backdrop-blur p-7 sm:p-10">
+          <div className="text-xs uppercase tracking-widest text-white/60">
+            Barracks Media Network
+          </div>
+          <h1 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            Terms & Requirements
+          </h1>
+          <p className="mt-4 text-white/70 leading-relaxed">
+            This page covers partnership paths, requirements, revenue splits, and payout rules.
+            You must agree to these terms before submitting an application.
+          </p>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/apply"
+              className="rounded-full bg-white px-5 py-2.5 text-sm font-extrabold text-black"
+            >
+              Back to Application
+            </Link>
+          </div>
+        </header>
+
+        <section className="mt-8 grid gap-6">
+          <Card title="Partnership Paths">
+            <ul className="text-white/75 space-y-3 leading-relaxed">
+              <li>
+                <b className="text-white">Full Network Partner</b> — RSS hosted and distributed by
+                Barracks Media with full integration into network sponsorship and ad programs.
+              </li>
+              <li>
+                <b className="text-white">Independent Network Partner</b> — You keep your RSS feed.
+                Manual stats reporting may be required when requested. Limited sponsorship eligibility
+                with an upgrade path.
+              </li>
+            </ul>
+          </Card>
+
+          <Card title="Eligibility Minimums (Full Network Partner)">
+            <ul className="text-white/75 space-y-2 leading-relaxed">
+              <li>• Minimum <b className="text-white">50 published episodes</b></li>
+              <li>
+                • Minimum <b className="text-white">50 downloads per episode</b> within{" "}
+                <b className="text-white">30 days</b>
+              </li>
+              <li>• Valid RSS feed required</li>
+            </ul>
+          </Card>
+
+          <Card title="Independent Partner Requirements">
+            <ul className="text-white/75 space-y-2 leading-relaxed">
+              <li>• You keep your RSS feed and hosting platform</li>
+              <li>• Manual stats reporting required when requested</li>
+              <li>• Valid RSS feed required</li>
+              <li>• Option to apply for upgrade when meeting Full Partner minimums</li>
+            </ul>
+          </Card>
+
+          <Card title="Revenue Splits">
+            <div className="grid sm:grid-cols-2 gap-5">
+              <Mini title="Full Network Partner">
+                <div className="text-white/75 leading-relaxed">
+                  <b className="text-white">70%</b> to creators / <b className="text-white">30%</b> to
+                  Barracks Media
+                </div>
+              </Mini>
+
+              <Mini title="Independent Network Partner">
+                <div className="text-white/75 leading-relaxed">
+                  <b className="text-white">30%</b> to creator / <b className="text-white">70%</b> to
+                  Barracks Media
+                </div>
+              </Mini>
+            </div>
+          </Card>
+
+          <Card title="Payout Rules">
+            <ul className="text-white/75 space-y-2 leading-relaxed">
+              <li>
+                • Minimum payout threshold: <b className="text-white">$100</b>
+              </li>
+              <li>
+                • Payouts issued on the <b className="text-white">first of each month</b>
+              </li>
+              <li>• Earnings roll forward until threshold is met</li>
+              <li>
+                • Payments via <b className="text-white">Stripe Connect (ACH only)</b> — no PayPal,
+                no checks
+              </li>
+            </ul>
+          </Card>
+
+          <Card title="Application Review">
+            <ul className="text-white/75 space-y-2 leading-relaxed">
+              <li>• Applications are reviewed in the order received.</li>
+              <li>• You may be asked for follow-up details or proof of performance metrics.</li>
+              <li>• Submitting an application does not guarantee acceptance.</li>
+            </ul>
+          </Card>
+
+          <div className="rounded-3xl border border-white/10 bg-slate-900/45 backdrop-blur p-6 sm:p-8">
+            <div className="text-white/80 leading-relaxed">
+              Ready to apply? Return to the application page and check the agreement box.
+            </div>
+            <div className="mt-5">
+              <Link
+                href="/apply"
+                className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-extrabold text-black"
+              >
+                Go to Application
+              </Link>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
+function Card({ title, children }) {
+  return (
+    <section className="rounded-3xl border border-white/10 bg-slate-900/45 backdrop-blur p-6 sm:p-8">
+      <h2 className="text-xl sm:text-2xl font-bold text-white">{title}</h2>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+function Mini({ title, children }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/25 p-5">
+      <div className="text-sm font-semibold text-white">{title}</div>
+      <div className="mt-3">{children}</div>
+    </div>
+  );
+}
