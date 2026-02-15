@@ -25,30 +25,42 @@ export default function ApplyClient() {
     manual_stats_reporting: false,
   });
 
-  const canSubmit = useMemo(() => {
-    const basic =
-      form.full_name.trim() &&
-      form.email.trim() &&
-      form.show_name.trim() &&
-      form.publish_frequency.trim() &&
-      form.focus.trim() &&
-      form.path.trim() &&
-      form.why_join.trim().length >= 40;
+  const requirements = useMemo(() => {
+    const missing = [];
 
-    if (!basic) return false;
+    // Base required for all paths
+    if (!form.full_name.trim()) missing.push("Your name");
+    if (!form.email.trim()) missing.push("Email");
+    if (!form.show_name.trim()) missing.push("Podcast name");
+    if (!form.publish_frequency.trim()) missing.push("Publishing frequency");
+    if (!form.focus.trim()) missing.push("Show focus");
+    if (!form.path.trim()) missing.push("Partnership path");
 
+    const whyLen = form.why_join.trim().length;
+    if (whyLen < 40) missing.push(`Why join (needs 40+ characters — currently ${whyLen})`);
+
+    // Path-specific requirements
     if (form.path === "full") {
       const eps = Number(form.published_episodes || 0);
       const dl = Number(form.avg_downloads_30days || 0);
-      return eps >= 50 && dl >= 50 && form.rss_url.trim();
+
+      if (!form.rss_url.trim()) missing.push("RSS feed URL");
+      if (eps < 50) missing.push("Published episodes (50+ required)");
+      if (dl < 50) missing.push("Avg downloads per episode in 30 days (50+ required)");
     }
 
     if (form.path === "independent") {
-      return form.rss_url.trim() && form.manual_stats_reporting === true;
+      if (!form.rss_url.trim()) missing.push("RSS feed URL");
+      if (!form.manual_stats_reporting) missing.push("Manual stats reporting checkbox");
     }
 
-    return basic;
+    return {
+      missing,
+      canSubmit: missing.length === 0,
+    };
   }, [form]);
+
+  const canSubmit = requirements.canSubmit;
 
   async function submit(e) {
     e.preventDefault();
@@ -56,9 +68,7 @@ export default function ApplyClient() {
     setDone(false);
 
     if (!canSubmit) {
-      setError(
-        "Please complete all required fields and ensure the selected path-specific requirements are met."
-      );
+      setError("Please complete the required fields below before submitting.");
       return;
     }
 
@@ -70,7 +80,15 @@ export default function ApplyClient() {
         body: JSON.stringify(form),
       });
 
-      const data = await res.json();
+      // Safe parse (handles HTML error pages too)
+      const text = await res.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = { error: text || "Non-JSON response from server." };
+      }
+
       if (!res.ok) throw new Error(data?.error || "Submission failed.");
 
       setDone(true);
@@ -92,7 +110,7 @@ export default function ApplyClient() {
         manual_stats_reporting: false,
       });
     } catch (err) {
-      setError(err.message || "Something went wrong.");
+      setError(err?.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -511,8 +529,25 @@ export default function ApplyClient() {
               </div>
 
               {!canSubmit ? (
-                <div className="text-sm text-white/60">Complete the required fields above to enable Submit.</div>
-              ) : null}
+                <div className="md:text-right">
+                  <div className="text-sm text-white/70 font-semibold">
+                    To enable Submit, complete:
+                  </div>
+                  <ul className="mt-2 text-sm text-white/60 space-y-1">
+                    {requirements.missing.slice(0, 5).map((m) => (
+                      <li key={m}>• {m}</li>
+                    ))}
+                    {requirements.missing.length > 5 ? (
+                      <li>• …and {requirements.missing.length - 5} more</li>
+                    ) : null}
+                  </ul>
+                </div>
+              ) : (
+                <div className="text-sm text-emerald-200/90 font-semibold">
+                  ✅ Ready to submit
+                </div>
+              )}
+
               <button
                 type="submit"
                 disabled={loading || !canSubmit}
