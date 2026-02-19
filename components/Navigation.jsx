@@ -84,7 +84,7 @@ export default function Navigation() {
     try {
       await supabase.auth.signOut();
     } catch (e) {
-      // no-op (we still redirect)
+      // no-op
     } finally {
       setCommandOpen(false);
       setAdvertiseOpen(false);
@@ -96,19 +96,17 @@ export default function Navigation() {
 
   const isAuthed = !!session;
 
-  // ✅ Inline styles that stop the dropdown getting trapped behind the glass
+  // ✅ Inline styles that stop dropdown getting trapped behind the glass
   const wrapStyle = { overflow: "visible" };
-  const headerStyle = {
-    position: "relative",
-    zIndex: 9999,
-    overflow: "visible",
-  };
+  const headerStyle = { position: "relative", zIndex: 9999, overflow: "visible" };
   const dropWrapStyle = { position: "relative", overflow: "visible" };
+
+  // ✅ Reduce gap so there's no "dead zone"
   const dropdownStyle = {
     position: "absolute",
-    top: "calc(100% + 10px)",
+    top: "calc(100% + 2px)", // was +10px
     right: 0,
-    zIndex: 999999, // this beats the glass stacking context
+    zIndex: 999999,
     overflow: "visible",
   };
 
@@ -145,14 +143,8 @@ export default function Navigation() {
               Live Webinar
             </Link>
 
-            {/* ✅ Services dropdown */}
-            <div
-              className="dropWrap"
-              ref={servicesRef}
-              style={dropWrapStyle}
-              onMouseEnter={() => setServicesOpen(true)}
-              onMouseLeave={() => setServicesOpen(false)}
-            >
+            {/* ✅ Services dropdown (CLICK to open, no hover-close problem) */}
+            <div className="dropWrap" ref={servicesRef} style={dropWrapStyle}>
               <button
                 type="button"
                 className="dropBtn"
@@ -169,11 +161,7 @@ export default function Navigation() {
 
               {servicesOpen && (
                 <div className="dropdown" role="menu" style={dropdownStyle}>
-                  <Link
-                    className="dropItem"
-                    href="/services"
-                    onClick={() => setServicesOpen(false)}
-                  >
+                  <Link className="dropItem" href="/services" onClick={() => setServicesOpen(false)}>
                     All Services
                   </Link>
 
@@ -206,7 +194,6 @@ export default function Navigation() {
               )}
             </div>
 
-            {/* ✅ Bring Portfolio back */}
             <Link className="tab" href="/portfolio">
               Portfolio
             </Link>
@@ -219,12 +206,11 @@ export default function Navigation() {
               Join Network
             </Link>
 
-            {/* ✅ Portal always visible */}
             <Link className="tab" href="/portal">
               Portal
             </Link>
 
-            {/* ✅ Auth controls */}
+            {/* Auth controls */}
             {!authLoading && !isAuthed ? (
               <Link className="tab" href="/portal">
                 Log In
@@ -237,18 +223,13 @@ export default function Navigation() {
                   Account
                 </Link>
 
-                <button
-                  type="button"
-                  className="tab"
-                  onClick={handleLogout}
-                  aria-label="Log out"
-                >
+                <button type="button" className="tab" onClick={handleLogout} aria-label="Log out">
                   Log Out
                 </button>
               </>
             ) : null}
 
-            {/* Advertise dropdown */}
+            {/* Advertise dropdown (unchanged hover behavior) */}
             <div
               className="dropWrap"
               ref={advertiseRef}
@@ -272,11 +253,7 @@ export default function Navigation() {
 
               {advertiseOpen && (
                 <div className="dropdown" role="menu" style={dropdownStyle}>
-                  <Link
-                    className="dropItem"
-                    href="/advertise"
-                    onClick={() => setAdvertiseOpen(false)}
-                  >
+                  <Link className="dropItem" href="/advertise" onClick={() => setAdvertiseOpen(false)}>
                     Advertise With Us
                   </Link>
 
@@ -299,7 +276,7 @@ export default function Navigation() {
               )}
             </div>
 
-            {/* Command dropdown */}
+            {/* Command dropdown (unchanged hover behavior) */}
             <div
               className="dropWrap"
               ref={commandRef}
@@ -323,35 +300,19 @@ export default function Navigation() {
 
               {commandOpen && (
                 <div className="dropdown" role="menu" style={dropdownStyle}>
-                  <Link
-                    className="dropItem"
-                    href="/services"
-                    onClick={() => setCommandOpen(false)}
-                  >
+                  <Link className="dropItem" href="/services" onClick={() => setCommandOpen(false)}>
                     Start a Project
                   </Link>
 
                   <div className="divider" />
 
-                  <Link
-                    className="dropItem"
-                    href="/privacy"
-                    onClick={() => setCommandOpen(false)}
-                  >
+                  <Link className="dropItem" href="/privacy" onClick={() => setCommandOpen(false)}>
                     Privacy Policy
                   </Link>
-                  <Link
-                    className="dropItem"
-                    href="/terms"
-                    onClick={() => setCommandOpen(false)}
-                  >
+                  <Link className="dropItem" href="/terms" onClick={() => setCommandOpen(false)}>
                     Terms
                   </Link>
-                  <Link
-                    className="dropItem"
-                    href="/copyright"
-                    onClick={() => setCommandOpen(false)}
-                  >
+                  <Link className="dropItem" href="/copyright" onClick={() => setCommandOpen(false)}>
                     Copyright
                   </Link>
                 </div>
