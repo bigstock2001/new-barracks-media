@@ -1,145 +1,242 @@
+import Link from "next/link";
+import Script from "next/script";
+import { getServicesByCategory } from "@/lib/sanity";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
-  title: "Website Design Services for Businesses & Creators | Barracks Media",
+  title: "Web Design Services | Barracks Media",
   description:
-    "Professional website design services for businesses, podcasters, and personal brands. Barracks Media builds fast, SEO-optimized, scalable websites that convert visitors into clients.",
-  alternates: {
-    canonical: "/services/web-design",
+    "Professional web design for small businesses and creators. SEO-ready, fast, conversion-focused websites built to scale—without template limitations.",
+  alternates: { canonical: "/services/web-design" },
+  openGraph: {
+    title: "Web Design Services | Barracks Media",
+    description:
+      "Professional web design that loads fast, ranks, and converts—built clean, built to scale.",
+    url: "https://barracksmedia.com/services/web-design",
+    type: "website",
   },
 };
 
-export default function WebDesignPage() {
+function FeatureList({ features }) {
+  if (!Array.isArray(features) || features.length === 0) return null;
   return (
-    <main className="section container-card">
+    <ul style={{ marginTop: 12, paddingLeft: 18 }}>
+      {features.slice(0, 6).map((f, idx) => (
+        <li key={idx} className="p" style={{ marginTop: 6 }}>
+          {f}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
-      {/* HERO SECTION */}
-      <h1 className="h1">
-        Professional Website Design Services for Businesses, Creators & Brands
-      </h1>
+function ServiceBanner({ raw }) {
+  const url = raw?.image?.asset?.url || "";
+  if (!url) return null;
+  const alt = raw?.image?.alt || raw?.title || "Service image";
 
-      <p className="p" style={{ marginTop: 20 }}>
-        Looking to hire a website designer? Whether you need a business website,
-        podcast website, personal brand site, or a fully custom digital platform,
-        Barracks Media Inc builds modern, fast, SEO-optimized websites that are
-        designed to grow with you.
-      </p>
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: 180,
+        borderRadius: 16,
+        overflow: "hidden",
+        border: "1px solid rgba(255,255,255,0.10)",
+        background: "rgba(255,255,255,0.04)",
+        marginBottom: 14,
+        position: "relative",
+      }}
+    >
+      <img
+        src={url}
+        alt={alt}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          display: "block",
+          transform: "scale(1.02)",
+        }}
+        loading="lazy"
+      />
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.12), rgba(0,0,0,0))",
+        }}
+      />
+    </div>
+  );
+}
 
-      <p className="p">
-        We don’t just build websites. We build digital infrastructure that
-        supports authority, visibility, and revenue.
-      </p>
+function buildFaqJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What makes a website SEO-ready?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "An SEO-ready website has clean structure, fast load times, mobile-friendly layout, clear headings, internal linking, and content that matches what people search for.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Why can templates become expensive later?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Many templates create limitations: slow performance, rigid layouts, and poor SEO structure. Businesses often end up paying for fixes, redesigns, or complete rebuilds later.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How does checkout work?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Checkout is handled through Stripe. After purchase, you’ll be taken to the next screen where we collect the details needed to deliver the service.",
+        },
+      },
+    ],
+  };
+}
 
-      {/* WHY WEBSITE DESIGN MATTERS */}
-      <h2 className="h2" style={{ marginTop: 40 }}>
-        Why Your Business Needs a Professionally Designed Website
-      </h2>
+export default async function WebDesignServicesPage() {
+  const services = await getServicesByCategory("web-design");
+  const faqJsonLd = buildFaqJsonLd();
 
-      <p className="p">
-        When people search for your business online, your website is your first
-        impression. A poorly designed site can cost you leads, credibility, and
-        long-term growth.
-      </p>
+  return (
+    <>
+      <Script
+        id="web-design-faq"
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
 
-      <ul style={{ marginTop: 20, paddingLeft: 20 }}>
-        <li>✔ Custom website design tailored to your brand</li>
-        <li>✔ Mobile-friendly and responsive layouts</li>
-        <li>✔ Fast loading speeds for better user experience</li>
-        <li>✔ Search engine optimized structure (SEO ready)</li>
-        <li>✔ Conversion-focused design built to generate inquiries</li>
-      </ul>
+      <section className="container-card section hero-strip">
+        <h1 className="h1">Web Design</h1>
 
-      <p className="p" style={{ marginTop: 20 }}>
-        If someone is searching for “website design services near me,”
-        “business website developer,” or “professional website designer,”
-        you need a site that not only looks good — but performs.
-      </p>
+        <p className="p" style={{ maxWidth: 980 }}>
+          If you’re searching for <strong>professional web design</strong>, you’re
+          not just buying a website — you’re building your digital headquarters.
+          A good website loads fast, looks professional on mobile, communicates
+          trust, and guides visitors to take action.
+        </p>
 
-      {/* WHAT WE BUILD */}
-      <h2 className="h2" style={{ marginTop: 50 }}>
-        Custom Website Development Services We Offer
-      </h2>
+        <div
+          style={{
+            marginTop: 14,
+            paddingTop: 14,
+            borderTop: "1px solid rgba(255,255,255,0.10)",
+            maxWidth: 980,
+          }}
+        >
+          <p className="p" style={{ opacity: 0.9 }}>
+            Templates can be a quick start, but many businesses outgrow them fast.
+            The hidden cost shows up as slow performance, limited SEO structure,
+            and redesigns you didn’t plan for. Barracks Media builds clean, scalable
+            sites designed for long-term growth — not short-term shortcuts.
+          </p>
+        </div>
 
-      <p className="p">
-        Barracks Media specializes in building high-performance websites for:
-      </p>
+        <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <Link className="tab" href="/services">
+            Back to all services
+          </Link>
+        </div>
+      </section>
 
-      <ul style={{ marginTop: 20, paddingLeft: 20 }}>
-        <li>Business Websites</li>
-        <li>Podcast & Media Websites</li>
-        <li>Personal Brand Websites</li>
-        <li>Author & Speaker Websites</li>
-        <li>Membership & Subscription Platforms</li>
-        <li>SEO-Driven Content Websites</li>
-      </ul>
+      <section className="section">
+        {services.length === 0 ? (
+          <div className="container-card" style={{ padding: 18 }}>
+            <h2 className="h1" style={{ fontSize: 18 }}>
+              No web design services found
+            </h2>
+            <p className="p" style={{ marginTop: 10, opacity: 0.9 }}>
+              Make sure your services in Sanity are:
+              <br />• <strong>Active</strong>
+              <br />• category set to <strong>web-design</strong>
+              <br />• Published (not Draft)
+            </p>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gap: 16,
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+              alignItems: "stretch",
+            }}
+          >
+            {services.map((raw) => {
+              const slug =
+                typeof raw?.slug === "string" ? raw.slug : raw?.slug?.current || "";
+              const stripeMode = raw?.stripeMode || "payment";
+              const ctaLabel = raw?.ctaLabel || "Get Started";
 
-      <p className="p" style={{ marginTop: 20 }}>
-        Every website is custom built — no generic templates, no bloated code,
-        and no one-size-fits-all solutions.
-      </p>
+              return (
+                <div
+                  key={raw._id || slug}
+                  className="container-card"
+                  style={{
+                    padding: 18,
+                    display: "flex",
+                    flexDirection: "column",
+                    minHeight: 0,
+                  }}
+                >
+                  <ServiceBanner raw={raw} />
 
-      {/* SEO SECTION */}
-      <h2 className="h2" style={{ marginTop: 50 }}>
-        SEO-Optimized Website Design That Gets Found
-      </h2>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                    <h2 className="h1" style={{ fontSize: 18, margin: 0 }}>
+                      {raw?.title || "Untitled Service"}
+                    </h2>
+                    <span className="small" style={{ opacity: 0.85, whiteSpace: "nowrap" }}>
+                      {stripeMode === "subscription" ? "Monthly" : "One-time"}
+                    </span>
+                  </div>
 
-      <p className="p">
-        A beautiful website is useless if no one can find it. That’s why we
-        build every site with search engine optimization in mind.
-      </p>
+                  <p className="p" style={{ marginTop: 10 }}>
+                    {raw?.shortDescription || "No description yet."}
+                  </p>
 
-      <ul style={{ marginTop: 20, paddingLeft: 20 }}>
-        <li>Strategic keyword structure</li>
-        <li>Optimized page titles & meta descriptions</li>
-        <li>Internal linking architecture</li>
-        <li>Clean URL structure</li>
-        <li>Fast Core Web Vitals performance</li>
-      </ul>
+                  <FeatureList features={raw?.features} />
 
-      <p className="p" style={{ marginTop: 20 }}>
-        If you're searching for “SEO website design,” “web developer for small
-        business,” or “hire someone to build my website,” you need a site that
-        ranks and converts.
-      </p>
+                  <div style={{ flex: 1 }} />
 
-      {/* WHY BARRACKS MEDIA */}
-      <h2 className="h2" style={{ marginTop: 50 }}>
-        Why Choose Barracks Media Inc for Website Design?
-      </h2>
+                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 16 }}>
+                    <Link className="tab" href={slug ? `/services/${slug}` : "/services"}>
+                      Details
+                    </Link>
 
-      <p className="p">
-        Barracks Media is a veteran-led media company focused on building
-        scalable digital platforms. We understand branding, content strategy,
-        authority building, and how websites integrate into larger media
-        ecosystems.
-      </p>
+                    <form action="/api/checkout/start" method="POST">
+                      <input type="hidden" name="slug" value={slug} />
+                      <button className="tab" type="submit" disabled={!slug}>
+                        {ctaLabel}
+                      </button>
+                    </form>
+                  </div>
 
-      <ul style={{ marginTop: 20, paddingLeft: 20 }}>
-        <li>✔ Veteran-owned and mission-driven</li>
-        <li>✔ Experience building podcast & media networks</li>
-        <li>✔ SEO and content strategy built into development</li>
-        <li>✔ Transparent pricing and project structure</li>
-        <li>✔ Built for growth — not just launch</li>
-      </ul>
-
-      <p className="p" style={{ marginTop: 20 }}>
-        We don’t just design websites. We build digital assets that support your
-        authority, generate traffic, and help you scale.
-      </p>
-
-      {/* CTA SECTION */}
-      <h2 className="h2" style={{ marginTop: 50 }}>
-        Ready to Launch Your Website?
-      </h2>
-
-      <p className="p">
-        If you're ready to hire a professional website designer and build a
-        website that actually works for your business, let’s talk.
-      </p>
-
-      <p className="p">
-        Contact Barracks Media today to discuss your website design project and
-        create a digital presence that sets you apart.
-      </p>
-
-    </main>
+                  <p className="small" style={{ marginTop: 10, opacity: 0.8 }}>
+                    You’ll be redirected to Stripe Checkout.
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </>
   );
 }
