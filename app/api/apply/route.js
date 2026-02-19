@@ -3,6 +3,32 @@ import { createClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
 
+/**
+ * ✅ Handle GET requests (for crawlers / SEO tools)
+ * Prevents Ubersuggest or other bots from flagging this as a broken link.
+ */
+export async function GET() {
+  return new NextResponse(
+    "Barracks Media Network application endpoint. POST requests only.",
+    {
+      status: 200,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+      },
+    }
+  );
+}
+
+/**
+ * ✅ Handle HEAD requests (some crawlers use HEAD instead of GET)
+ */
+export async function HEAD() {
+  return new NextResponse(null, { status: 200 });
+}
+
+/**
+ * ✅ Main POST handler (your original logic)
+ */
 export async function POST(req) {
   try {
     const url =
@@ -56,15 +82,23 @@ export async function POST(req) {
       full_name: String(body.full_name).trim(),
       email: String(body.email).trim().toLowerCase(),
       show_name: String(body.show_name).trim(),
-      show_website: body.show_website ? String(body.show_website).trim() : null,
+      show_website: body.show_website
+        ? String(body.show_website).trim()
+        : null,
       rss_url: body.rss_url ? String(body.rss_url).trim() : null,
-      host_platform: body.host_platform ? String(body.host_platform).trim() : null,
+      host_platform: body.host_platform
+        ? String(body.host_platform).trim()
+        : null,
       publish_frequency: String(body.publish_frequency).trim(),
       focus: String(body.focus).trim(),
-      primary_topics: body.primary_topics ? String(body.primary_topics).trim() : null,
+      primary_topics: body.primary_topics
+        ? String(body.primary_topics).trim()
+        : null,
       why_join: String(body.why_join).trim(),
       path: String(body.path).trim(),
-      stats_proof_url: body.stats_proof_url ? String(body.stats_proof_url).trim() : null,
+      stats_proof_url: body.stats_proof_url
+        ? String(body.stats_proof_url).trim()
+        : null,
       published_episodes: body.published_episodes
         ? Number(String(body.published_episodes).replace(/[^0-9]/g, "")) || null
         : null,
