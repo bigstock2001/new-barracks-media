@@ -3,20 +3,23 @@ import Link from "next/link";
 import { shows } from "@/lib/shows";
 
 export const metadata = {
-  title: "Network",
-  description: "Explore the Barracks Media network of shows and podcasts.",
+  title: "Veteran-Led Podcast Network & Shows | Barracks Media",
+  description:
+    "Explore the Barracks Media podcast network—veteran-led shows featuring leadership, storytelling, business, history, and culture. Find a show and start listening.",
   alternates: { canonical: "/network" },
   openGraph: {
-    title: "Network",
-    description: "Explore the Barracks Media network of shows and podcasts.",
+    title: "Veteran-Led Podcast Network & Shows | Barracks Media",
+    description:
+      "Explore the Barracks Media podcast network—veteran-led shows featuring leadership, storytelling, business, history, and culture.",
     url: "https://barracksmedia.com/network",
     type: "website",
     siteName: "Barracks Media",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Network",
-    description: "Explore the Barracks Media network of shows and podcasts.",
+    title: "Veteran-Led Podcast Network & Shows | Barracks Media",
+    description:
+      "Explore the Barracks Media podcast network—veteran-led shows featuring leadership, storytelling, business, history, and culture.",
   },
 };
 
@@ -24,9 +27,10 @@ export default function NetworkPage() {
   return (
     <>
       <section className="container-card section hero-strip">
-        <h1 className="h1">The Network</h1>
+        <h1 className="h1">Barracks Media Podcast Network</h1>
         <p className="p" style={{ marginTop: 10 }}>
-          All shows in one place. Click into any show to view details and episodes.
+          Browse veteran-led podcasts and shows built for growth, impact, and authority.
+          Click a show to view details and episodes.
         </p>
       </section>
 
@@ -44,11 +48,12 @@ export default function NetworkPage() {
               href={`/network/${s.slug}`}
               className="podCard"
               style={{ width: "100%" }}
+              title={`Listen to ${s.title}`}
             >
               <div className="podCoverWrap" style={{ aspectRatio: "16 / 10" }}>
                 <img
                   src={s.image}
-                  alt={s.title}
+                  alt={`${s.title} podcast cover`}
                   className="podCover"
                   loading="lazy"
                 />

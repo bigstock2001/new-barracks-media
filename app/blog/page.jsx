@@ -7,23 +7,23 @@ import { PortableText } from "@portabletext/react";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "Blog",
+  title: "Podcasting, Media Growth & Business Strategy Blog | Barracks Media",
   description:
-    "Episode blog posts and show notes from Barracks Media — full posts displayed on one page.",
+    "Actionable insights on podcast production, podcast marketing, website SEO, and media growth—plus show notes and episode highlights from Barracks Media.",
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "Blog",
+    title: "Podcasting, Media Growth & Business Strategy Blog | Barracks Media",
     description:
-      "Episode blog posts and show notes from Barracks Media — full posts displayed on one page.",
+      "Podcast production, marketing, SEO, and media growth insights—plus show notes and episode highlights from Barracks Media.",
     url: "https://barracksmedia.com/blog",
     type: "website",
     siteName: "Barracks Media",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blog",
+    title: "Podcasting, Media Growth & Business Strategy Blog | Barracks Media",
     description:
-      "Episode blog posts and show notes from Barracks Media — full posts displayed on one page.",
+      "Podcast production, marketing, SEO, and media growth insights—plus show notes and episode highlights from Barracks Media.",
   },
 };
 
@@ -67,7 +67,7 @@ function buildJsonLd(posts) {
     name: "Barracks Media Blog",
     url: `${baseUrl}/blog`,
     description:
-      "Episode blog posts and show notes from Barracks Media. Full posts displayed on one page.",
+      "Actionable insights on podcast production, marketing, SEO, and media growth—plus show notes and episode highlights from Barracks Media.",
     publisher: {
       "@type": "Organization",
       name: "Barracks Media",
@@ -157,9 +157,11 @@ export default async function BlogPage() {
         {/* Header */}
         <header className="mb-8 rounded-3xl border border-white/10 bg-black/40 p-6 backdrop-blur">
           <h1 className="text-3xl font-bold tracking-tight text-white">
-            Barracks Media Blog
+            Podcasting, Media Growth & Business Strategy
           </h1>
           <p className="mt-2 max-w-3xl text-white/80">
+            Articles, show notes, and episode highlights focused on podcast production,
+            podcast marketing, website SEO, and building authority online.
           </p>
         </header>
 
