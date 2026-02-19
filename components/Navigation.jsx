@@ -11,6 +11,7 @@ export default function Navigation() {
 
   const [commandOpen, setCommandOpen] = useState(false);
   const [advertiseOpen, setAdvertiseOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
 
   // ✅ auth state
   const [session, setSession] = useState(null);
@@ -18,6 +19,7 @@ export default function Navigation() {
 
   const commandRef = useRef(null);
   const advertiseRef = useRef(null);
+  const servicesRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -27,12 +29,16 @@ export default function Navigation() {
       if (advertiseRef.current && !advertiseRef.current.contains(e.target)) {
         setAdvertiseOpen(false);
       }
+      if (servicesRef.current && !servicesRef.current.contains(e.target)) {
+        setServicesOpen(false);
+      }
     };
 
     const handleEscape = (e) => {
       if (e.key === "Escape") {
         setCommandOpen(false);
         setAdvertiseOpen(false);
+        setServicesOpen(false);
       }
     };
 
@@ -82,6 +88,7 @@ export default function Navigation() {
     } finally {
       setCommandOpen(false);
       setAdvertiseOpen(false);
+      setServicesOpen(false);
       router.push("/");
       router.refresh();
     }
@@ -138,9 +145,66 @@ export default function Navigation() {
               Live Webinar
             </Link>
 
-            <Link className="tab" href="/services">
-              Services
-            </Link>
+            {/* ✅ Services dropdown */}
+            <div
+              className="dropWrap"
+              ref={servicesRef}
+              style={dropWrapStyle}
+              onMouseEnter={() => setServicesOpen(true)}
+              onMouseLeave={() => setServicesOpen(false)}
+            >
+              <button
+                type="button"
+                className="dropBtn"
+                aria-expanded={servicesOpen}
+                aria-haspopup="menu"
+                onClick={() => {
+                  setServicesOpen((v) => !v);
+                  setCommandOpen(false);
+                  setAdvertiseOpen(false);
+                }}
+              >
+                Services {servicesOpen ? "▴" : "▾"}
+              </button>
+
+              {servicesOpen && (
+                <div className="dropdown" role="menu" style={dropdownStyle}>
+                  <Link
+                    className="dropItem"
+                    href="/services"
+                    onClick={() => setServicesOpen(false)}
+                  >
+                    All Services
+                  </Link>
+
+                  <div className="divider" />
+
+                  <Link
+                    className="dropItem"
+                    href="/services/web-design"
+                    onClick={() => setServicesOpen(false)}
+                  >
+                    Web Design
+                  </Link>
+
+                  <Link
+                    className="dropItem"
+                    href="/services/podcast-editing"
+                    onClick={() => setServicesOpen(false)}
+                  >
+                    Podcast Editing
+                  </Link>
+
+                  <Link
+                    className="dropItem"
+                    href="/services/podcast-production"
+                    onClick={() => setServicesOpen(false)}
+                  >
+                    Podcast Production
+                  </Link>
+                </div>
+              )}
+            </div>
 
             {/* ✅ Bring Portfolio back */}
             <Link className="tab" href="/portfolio">
@@ -200,6 +264,7 @@ export default function Navigation() {
                 onClick={() => {
                   setAdvertiseOpen((v) => !v);
                   setCommandOpen(false);
+                  setServicesOpen(false);
                 }}
               >
                 Advertise {advertiseOpen ? "▴" : "▾"}
@@ -250,6 +315,7 @@ export default function Navigation() {
                 onClick={() => {
                   setCommandOpen((v) => !v);
                   setAdvertiseOpen(false);
+                  setServicesOpen(false);
                 }}
               >
                 Command {commandOpen ? "▴" : "▾"}
