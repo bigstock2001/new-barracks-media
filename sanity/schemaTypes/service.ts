@@ -20,6 +20,23 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    // ✅ NEW: Category (used to power per-topic service pages)
+    defineField({
+      name: "category",
+      title: "Service Category",
+      type: "string",
+      options: {
+        list: [
+          { title: "Web Design", value: "web-design" },
+          { title: "Podcast Editing", value: "podcast-editing" },
+          { title: "Podcast Production", value: "podcast-production" },
+          { title: "Podcast Launch", value: "podcast-launch" },
+        ],
+        layout: "radio",
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+
     defineField({
       name: "shortDescription",
       title: "Short Description (Card)",
@@ -28,7 +45,7 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // ✅ NEW: Service Image (upload inside Sanity)
+    // ✅ Service Image (upload inside Sanity)
     defineField({
       name: "image",
       title: "Service Image",
@@ -82,7 +99,6 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // ✅ lookup key replaces price ID
     defineField({
       name: "stripeLookupKey",
       title: "Stripe Lookup Key",
