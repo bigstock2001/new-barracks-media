@@ -175,9 +175,10 @@ export default function Navigation() {
                     Web Design
                   </Link>
 
+                  {/* ✅ Label stays "Podcast Editing", link points to the new page */}
                   <Link
                     className="dropItem"
-                    href="/services/podcast-editing"
+                    href="/podcast-editing-for-coaches"
                     onClick={() => setServicesOpen(false)}
                   >
                     Podcast Editing
