@@ -30,7 +30,7 @@ export default async function sitemap() {
     { url: `${baseUrl}/copyright`, lastModified: new Date() },
   ];
 
-  // Blog posts (you’re using anchors on /blog, not /blog/[slug])
+  // Episode posts
   let posts = [];
   try {
     posts = await sanityClient.fetch(POSTS_QUERY);
@@ -39,8 +39,9 @@ export default async function sitemap() {
     posts = [];
   }
 
+  // ✅ Real, indexable URLs (no #fragments)
   const postRoutes = posts.map((p) => ({
-    url: `${baseUrl}/blog#${p.slug}`,
+    url: `${baseUrl}/blog/${p.slug}`,
     lastModified: p._updatedAt ? new Date(p._updatedAt) : new Date(),
   }));
 
