@@ -56,7 +56,7 @@ export default function BooksPage() {
 
           <div style={styles.buttonRow}>
             <Link
-              href="https://buy.stripe.com/7sY3cvdST9SGdvrbYF3cc02"
+              href="https://buy.stripe.com/cNibJ1g113uifDz6El3cc03"
               target="_blank"
               rel="noopener noreferrer"
               style={styles.button}
