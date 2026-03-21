@@ -193,6 +193,10 @@ export default function Navigation() {
               Portfolio
             </Link>
 
+            <Link className="tab" href="/books">
+              Books
+            </Link>
+
             <Link className="tab" href="/blog">
               Blog
             </Link>
