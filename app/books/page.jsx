@@ -66,6 +66,171 @@ export default function BooksPage() {
           </div>
         </div>
       </section>
+
+      <section style={styles.hero}>
+        <div style={styles.imageWrap}>
+          <Image
+            src="/books/dustandiron.jpg"
+            alt="Dust to Iron (Volume 1)"
+            width={900}
+            height={1200}
+            style={styles.image}
+          />
+        </div>
+
+        <div style={styles.content}>
+          <p style={styles.eyebrow}>Volume 1</p>
+
+          <h1 style={styles.title}>Dust to Iron</h1>
+
+          <p style={styles.subtitle}>
+            The beginning of the transformation.
+          </p>
+
+          <p style={styles.text}>
+            In the unforgiving mountains of Afghanistan, a soldier's world is forged in the fires of conflict. As secrets unravel and loyalties are tested, one man discovers that the true battle begins when the dust settles.
+          </p>
+
+          <p style={styles.text}>
+            This gripping tale explores the transformation from ordinary soldier to unbreakable warrior.
+          </p>
+
+          <div style={styles.buttonRow}>
+            <Link
+              href="https://buy.stripe.com/bJeeVdg117Ky8b7geV3cc05"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={styles.button}
+            >
+              Buy Now
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section style={styles.hero}>
+        <div style={styles.imageWrap}>
+          <Image
+            src="/books/ironandash.jpg"
+            alt="Iron to Ash (Volume 2)"
+            width={900}
+            height={1200}
+            style={styles.image}
+          />
+        </div>
+
+        <div style={styles.content}>
+          <p style={styles.eyebrow}>Volume 2</p>
+
+          <h1 style={styles.title}>Iron to Ash</h1>
+
+          <p style={styles.subtitle}>
+            The consequences of strength.
+          </p>
+
+          <p style={styles.text}>
+            The journey continues as our hero faces the repercussions of his choices. In a world where trust is scarce and danger lurks in every shadow, he must confront the demons of his past.
+          </p>
+
+          <p style={styles.text}>
+            Iron to Ash delves deeper into the heart of war's aftermath, where strength is both salvation and curse.
+          </p>
+
+          <div style={styles.buttonRow}>
+            <Link
+              href="https://buy.stripe.com/dRmfZhcOPaWKajf2o53cc04"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={styles.button}
+            >
+              Buy Now
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section style={styles.hero}>
+        <div style={styles.imageWrap}>
+          <Image
+            src="/books/whendemonsfollowyouhome.jpg"
+            alt="When Demons Follow You Home"
+            width={900}
+            height={1200}
+            style={styles.image}
+          />
+        </div>
+
+        <div style={styles.content}>
+          <p style={styles.eyebrow}>Standalone Novel</p>
+
+          <h1 style={styles.title}>When Demons Follow You Home</h1>
+
+          <p style={styles.subtitle}>
+            The invisible wounds of war.
+          </p>
+
+          <p style={styles.text}>
+            Returning from the battlefield doesn't mean leaving the war behind. As memories haunt and relationships fracture, our protagonist learns that some wounds are invisible.
+          </p>
+
+          <p style={styles.text}>
+            This powerful story examines the psychological toll of combat and the struggle to rebuild a life in peacetime.
+          </p>
+
+          <div style={styles.buttonRow}>
+            <Link
+              href="https://buy.stripe.com/00waEX8yz5CqcrnbYF3cc06"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={styles.button}
+            >
+              Buy Now
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section style={styles.hero}>
+        <div style={styles.imageWrap}>
+          <Image
+            src="/books/echoesofwar.jpg"
+            alt="Echoes of War"
+            width={900}
+            height={1200}
+            style={styles.image}
+          />
+        </div>
+
+        <div style={styles.content}>
+          <p style={styles.eyebrow}>Standalone Novel</p>
+
+          <h1 style={styles.title}>Echoes of War</h1>
+
+          <p style={styles.subtitle}>
+            The final reckoning.
+          </p>
+
+          <p style={styles.text}>
+            The final reckoning approaches as buried truths surface and old enemies resurface. In a race against time, alliances form and break, leading to a climactic confrontation.
+          </p>
+
+          <p style={styles.text}>
+            Echoes of War brings the series to its explosive conclusion, exploring themes of redemption and the enduring impact of conflict.
+          </p>
+
+          <div style={styles.buttonRow}>
+            <Link
+              href="https://buy.stripe.com/6oU6oH7uv3uigHD9Qx3cc07"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={styles.button}
+            >
+              Buy Now
+            </Link>
+          </div>
+        </div>
+      </section>
+
     </main>
   );
 }
