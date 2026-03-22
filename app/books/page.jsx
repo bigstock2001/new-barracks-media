@@ -71,7 +71,7 @@ export default function BooksPage() {
         <div style={styles.imageWrap}>
           <Image
             src="/books/ironandash.jpg"
-            alt="Iron to Ash Volume 2 of the secret of the hindu kush"
+            alt="Iron and Ash Volume 2 of the secret of the hindu kush"
             width={900}
             height={1200}
             style={styles.image}
@@ -81,7 +81,7 @@ export default function BooksPage() {
         <div style={styles.content}>
           <p style={styles.eyebrow}>Volume 2</p>
 
-          <h1 style={styles.title}>Iron to Ash Volume 2 of the secret of the hindu kush</h1>
+          <h1 style={styles.title}>Iron and Ash Volume 2 of the secret of the hindu kush</h1>
 
           <p style={styles.text}>
             War leaves scars. Some you can see. Some you can't.
@@ -124,7 +124,7 @@ export default function BooksPage() {
         <div style={styles.imageWrap}>
           <Image
             src="/books/dustandiron.jpg"
-            alt="Dust to Iron Volume 1 of the secret of the Hindu Kush"
+            alt="Dust and Iron Volume 1 of the secret of the Hindu Kush"
             width={900}
             height={1200}
             style={styles.image}
@@ -134,7 +134,7 @@ export default function BooksPage() {
         <div style={styles.content}>
           <p style={styles.eyebrow}>Volume 1</p>
 
-          <h1 style={styles.title}>Dust to Iron Volume 1 of the secret of the Hindu Kush</h1>
+          <h1 style={styles.title}>Dust and Iron Volume 1 of the secret of the Hindu Kush</h1>
 
           <p style={styles.text}>
             Some wars are fought with bullets. Others are fought in the mind.
