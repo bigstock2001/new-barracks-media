@@ -71,7 +71,7 @@ export default function BooksPage() {
         <div style={styles.imageWrap}>
           <Image
             src="/books/dustandiron.jpg"
-            alt="Dust to Iron (Volume 1)"
+            alt="Dust to Iron Volume 1 of the Secret of the Hindu Kush"
             width={900}
             height={1200}
             style={styles.image}
@@ -81,18 +81,10 @@ export default function BooksPage() {
         <div style={styles.content}>
           <p style={styles.eyebrow}>Volume 1</p>
 
-          <h1 style={styles.title}>Dust to Iron</h1>
-
-          <p style={styles.subtitle}>
-            The beginning of the transformation.
-          </p>
+          <h1 style={styles.title}>Dust to Iron Volume 1 of the Secret of the Hindu Kush</h1>
 
           <p style={styles.text}>
-            In the unforgiving mountains of Afghanistan, a soldier's world is forged in the fires of conflict. As secrets unravel and loyalties are tested, one man discovers that the true battle begins when the dust settles.
-          </p>
-
-          <p style={styles.text}>
-            This gripping tale explores the transformation from ordinary soldier to unbreakable warrior.
+            A seasoned Ranger medic returns to Afghanistan where every mission carries weight. A raw, powerful story of combat, sacrifice, and the unseen scars carried long after the fight is over.
           </p>
 
           <div style={styles.buttonRow}>
@@ -112,7 +104,7 @@ export default function BooksPage() {
         <div style={styles.imageWrap}>
           <Image
             src="/books/ironandash.jpg"
-            alt="Iron to Ash (Volume 2)"
+            alt="Iron to Ash Volume 2 of the Secret of the Hindu Kush"
             width={900}
             height={1200}
             style={styles.image}
@@ -122,18 +114,14 @@ export default function BooksPage() {
         <div style={styles.content}>
           <p style={styles.eyebrow}>Volume 2</p>
 
-          <h1 style={styles.title}>Iron to Ash</h1>
+          <h1 style={styles.title}>Iron to Ash Volume 2 of the Secret of the Hindu Kush</h1>
 
-          <p style={styles.subtitle}>
-            The consequences of strength.
+          <p style={styles.text}>
+            War leaves scars—some you can see, some you can't.
           </p>
 
           <p style={styles.text}>
-            The journey continues as our hero faces the repercussions of his choices. In a world where trust is scarce and danger lurks in every shadow, he must confront the demons of his past.
-          </p>
-
-          <p style={styles.text}>
-            Iron to Ash delves deeper into the heart of war's aftermath, where strength is both salvation and curse.
+            As the conflict escalates, Marcus must face a truth more dangerous than the enemy… what the war is turning him into.
           </p>
 
           <div style={styles.buttonRow}>
@@ -165,16 +153,8 @@ export default function BooksPage() {
 
           <h1 style={styles.title}>When Demons Follow You Home</h1>
 
-          <p style={styles.subtitle}>
-            The invisible wounds of war.
-          </p>
-
           <p style={styles.text}>
-            Returning from the battlefield doesn't mean leaving the war behind. As memories haunt and relationships fracture, our protagonist learns that some wounds are invisible.
-          </p>
-
-          <p style={styles.text}>
-            This powerful story examines the psychological toll of combat and the struggle to rebuild a life in peacetime.
+            What if the demons we fight in our heads aren’t just in our heads? A group of veterans discovers the war followed them home—literally.
           </p>
 
           <div style={styles.buttonRow}>
@@ -194,7 +174,7 @@ export default function BooksPage() {
         <div style={styles.imageWrap}>
           <Image
             src="/books/echoesofwar.jpg"
-            alt="Echoes of War"
+            alt="Echoes of War The Silent Transition of a Soldier"
             width={900}
             height={1200}
             style={styles.image}
@@ -204,18 +184,14 @@ export default function BooksPage() {
         <div style={styles.content}>
           <p style={styles.eyebrow}>Standalone Novel</p>
 
-          <h1 style={styles.title}>Echoes of War</h1>
+          <h1 style={styles.title}>Echoes of War The Silent Transition of a Soldier</h1>
 
-          <p style={styles.subtitle}>
-            The final reckoning.
+          <p style={styles.text}>
+            A deeply personal journey through the invisible wounds of war.
           </p>
 
           <p style={styles.text}>
-            The final reckoning approaches as buried truths surface and old enemies resurface. In a race against time, alliances form and break, leading to a climactic confrontation.
-          </p>
-
-          <p style={styles.text}>
-            Echoes of War brings the series to its explosive conclusion, exploring themes of redemption and the enduring impact of conflict.
+            A story of battles fought not overseas, but within—offering understanding for those navigating life after service.
           </p>
 
           <div style={styles.buttonRow}>
