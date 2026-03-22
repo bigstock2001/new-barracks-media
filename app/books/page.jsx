@@ -70,8 +70,8 @@ export default function BooksPage() {
       <section style={styles.hero}>
         <div style={styles.imageWrap}>
           <Image
-            src="/books/dustandiron.jpg"
-            alt="Dust to Iron Volume 1 of the Secret of the Hindu Kush"
+            src="/books/ironandash.jpg"
+            alt="Iron to Ash Volume 2 of the secret of the hindu kush"
             width={900}
             height={1200}
             style={styles.image}
@@ -79,17 +79,37 @@ export default function BooksPage() {
         </div>
 
         <div style={styles.content}>
-          <p style={styles.eyebrow}>Volume 1</p>
+          <p style={styles.eyebrow}>Volume 2</p>
 
-          <h1 style={styles.title}>Dust to Iron Volume 1 of the Secret of the Hindu Kush</h1>
+          <h1 style={styles.title}>Iron to Ash Volume 2 of the secret of the hindu kush</h1>
 
           <p style={styles.text}>
-            A seasoned Ranger medic returns to Afghanistan where every mission carries weight. A raw, powerful story of combat, sacrifice, and the unseen scars carried long after the fight is over.
+            War leaves scars. Some you can see. Some you can't.
+          </p>
+
+          <p style={styles.text}>
+            Marcus Holloway made it through the last deployment—but he didn't come back the same.
+          </p>
+
+          <p style={styles.text}>
+            When a new threat emerges in the mountains of Afghanistan, Marcus and his team are thrust back into a conflict that is spiraling out of control. The enemy is smarter. The missions are deadlier. And every decision carries consequences that reach far beyond the battlefield.
+          </p>
+
+          <p style={styles.text}>
+            As the fighting intensifies, Marcus must navigate a war that no longer has clear sides—and confront the truth that the greatest danger may not be the enemy…
+          </p>
+
+          <p style={styles.text}>
+            …but what the war is turning him into.
+          </p>
+
+          <p style={styles.text}>
+            Iron and Ash raises the stakes in this powerful military series, delivering relentless action, brotherhood, and the psychological toll of combat.
           </p>
 
           <div style={styles.buttonRow}>
             <Link
-              href="https://buy.stripe.com/bJeeVdg117Ky8b7geV3cc05"
+              href="https://buy.stripe.com/dRmfZhcOPaWKajf2o53cc04"
               target="_blank"
               rel="noopener noreferrer"
               style={styles.button}
@@ -103,8 +123,8 @@ export default function BooksPage() {
       <section style={styles.hero}>
         <div style={styles.imageWrap}>
           <Image
-            src="/books/ironandash.jpg"
-            alt="Iron to Ash Volume 2 of the Secret of the Hindu Kush"
+            src="/books/dustandiron.jpg"
+            alt="Dust to Iron Volume 1 of the secret of the Hindu Kush"
             width={900}
             height={1200}
             style={styles.image}
@@ -112,21 +132,41 @@ export default function BooksPage() {
         </div>
 
         <div style={styles.content}>
-          <p style={styles.eyebrow}>Volume 2</p>
+          <p style={styles.eyebrow}>Volume 1</p>
 
-          <h1 style={styles.title}>Iron to Ash Volume 2 of the Secret of the Hindu Kush</h1>
+          <h1 style={styles.title}>Dust to Iron Volume 1 of the secret of the Hindu Kush</h1>
 
           <p style={styles.text}>
-            War leaves scars—some you can see, some you can't.
+            Some wars are fought with bullets. Others are fought in the mind.
           </p>
 
           <p style={styles.text}>
-            As the conflict escalates, Marcus must face a truth more dangerous than the enemy… what the war is turning him into.
+            Marcus Holloway has lived both.
+          </p>
+
+          <p style={styles.text}>
+            A seasoned Ranger medic with multiple deployments behind him, Marcus knows the reality of war—the chaos, the brotherhood, and the weight of decisions that never leave you. When he returns to Afghanistan for another tour, he steps back into a world where danger hides in every shadow and trust is a luxury no one can afford.
+          </p>
+
+          <p style={styles.text}>
+            In the mountains of the Hindu Kush, every mission is a gamble. Every village holds secrets. And every man in his squad is counting on him to bring them home.
+          </p>
+
+          <p style={styles.text}>
+            But as the violence escalates and the lines between enemy and ally blur, Marcus begins to realize something far more dangerous than the battlefield itself:
+          </p>
+
+          <p style={styles.text}>
+            War changes you… and not everyone comes back whole.
+          </p>
+
+          <p style={styles.text}>
+            Dust and Iron is a raw, powerful story of combat, sacrifice, and the unseen scars carried long after the fight is over.
           </p>
 
           <div style={styles.buttonRow}>
             <Link
-              href="https://buy.stripe.com/dRmfZhcOPaWKajf2o53cc04"
+              href="https://buy.stripe.com/bJeeVdg117Ky8b7geV3cc05"
               target="_blank"
               rel="noopener noreferrer"
               style={styles.button}
@@ -154,7 +194,31 @@ export default function BooksPage() {
           <h1 style={styles.title}>When Demons Follow You Home</h1>
 
           <p style={styles.text}>
-            What if the demons we fight in our heads aren’t just in our heads? A group of veterans discovers the war followed them home—literally.
+            What if the demons we fight in our heads aren't just in our heads?
+          </p>
+
+          <p style={styles.text}>
+            When homeless veteran Marcus "Tank" Rodriguez starts seeing shadows that move wrong and feeling hunted by something that shouldn't exist, he assumes he's finally lost his mind to PTSD. But when other veterans living under Atlanta's bridges report identical supernatural experiences, Tank realizes they're facing an enemy no military manual prepared them for.
+          </p>
+
+          <p style={styles.text}>
+            The shadows followed them home from Iraq and Afghanistan—literal demons that feed on trauma, guilt, and isolation. These entities have been systematically hunting American veterans, recruiting the broken and forgotten for something called "the final deployment." Their mission: transform America's warriors into supernatural soldiers for a darker cause.
+          </p>
+
+          <p style={styles.text}>
+            As Tank forges his fellow homeless veterans into a fighting unit, they discover this isn't just happening in Atlanta. Resistance cells across the country are battling the same invisible war. From abandoned warehouses to weapons manufacturing facilities, these forgotten soldiers must prove that military bonds forged in combat can stand against supernatural forces that want to turn their greatest strength—their brotherhood—into their ultimate weakness.
+          </p>
+
+          <p style={styles.text}>
+            Armed with nothing but their training, their loyalty to each other, and the discovery that some demons fear fire as much as they crave darkness, Tank's unit faces an impossible choice: let the shadows convert every veteran in America, or fight a war that most people don't believe exists against an enemy that shouldn't be real.
+          </p>
+
+          <p style={styles.text}>
+            Because when supernatural forces threaten everything they fought to protect overseas, these homeless veterans will remind the world what happens when you hunt soldiers who've already been through hell and come back fighting. Some oaths don't end when you take off the uniform—they find new enemies to fight.
+          </p>
+
+          <p style={styles.text}>
+            A supernatural military thriller that asks: What if the real battle begins when the war comes home?
           </p>
 
           <div style={styles.buttonRow}>
@@ -187,11 +251,7 @@ export default function BooksPage() {
           <h1 style={styles.title}>Echoes of War The Silent Transition of a Soldier</h1>
 
           <p style={styles.text}>
-            A deeply personal journey through the invisible wounds of war.
-          </p>
-
-          <p style={styles.text}>
-            A story of battles fought not overseas, but within—offering understanding for those navigating life after service.
+            In the shadows of service, behind the laughter that fades, lies a story untold of battles waged not on distant lands, but within the quiet confines of home and self. "Echoes of Silence" is a deeply personal journey through the invisible wounds of war, chronicled by a veteran whose life was forever altered by the choices made in youth, the silence kept in strength, and the path walked in solitude. This is not just a tale of struggle with PTSD; it is a beacon for those navigating the aftermath of their own battles, seeking a glimmer of understanding in a sea of unspoken pain.
           </p>
 
           <div style={styles.buttonRow}>
